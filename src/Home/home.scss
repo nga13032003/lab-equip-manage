@@ -1,0 +1,53 @@
+.home-layout {
+    height: 100vh;
+  
+    .ant-layout-sider {
+      height: 80vh;
+      position: fixed;
+      left: 0;
+      top: 10vh;
+      bottom: 10vh;
+      z-index: 1000;
+    }
+  
+    .ant-layout {
+      margin-left: 200px;
+    }
+  
+    .ant-layout-header {
+      position: fixed;
+      width: calc(100% - 200px);
+      top: 0;
+      z-index: 999;
+    }
+  
+    .ant-layout-content {
+      margin-top: 64px;
+      padding: 24px;
+    }
+  
+    .ant-layout-footer {
+      position: fixed;
+      bottom: 0;
+      width: calc(100% - 200px);
+      text-align: center;
+      padding: 10px;
+      background-color: #f0f2f5; 
+      border-top: 1px solid #d9d9d9; 
+      z-index: 998;
+    }
+    .custom-footer {
+        text-align: center;
+        background-color: #f0f2f5; 
+        padding: 20px 10px;
+        border-top: 1px solid #d9d9d9;
+        font-size: 14px;
+        line-height: 1.5;
+      
+        strong {
+          font-weight: bold;
+        }
+      }
+      
+  }
+  
