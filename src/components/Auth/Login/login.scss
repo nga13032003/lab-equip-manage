@@ -1,0 +1,16 @@
+.login-container {
+    @apply flex items-center justify-center h-screen bg-gray-100; 
+  
+  .login-form {
+    @apply max-w-lg p-6 bg-white shadow-lg rounded-lg; 
+    
+    border: 1px solid #d9d9d9;
+
+    .login-title {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+}
+  
