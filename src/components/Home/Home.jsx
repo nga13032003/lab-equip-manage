@@ -3,7 +3,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
-  KeyOutlined,
   FileAddOutlined,
   SwapOutlined,
   ClockCircleOutlined,
@@ -12,26 +11,30 @@ import {
   BarChartOutlined,
   UserOutlined,
   DownOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, Dropdown, theme } from 'antd';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import './home.scss';
 import profileImage from '../../assets/images/profile.png';
 
 const { Header, Sider, Content, Footer } = Layout;
 
 const App = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
- 
   const menuItems = [
     {
       label: (
-        <Button type="text" onClick={() => window.location.href = 'https://www.antgroup.com'} style={{ width: '100%' }}>
+        <Button
+          type="text"
+          onClick={() => window.location.href = 'https://www.antgroup.com'}
+          style={{ width: '100%' }}
+        >
           Hồ sơ cá nhân
         </Button>
       ),
@@ -39,7 +42,11 @@ const App = () => {
     },
     {
       label: (
-        <Button type="text" onClick={() => window.location.href = 'https://www.aliyun.com'} style={{ width: '100%' }}>
+        <Button
+          type="text"
+          onClick={() => window.location.href = 'https://www.aliyun.com'}
+          style={{ width: '100%' }}
+        >
           Thiết lập tài khoản
         </Button>
       ),
@@ -53,7 +60,7 @@ const App = () => {
         <Button
           type="text"
           onClick={() => {
-            navigate('/login'); 
+            navigate('/login');
           }}
           style={{ width: '100%' }}
         >
@@ -79,11 +86,6 @@ const App = () => {
               icon: <UserOutlined />,
               label: 'Người dùng',
             },
-            // {
-            //   key: '2',
-            //   icon: <KeyOutlined />,
-            //   label: 'Thay đổi mật khẩu',
-            // },
             {
               key: '2',
               icon: <FileAddOutlined />,
@@ -119,6 +121,12 @@ const App = () => {
               icon: <BarChartOutlined />,
               label: 'Thống kê và báo cáo',
             },
+            {
+              key: '9',
+              icon: <UnorderedListOutlined />,
+              label: 'Danh sách dụng cụ và thiết bị',
+              // onClick: () => navigate('/equipment-list'),
+            },
           ]}
         />
       </Sider>
@@ -144,11 +152,15 @@ const App = () => {
             }}
           />
           <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-            <Button type="text" onClick={(e) => e.preventDefault()} style={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              type="text"
+              onClick={(e) => e.preventDefault()}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
               <img
                 src={profileImage}
                 alt="Profile"
-                style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }} 
+                style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }}
               />
               <DownOutlined />
             </Button>
@@ -163,7 +175,7 @@ const App = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          {/* Nội dung chính ở đây */}
+          {/* Main content here */}
         </Content>
         <Footer className="custom-footer">
           <strong>ỨNG DỤNG WEB QUẢN LÝ THIẾT BỊ, DỤNG CỤ TẠI PHÒNG THÍ NGHIỆM</strong><br />
