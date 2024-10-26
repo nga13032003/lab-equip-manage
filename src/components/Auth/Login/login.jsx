@@ -28,16 +28,8 @@ const Login = () => (
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
-          <p className="login-title">ĐĂNG NHẬP HỆ THỐNG</p>
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-
-      </Form.Item>
-
+      <p className="login-title">ĐĂNG NHẬP HỆ THỐNG</p>
+      
       <Form.Item
         label="Username"
         name="username"
