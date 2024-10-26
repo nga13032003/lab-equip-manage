@@ -1,0 +1,68 @@
+.custom-btn {
+    border: none;
+    outline: 0;
+    padding: 8px 15px;
+    border-radius: 4px;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  
+    &__lg {
+      height: 48px;
+    }
+  
+    &__md {
+      height: 40px;
+    }
+  
+    &__sm {
+      height: 32px;
+    }
+  
+    &__contained {
+      opacity: 0.9;
+  
+      &:hover {
+        opacity: 1;
+      }
+  
+      &.custom-btn--primary {
+        background-color: blue;
+      }
+  
+      &.custom-btn--danger {
+        background-color: red;
+      }
+    }
+  
+    &__half-contained {
+      &.custom-btn--primary {
+        background-color: blue;
+        color: blue;
+  
+        &:hover {
+          background-color: blue;
+        }
+      }
+  
+      &.custom-btn--danger {
+        background-color: red;
+        color: red;
+  
+        &:hover {
+          background-color: red;
+        }
+      }
+  
+      &.custom-btn--success {
+        background-color: rgb(36, 207, 113);
+        
+      }
+    }
+  
+    
+  }

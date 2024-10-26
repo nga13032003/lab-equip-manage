@@ -1,7 +1,24 @@
 header {
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 0;
+  display: flex;
+  justify-content: space-between; /* Aligns children to the edges of the header */
+  align-items: center; /* Vertically centers items */
+  position: relative; /* Allows dropdown to overlay correctly */
+
+  .img-dashboard {
+    width: 100px; /* Adjust width as needed */
+    height: 32px; /* Adjust height as needed */
+    cursor: pointer; /* Indicates that the image is clickable */
+    margin-left: 10px; /* Adds space between the dropdown and the dashboard image */
   }
-  
+
+  .MuiInputBase-root{
+    width: 300px;
+    height: 45px;
+    align-items: center;
+    margin: auto;
+  }
+    
+}
+
+

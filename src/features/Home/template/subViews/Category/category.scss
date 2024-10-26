@@ -1,0 +1,73 @@
+.category-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  
+    // Tiêu đề
+    h1 {
+      font-size: 24px;
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      margin-bottom: 30px;
+      padding-left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      &::after {
+        content: '🧐'; // Emoji từ tiêu đề gốc
+        font-size: 20px;
+      }
+    }
+  
+    // Grid container
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 10px;
+  
+      // Card sản phẩm
+      .device-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        transition: transform 0.3s ease;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+  
+        &:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transform: translateY(-3px);
+        }
+  
+        // Container hình ảnh
+        .device-image {
+          width: 100%;
+          aspect-ratio: 1/1; // Tỷ lệ vuông cho hình ảnh
+          object-fit: cover;
+          border-radius: 8px;
+          margin-bottom: 12px;
+        }
+  
+        // Tên sản phẩm
+        .device-name {
+          font-size: 16px;
+          font-weight: 500;
+          color: #333;
+          margin: 0;
+          line-height: 1.4;
+          // Giới hạn 2 dòng cho tên sản phẩm
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }

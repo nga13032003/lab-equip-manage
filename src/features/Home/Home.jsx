@@ -4,6 +4,8 @@ import { Layout } from 'antd';
 import AuthSider from '../../components/AuthSider/AuthSider';
 import AuthFooter from '../../components/AuthFooter/AuthFooter';
 import AuthHeader from '../../components/AuthHeader/AuthHeader';
+import Banner  from './template/subViews/Banner/Banner';
+import Category from './template/subViews/Category/Category';
 import './home.scss';
 
 const { Content } = Layout;
@@ -17,6 +19,8 @@ const Home = () => {
       <Layout>
         <AuthHeader collapsed={collapsed} setCollapsed={setCollapsed} />
         <Content style={{ margin: '24px 16px', padding: 24, minHeight: 280, background: '#fff', borderRadius: '8px',}}>
+        <Banner/>
+        <Category/>
         </Content>
         <AuthFooter />
       </Layout>

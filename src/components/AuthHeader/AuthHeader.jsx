@@ -1,18 +1,19 @@
-// AuthHeader.jsx
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined, DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, theme } from 'antd';
-import profileImage from '../../assets/images/profile.png';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { profileImage, dashboard } from '../../assets';
+import { useNavigate } from 'react-router-dom';
 import './AuthHeader.scss';
+import CustomInput from '../CustomInput/CustomInput';
 
 const AuthHeader = ({ collapsed, setCollapsed }) => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  // Define menuItems inside AuthHeader
+  const [isDropdownVisible, setDropdownVisible] = useState(true);
+
   const menuItems = [
     {
       label: (
@@ -45,7 +46,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
       label: (
         <Button
           type="text"
-          onClick={() => navigate('/login')} // Use navigate directly here
+          onClick={() => navigate('/login')}
           style={{ width: '100%' }}
         >
           Đăng xuất
@@ -55,6 +56,19 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
     },
   ];
 
+  useEffect(() => {
+    const handleResize = () => {
+      setDropdownVisible(window.innerWidth >= 768); // Hiện dropdown trên thiết bị lớn hơn 768px
+    };
+
+    handleResize(); // Thiết lập giá trị ban đầu
+    window.addEventListener('resize', handleResize); // Theo dõi kích thước
+
+    return () => {
+      window.removeEventListener('resize', handleResize); // Dọn dẹp listener
+    };
+  }, []);
+
   return (
     <header
       style={{
@@ -63,6 +77,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        position: 'relative', // Thêm thuộc tính này để vị trí của dropdown không bị ảnh hưởng bởi các phần tử khác
       }}
     >
       <Button
@@ -75,19 +90,36 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
           height: 64,
         }}
       />
-      <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-        <Button
-          type="text"
-          onClick={(e) => e.preventDefault()}
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
+      <CustomInput
+        type="text"
+        placeholder="Tìm kiếm..."
+        className="search-input"
+        // onChange={(e) => setSearchTerm(e.target.value)}
+        // value={searchTerm}
+      />
+      <Dropdown menu={{ items: menuItems }} trigger={['click']} overlayStyle={{ zIndex: 1000 }}>
+        <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
           <img
-            src={profileImage}
-            alt="Profile"
-            style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }}
+            src={dashboard}
+            alt="Navigate to HomePage"
+            onClick={() => navigate('/home')}
+            className='img-dashboard'
           />
-          <DownOutlined />
-        </Button>
+          {isDropdownVisible && ( // Chỉ hiện button dropdown khi dropdownVisible là true
+            <Button
+              type="text"
+              onClick={(e) => e.preventDefault()}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <img
+                src={profileImage}
+                alt="Profile"
+                style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }}
+              />
+              <DownOutlined />
+            </Button>
+          )}
+        </div>
       </Dropdown>
     </header>
   );

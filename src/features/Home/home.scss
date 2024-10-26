@@ -2,11 +2,11 @@
   height: 100vh;
 
   .ant-layout-sider {
-    height: calc(100vh - 20vh); // Adjust to prevent overlap with footer
+    height: calc(100vh - 20vh);
     position: fixed;
     left: 0;
-    top: 10vh; // Space above the Sider
-    bottom: 10vh; // Space below the Sider
+    top: 10vh;
+    bottom: 10vh;
     z-index: 1000;
   }
 
@@ -22,9 +22,9 @@
   }
 
   .ant-layout-content {
-    margin-top: 64px; // Space for the header
+    margin-top: 64px;
     padding: 24px;
-    margin-bottom: 10vh; // Add space for the footer
+    margin-bottom: 10vh;
   }
 
   .ant-layout-footer {
@@ -33,14 +33,14 @@
     width: calc(100% - 200px);
     text-align: center;
     padding: 10px;
-    background-color: #f0f2f5; 
-    border-top: 1px solid #d9d9d9; 
+    background-color: #f0f2f5;
+    border-top: 1px solid #d9d9d9;
     z-index: 998;
   }
 
   .custom-footer {
     text-align: center;
-    background-color: #f0f2f5; 
+    background-color: #f0f2f5;
     padding: 20px 10px;
     border-top: 1px solid #d9d9d9;
     font-size: 14px;
@@ -48,6 +48,60 @@
 
     strong {
       font-weight: bold;
+    }
+  }
+}
+
+.home-banner {
+  position: relative;
+  overflow: hidden; /* Prevents overflow of images */
+  height: 340px;
+
+  .banner-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+
+    button {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      outline: none;
+      border: none;
+      cursor: pointer;
+      background-color: gray;
+      transition: background-color 0.4s ease;
+
+      &.active {
+        background-color: blue;
+        width: 24px;
+        height: 12px;
+        border-radius: 10px;
+      }
+    }
+  }
+
+  .banner-inner {
+    height: 100%;
+    overflow: hidden; /* Ensure only one banner is visible */
+    scroll-behavior: smooth;
+
+    .row {
+      display: flex; /* Use flexbox to lay out the banners */
+      height: 100%; /* Full height for each banner */
+      transition: transform 0.5s ease; /* Smooth transition */
+    }
+
+    .banner-inner__item {
+      min-width: 100%; /* Ensures each item takes full width */
+      height: 100%;
+
+      img {
+        height: 100%;
+        object-fit: contain; 
+      }
     }
   }
 }
