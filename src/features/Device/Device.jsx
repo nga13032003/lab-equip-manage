@@ -1,3 +1,4 @@
+// Device.jsx
 import React from 'react';
 import { thietbi, thinghiem } from '../../assets';
 
@@ -12,7 +13,7 @@ const devices = [
     name: 'Thí nghiệm hóa sinh',
     imageUrl: thinghiem,
   },
-  // Thêm các thiết bị khác ở đây
+  // Add more devices as needed
 ];
 
 const Device = () => {

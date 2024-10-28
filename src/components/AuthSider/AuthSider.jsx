@@ -17,20 +17,47 @@ import './AuthSider.scss';
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
-
 const AuthSider = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
 
   const handleMenuClick = (key) => {
     switch (key) {
-      case '9-2':
-        navigate('/device'); // Chuyển hướng đến trang Device
+      case '1':
+        // Optional: Add specific navigation if needed
+        navigate('/device'); 
         break;
-      // Thêm các trường hợp khác nếu cần
+      case '2':
+        navigate('/'); // Navigate to FormDisabledDemo
+        break;
+      case '3':
+        navigate('/device'); 
+        break;
+      case '4':
+        navigate('/device'); 
+        break;
+      case '5':
+        navigate('/device'); 
+        break;
+      case '6':
+        navigate('/device'); 
+        break;
+      case '7':
+        navigate('/device'); 
+        break;
+      case '8':
+        navigate('/device'); 
+        break;
+      case '9-1':
+        navigate('/device'); 
+        break;
+      case '9-2':
+        navigate('/device'); 
+        break;
       default:
         break;
     }
   };
+
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <div className="demo-logo-vertical" />

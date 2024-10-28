@@ -77,7 +77,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        position: 'relative', // Thêm thuộc tính này để vị trí của dropdown không bị ảnh hưởng bởi các phần tử khác
+        position: 'relative', 
       }}
     >
       <Button

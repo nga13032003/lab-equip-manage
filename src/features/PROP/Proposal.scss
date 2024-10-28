@@ -1,0 +1,59 @@
+// Proposal.scss
+
+$primary-color: #1890ff; // Example primary color, adjust as needed
+
+.proposal-title {
+  text-align: center; // Center the text
+  margin-bottom: 20px; // Spacing below the title
+  font-size: 24px; // Adjust font size as needed
+  color: #333; // Change color if necessary
+}
+
+// Continue with the rest of your SCSS...
+
+  
+  .proposal-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Center the form horizontally
+    justify-content: center; // Center the form vertically
+    margin: 0 auto; // Center horizontally
+    max-width: 800px; // Maximum width for the form
+    padding: 20px;
+    border: 1px solid #d9d9d9; // Add a border around the form
+    border-radius: 8px; // Rounded corners
+    background-color: #fff; // White background
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Subtle shadow
+  
+    .ant-form-item {
+      margin-bottom: 20px; // Spacing between form items
+      width: 100%; // Ensure the form item takes full width
+  
+      &-label {
+        text-align: left; // Align labels to the left
+        margin-left: 20px; // Margin left for labels
+      }
+  
+      &:nth-child(5), // Specific fields with left margin
+      &:nth-child(9) {
+        .ant-form-item-label {
+          margin-left: 20px; // Additional left margin for specific labels
+        }
+      }
+    }
+  
+    .ant-btn-primary {
+      background-color: $primary-color; // Primary button color
+      border-color: $primary-color; // Primary button border color
+  
+      &:hover {
+        background-color: darken($primary-color, 10%); // Darken on hover
+        border-color: darken($primary-color, 10%);
+      }
+    }
+  
+    @media (max-width: 600px) {
+      width: 90%; // Responsive width for smaller screens
+    }
+  }
+  
