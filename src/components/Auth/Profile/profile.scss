@@ -1,0 +1,26 @@
+.profile-title {
+  text-align: center; // Center the title
+  margin-bottom: 20px; // Spacing below the title
+}
+
+.profile-form {
+  max-width: 600px; // Set a maximum width for the form
+  margin: 0 auto; // Center the form horizontally
+  background-color: #fff; // Set a background color for the form
+  padding: 20px; // Add padding inside the form
+  border-radius: 8px; // Set border radius for rounded corners
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: Add a subtle shadow
+}
+
+.profile-form .ant-form-item {
+  margin-bottom: 16px; // Space between form items
+  text-align: left; // Align text to the left for form items
+}
+
+.profile-form .ant-form-item-label {
+  text-align: left; // Ensure labels are left aligned
+}
+
+.profile-form .ant-form-item-control {
+  text-align: left; // Ensure control elements are left aligned
+}
