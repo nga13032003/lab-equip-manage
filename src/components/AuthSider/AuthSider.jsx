@@ -17,95 +17,77 @@ import './AuthSider.scss';
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
-const AuthSider = ({ collapsed, setCollapsed }) => {
-  const navigate = useNavigate();
+const AuthSider = ({ collapsed, setCollapsed, role }) => {
+    const navigate = useNavigate();
 
-  const handleMenuClick = (key) => {
-    switch (key) {
-      case '1':
-        // Optional: Add specific navigation if needed
-        navigate('/device'); 
-        break;
-      case '2':
-        navigate('/'); // Navigate to FormDisabledDemo
-        break;
-      case '3':
-        navigate('/device'); 
-        break;
-      case '4':
-        navigate('/device'); 
-        break;
-      case '5':
-        navigate('/device'); 
-        break;
-      case '6':
-        navigate('/device'); 
-        break;
-      case '7':
-        navigate('/device'); 
-        break;
-      case '8':
-        navigate('/device'); 
-        break;
-      case '9-1':
-        navigate('/device'); 
-        break;
-      case '9-2':
-        navigate('/device'); 
-        break;
-      default:
-        break;
-    }
-  };
+    const handleMenuClick = (key) => {
+        navigate(`/${key}`);
+    };
 
-  return (
-    <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div className="demo-logo-vertical" />
-      <Menu
-        theme="dark"
-        mode="inline"
-        defaultSelectedKeys={['1']}
-        onClick={({ key }) => handleMenuClick(key)} 
-      >
-        <Menu.Item key="1" icon={<UserOutlined />}>
-          Người dùng
-        </Menu.Item>
-        
-        <Menu.Item key="2" icon={<FileAddOutlined />}>
-          Đề xuất và phê duyệt thiết bị
-        </Menu.Item>
-        
-        <Menu.Item key="3" icon={<SettingOutlined />}>
-          Nhập thiết bị mới
-        </Menu.Item>
-        
-        <Menu.Item key="4" icon={<SwapOutlined />}>
-          Luân chuyển thiết bị
-        </Menu.Item>
-        
-        <Menu.Item key="5" icon={<ClockCircleOutlined />}>
-          Quản lý giờ sử dụng
-        </Menu.Item>
-        
-        <Menu.Item key="6" icon={<ToolOutlined />}>
-          Bảo trì định kỳ
-        </Menu.Item>
-        
-        <Menu.Item key="7" icon={<DeleteOutlined />}>
-          Thanh lý thiết bị
-        </Menu.Item>
-        
-        <Menu.Item key="8" icon={<BarChartOutlined />}>
-          Thống kê và báo cáo
-        </Menu.Item>
+    return (
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+            <div className="demo-logo-vertical" />
+            <Menu
+                theme="dark"
+                mode="inline"
+                defaultSelectedKeys={['1']}
+                onClick={({ key }) => handleMenuClick(key)} 
+            >
+                <Menu.Item key="user" icon={<UserOutlined />}>
+                    Người dùng
+                </Menu.Item>
 
-        <SubMenu key="sub1" icon={<UnorderedListOutlined />} title="Danh sách dụng cụ và thiết bị">
-          <Menu.Item key="9-1">Dụng cụ</Menu.Item>
-          <Menu.Item key="9-2">Thiết bị</Menu.Item>
-        </SubMenu>
-      </Menu>
-    </Sider>
-  );
+                {role === 'Người dùng' && (
+                    <>
+                        <Menu.Item key="proposal" icon={<UnorderedListOutlined />}>
+                            Đề xuất
+                        </Menu.Item>
+                        <Menu.Item key="register-use" icon={<FileAddOutlined />}>
+                            Đăng ký sử dụng
+                        </Menu.Item>
+                        <SubMenu key="devices" icon={<UnorderedListOutlined />} title="Danh sách dụng cụ và thiết bị">
+                            <Menu.Item key="tools">Dụng cụ</Menu.Item>
+                            <Menu.Item key="equipment">Thiết bị</Menu.Item>
+                        </SubMenu>
+                    </>
+                )}
+
+                {(role === 'Chuyên viên phòng thí nghiệm' || role === 'Giám đốc trung tâm')  && (
+                    <>
+                        <SubMenu key="sub1" icon={<UnorderedListOutlined />} title="Đề xuất và phê duyệt">
+                            <Menu.Item key="proposal">Đề xuất</Menu.Item>
+                            <Menu.Item key="approval">Phê duyệt</Menu.Item>
+                        </SubMenu>
+                        <Menu.Item key="approve-register" icon={<ClockCircleOutlined />}>
+                            Phê duyệt đăng kí sử dụng
+                        </Menu.Item>
+                        <Menu.Item key="time-management" icon={<ClockCircleOutlined />}>
+                            Quản lý giờ sử dụng
+                        </Menu.Item>
+                        <Menu.Item key="transfer" icon={<SwapOutlined />}>
+                            Luân chuyển
+                        </Menu.Item>
+                        <Menu.Item key="maintenance" icon={<ToolOutlined />}>
+                            Bảo trì
+                        </Menu.Item>
+                        <Menu.Item key="liquidation" icon={<DeleteOutlined />}>
+                            Thanh lý
+                        </Menu.Item>
+                        <Menu.Item key="report" icon={<BarChartOutlined />}>
+                            Thống kê báo cáo
+                        </Menu.Item>
+                        <Menu.Item key="add-equipment" icon={<SettingOutlined />}>
+                            Nhập thiết bị mới
+                        </Menu.Item>
+                        <SubMenu key="devices" icon={<UnorderedListOutlined />} title="Danh sách dụng cụ và thiết bị">
+                            <Menu.Item key="tools">Dụng cụ</Menu.Item>
+                            <Menu.Item key="equipment">Thiết bị</Menu.Item>
+                        </SubMenu>
+                    </>
+                )}
+            </Menu>
+        </Sider>
+    );
 };
 
 export default AuthSider;

@@ -1,23 +1,29 @@
 import React from 'react';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { login } from '../../../api/authApi';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './login.scss';
 
-const Login = () => {
-    const navigate = useNavigate(); // Khởi tạo useNavigate
+const Login = ({ setRole }) => {
+    const navigate = useNavigate();
 
     const onFinish = async (values) => {
-        console.log('Success:', values);
         try {
             const data = await login(values.username, values.password);
-            console.log('Login data:', data);
-            // Xử lý dữ liệu sau khi đăng nhập thành công (như lưu token, điều hướng, v.v.)
-            // Chuyển đến trang home sau khi đăng nhập thành công
-            navigate('/'); // Đường dẫn đến trang home
+            const token = data.token;
+            const role = data.role;
+
+
+            // Lưu token vào localStorage hoặc state nếu cần
+            localStorage.setItem('token', token);
+
+            // Thiết lập vai trò cho sidebar
+            setRole(role);
+
+            // Chuyển đến trang home
+            navigate('/');
         } catch (error) {
             console.error('Login error:', error);
-            // Hiển thị thông báo lỗi cho người dùng nếu cần
         }
     };
 
