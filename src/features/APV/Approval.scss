@@ -26,6 +26,31 @@
         font-size: 14px;
         padding: 12px;
       }
+
+      .action-link {
+        &.accept {
+          background-color: green; // Change to your preferred green shade
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          text-decoration: none;
+          &:hover {
+            background-color: darkgreen; // Darker shade for hover
+          }
+        }
+      
+        &.reject {
+          background-color: darkred; // Change to your preferred dark red shade
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          text-decoration: none;
+          &:hover {
+            background-color: red; // Lighter shade for hover
+          }
+          }  
+        
+        }
     }
   }
   

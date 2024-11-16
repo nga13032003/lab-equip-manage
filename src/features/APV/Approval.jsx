@@ -55,8 +55,8 @@ const DuyetPhieuTable = () => (
         key="action"
         render={() => (
           <Space size="middle">
-            <a>Chấp nhận</a>
-            <a>Từ chối</a>
+            <a className="action-link accept">Chấp nhận</a>
+            <a className="action-link reject">Từ chối</a>
           </Space>
         )}
       />

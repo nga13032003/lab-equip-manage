@@ -1,13 +1,12 @@
 import React from 'react';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { login } from '../../../api/authApi';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './login.scss';
 
 const Login = () => {
     const navigate = useNavigate(); // Khởi tạo useNavigate
     const onFinish = async (values) => {
-        console.log('Success:', values);
         try {
             const data = await login(values.username, values.password); // Call login API
             console.log('Login data:', data);
