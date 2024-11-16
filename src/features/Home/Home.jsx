@@ -5,15 +5,16 @@ import AuthSider from '../../components/AuthSider/AuthSider';
 import AuthFooter from '../../components/AuthFooter/AuthFooter';
 import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import ContentContainer from './template/subViews/ContentContainer/ContentContainer';
+import Login from '../../components/Auth/Login/login';
 import './home.scss';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Home = () => {
-  const [collapsed, setCollapsed] = useState(false);
   const [role, setRole] = useState(null);
-  const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+
 
   useEffect(() => {
     const userRole = localStorage.getItem('role');
