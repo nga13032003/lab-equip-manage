@@ -6,21 +6,25 @@ import './login.scss';
 
 const Login = () => {
     const navigate = useNavigate(); // Khởi tạo useNavigate
-
     const onFinish = async (values) => {
         console.log('Success:', values);
         try {
-            const data = await login(values.username, values.password);
+            const data = await login(values.username, values.password); // Call login API
             console.log('Login data:', data);
-            // Xử lý dữ liệu sau khi đăng nhập thành công (như lưu token, điều hướng, v.v.)
-            // Chuyển đến trang home sau khi đăng nhập thành công
-            navigate('/'); // Đường dẫn đến trang home
+    
+            // Store token, role, and employeeName in localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('employeeName', data.employeeName); // Use the correct key from API response
+    
+            // Navigate to the home page
+            navigate('/home');
         } catch (error) {
             console.error('Login error:', error);
-            // Hiển thị thông báo lỗi cho người dùng nếu cần
+            // Display error notification to user if needed
         }
     };
-
+    
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };

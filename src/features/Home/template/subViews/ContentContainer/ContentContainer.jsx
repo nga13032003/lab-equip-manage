@@ -1,23 +1,47 @@
-// ContentContainer.jsx
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Banner from '../Banner/Banner'; 
+import Banner from '../Banner/Banner';
 import Category from '../Category/Category';
 import Device from '../../../../Device/Device';
 import FormDisabledDemo from '../../../../PROP/Proposal';
-import './ContentContainer.scss';
 import DuyetPhieuTable from '../../../../APV/Approval';
+import './ContentContainer.scss';
 
-const ContentContainer = () => {
+const ContentContainer = ({ activeComponent }) => {
+  const renderContent = () => {
+    switch (activeComponent) {
+      case 'User':
+        return (
+          <>
+            <Banner />
+            <Category />
+          </>
+        );
+      case 'Proposal':
+        return <FormDisabledDemo />;
+      case 'Device':
+        return <Device />;
+      case 'Transfer':
+        return <Category />; // Replace with a Transfer component if available
+      case 'UsageManagement':
+        return <DuyetPhieuTable />; // Replace with UsageManagement component if available
+      case 'Maintenance':
+        return <div>Bảo trì định kỳ</div>; // Replace with Maintenance component if available
+      case 'Disposal':
+        return <div>Thanh lý thiết bị</div>; // Replace with Disposal component if available
+      case 'Report':
+        return <div>Thống kê và báo cáo</div>; // Replace with Report component if available
+      case 'ToolsList':
+        return <div>Danh sách dụng cụ</div>; // Replace with ToolsList component if available
+      case 'EquipmentList':
+        return <div>Danh sách thiết bị</div>; // Replace with EquipmentList component if available
+      default:
+        return <Banner />; // Default to Banner
+    }
+  };
+
   return (
     <div className="content-container">
-      <Banner />
-      <Routes>
-        <Route path="/1" element={<Category />} /> 
-        <Route path="/device" element={<Device />} /> 
-        <Route path="/2" element={<FormDisabledDemo />} /> 
-        <Route path="/" element={<DuyetPhieuTable />} /> 
-      </Routes>
+      {renderContent()}
     </div>
   );
 };

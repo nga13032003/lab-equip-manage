@@ -13,13 +13,14 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
   } = theme.useToken();
 
   const [isDropdownVisible, setDropdownVisible] = useState(true);
+  const [employeeName, setEmployeeName] = useState(''); // State to store the employee's name
 
   const menuItems = [
     {
       label: (
         <Button
           type="text"
-          onClick={() => window.location.href = 'https://www.antgroup.com'}
+          onClick={() => window.location.href = '#'}
           style={{ width: '100%' }}
         >
           Hồ sơ cá nhân
@@ -31,7 +32,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
       label: (
         <Button
           type="text"
-          onClick={() => window.location.href = 'https://www.aliyun.com'}
+          onClick={() => window.location.href = '#'}
           style={{ width: '100%' }}
         >
           Thiết lập tài khoản
@@ -46,7 +47,10 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
       label: (
         <Button
           type="text"
-          onClick={() => navigate('/login')}
+          onClick={() => {
+            localStorage.clear(); // Clear all user-related data
+            navigate('/login');
+          }}
           style={{ width: '100%' }}
         >
           Đăng xuất
@@ -56,16 +60,22 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
     },
   ];
 
+  // Fetch the employee's name from localStorage when the component mounts
   useEffect(() => {
+    const name = localStorage.getItem('employeeName');
+    if (name) {
+      setEmployeeName(name); // Update the employee name state
+    }
+
     const handleResize = () => {
-      setDropdownVisible(window.innerWidth >= 768); // Hiện dropdown trên thiết bị lớn hơn 768px
+      setDropdownVisible(window.innerWidth >= 768);
     };
 
-    handleResize(); // Thiết lập giá trị ban đầu
-    window.addEventListener('resize', handleResize); // Theo dõi kích thước
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize); // Dọn dẹp listener
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -77,7 +87,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        position: 'relative', 
+        position: 'relative',
       }}
     >
       <Button
@@ -94,8 +104,6 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
         type="text"
         placeholder="Tìm kiếm..."
         className="search-input"
-        // onChange={(e) => setSearchTerm(e.target.value)}
-        // value={searchTerm}
       />
       <Dropdown menu={{ items: menuItems }} trigger={['click']} overlayStyle={{ zIndex: 1000 }}>
         <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
@@ -103,9 +111,9 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
             src={dashboard}
             alt="Navigate to HomePage"
             onClick={() => navigate('/home')}
-            className='img-dashboard'
+            className="img-dashboard"
           />
-          {isDropdownVisible && ( // Chỉ hiện button dropdown khi dropdownVisible là true
+          {isDropdownVisible && (
             <Button
               type="text"
               onClick={(e) => e.preventDefault()}
@@ -116,6 +124,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
                 alt="Profile"
                 style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }}
               />
+              <p>Xin chào {employeeName || '...'}</p>
               <DownOutlined />
             </Button>
           )}
