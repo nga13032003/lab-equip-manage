@@ -5,16 +5,16 @@ import AuthSider from '../../components/AuthSider/AuthSider';
 import AuthFooter from '../../components/AuthFooter/AuthFooter';
 import AuthHeader from '../../components/AuthHeader/AuthHeader';
 import ContentContainer from './template/subViews/ContentContainer/ContentContainer';
-import Login from '../../components/Auth/Login/login';
 import './home.scss';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Home = () => {
-  const [role, setRole] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
-
+  const [role, setRole] = useState(null);
+  const [activeComponent, setActiveComponent] = useState('Banner'); // Default component
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userRole = localStorage.getItem('role');
@@ -33,6 +33,7 @@ const Home = () => {
         collapsed={collapsed}
         role={role} // Pass the role to AuthSider
         setCollapsed={setCollapsed}
+        setActiveComponent={setActiveComponent} // Pass setActiveComponent to AuthSider
       />
       <Layout>
         <AuthHeader collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -49,7 +50,7 @@ const Home = () => {
               </Title>
             )}
           </div>
-          <ContentContainer />
+          <ContentContainer activeComponent={activeComponent} /> {/* Pass activeComponent */}
         </Content>
         <AuthFooter />
       </Layout>

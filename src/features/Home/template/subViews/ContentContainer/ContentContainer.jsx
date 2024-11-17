@@ -5,6 +5,7 @@ import Device from '../../../../Device/Device';
 import FormDisabledDemo from '../../../../PROP/Proposal';
 import DuyetPhieuTable from '../../../../APV/Approval';
 import './ContentContainer.scss';
+import DeviceTypeTable from '../Category/DeviceType';
 
 const ContentContainer = ({ activeComponent }) => {
   const renderContent = () => {
@@ -21,7 +22,7 @@ const ContentContainer = ({ activeComponent }) => {
       case 'Device':
         return <Device />;
       case 'Transfer':
-        return <Category />; // Replace with a Transfer component if available
+        return <DeviceTypeTable/>; // Replace with a Transfer component if available
       case 'UsageManagement':
         return <DuyetPhieuTable />; // Replace with UsageManagement component if available
       case 'Maintenance':
@@ -31,7 +32,7 @@ const ContentContainer = ({ activeComponent }) => {
       case 'Report':
         return <div>Thống kê và báo cáo</div>; // Replace with Report component if available
       case 'ToolsList':
-        return <div>Danh sách dụng cụ</div>; // Replace with ToolsList component if available
+        return <DeviceTypeTable/>; // Replace with ToolsList component if available
       case 'EquipmentList':
         return <div>Danh sách thiết bị</div>; // Replace with EquipmentList component if available
       default:

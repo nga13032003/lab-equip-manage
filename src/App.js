@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './features/Home/Home';
 import Login from './components/Auth/Login/login';
 import AuthSider from './components/AuthSider/AuthSider';
@@ -11,7 +11,11 @@ const App = () => {
       <Routes>
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/device" element={<Device />} /> 
+        <Route path="/device" element={<Device />} />
+        {/* Add the dynamic route for loaithethicbi */}
+        <Route path="/LoaiThietBi/:maLoaiThietBi" element={<Device />} />
+        {/* Default route */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

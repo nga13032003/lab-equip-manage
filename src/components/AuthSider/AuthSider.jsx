@@ -8,7 +8,6 @@ import {
   DeleteOutlined,
   BarChartOutlined,
   UserOutlined,
-  UnorderedListOutlined,
 } from '@ant-design/icons';
 import { Menu, Layout } from 'antd';
 import './AuthSider.scss';
@@ -20,7 +19,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
   const handleMenuClick = (key) => {
     switch (key) {
       case '1':
-        setActiveComponent('User');
+        setActiveComponent('UsageManagement');
         break;
       case '2':
         setActiveComponent('Proposal');
@@ -59,39 +58,53 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
     if (role === 'Quản lý dụng cụ') {
       return (
         <>
-          <Menu.Item key="1" icon={<UserOutlined />}>
-            Người dùng
+          <Menu.Item key="1" icon={<SettingOutlined />}>
+            Phê duyệt đề xuất thiết bị, dụng cụ
           </Menu.Item>
           <Menu.Item key="2" icon={<FileAddOutlined />}>
-            Đề xuất thiết bị
+            Phê duyệt thanh lý
           </Menu.Item>
+          <Menu.Item key="3" icon={<SwapOutlined />}>
+            Phê duyệt luân chuyển
+          </Menu.Item>
+          <Menu.Item key="4" icon={<ClockCircleOutlined />}>
+            Phê duyệt đăng ký sử dụng
+          </Menu.Item>
+          <Menu.Item key="5" icon={<ToolOutlined />}>
+            Nhập thiết bị mới
+          </Menu.Item>
+          <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
+            <Menu.Item key="9-1">Dụng cụ</Menu.Item>
+            <Menu.Item key="9-2">Thiết bị</Menu.Item>
+          </SubMenu>
         </>
       );
     } else if (role === 'Nhân viên phòng thí nghiệm') {
       return (
         <>
-          <Menu.Item key="3" icon={<SettingOutlined />}>
-            Nhập thiết bị mới
-          </Menu.Item>
           <Menu.Item key="4" icon={<SwapOutlined />}>
-            Luân chuyển thiết bị
+            Đề xuất luân chuyển thiết bị
           </Menu.Item>
           <Menu.Item key="5" icon={<ClockCircleOutlined />}>
-            Phê duyệt đề xuất
+            Đề xuất thanh lý thiết bị
           </Menu.Item>
           <Menu.Item key="6" icon={<ToolOutlined />}>
             Bảo trì định kỳ
           </Menu.Item>
+          <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
+            <Menu.Item key="9-1">Dụng cụ</Menu.Item>
+            <Menu.Item key="9-2">Thiết bị</Menu.Item>
+          </SubMenu>
         </>
       );
     } else if (role === 'Người dùng') {
       return (
         <>
-          <Menu.Item key="7" icon={<DeleteOutlined />}>
-            Thanh lý thiết bị
+          <Menu.Item key="1" icon={<FileAddOutlined />}>
+            Đề xuất thiết bị, dụng cụ mới
           </Menu.Item>
-          <Menu.Item key="8" icon={<BarChartOutlined />}>
-            Thống kê và báo cáo
+          <Menu.Item key="2" icon={<ClockCircleOutlined />}>
+            Đề xuất sử dụng
           </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
             <Menu.Item key="9-1">Dụng cụ</Menu.Item>
