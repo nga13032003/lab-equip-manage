@@ -6,6 +6,7 @@ import FormDisabledDemo from '../../../../PROP/Proposal';
 import DuyetPhieuTable from '../../../../APV/Approval';
 import './ContentContainer.scss';
 import DeviceTypeTable from '../Category/DeviceType';
+import ToolType from '../Category/ToolType';
 
 const ContentContainer = ({ activeComponent }) => {
   const renderContent = () => {
@@ -32,9 +33,9 @@ const ContentContainer = ({ activeComponent }) => {
       case 'Report':
         return <div>Thống kê và báo cáo</div>; // Replace with Report component if available
       case 'ToolsList':
-        return <DeviceTypeTable/>; // Replace with ToolsList component if available
+        return <ToolType/>; // Replace with ToolsList component if available
       case 'EquipmentList':
-        return <div>Danh sách thiết bị</div>; // Replace with EquipmentList component if available
+        return <DeviceTypeTable/>; // Replace with EquipmentList component if available
       default:
         return <Banner />; // Default to Banner
     }

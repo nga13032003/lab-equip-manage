@@ -43,7 +43,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
         setActiveComponent('Report');
         break;
       case '9-1':
-        setActiveComponent('Transfer');
+        setActiveComponent('ToolsList');
         break;
       case '9-2':
         setActiveComponent('EquipmentList');
