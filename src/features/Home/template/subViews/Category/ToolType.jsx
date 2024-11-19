@@ -27,17 +27,17 @@ const ToolType = () => {
   const columns = [
     {
       title: 'Mã loại',
-      dataIndex: 'maLoaiDC', 
-      key: 'maLoaiDungCu',
+      dataIndex: 'maLoaiDC', // Trùng với tên trường từ API
+      key: 'maLoaiDC',
     },
     {
       title: 'Tên loại dụng cụ',
-      dataIndex: 'tenLoaiDC',  
-      key: 'tenLoaiDungCu',
+      dataIndex: 'tenLoaiDC',
+      key: 'tenLoaiDC',
     },
     {
       title: 'Mô tả',
-      dataIndex: 'moTa',  
+      dataIndex: 'moTa',
       key: 'moTa',
       render: (text) => (text ? text : 'Không có mô tả'),
     },
@@ -47,13 +47,14 @@ const ToolType = () => {
       render: (_, record) => (
         <Button
           type="link"
-          onClick={() => navigate(`/LoaiDungCu/${record.maLoaiDungCu}/DungCu`)} // Điều hướng đến danh sách dụng cụ
+          onClick={() => navigate(`/LoaiDungCu/${record.maLoaiDC}`)} // Điều hướng chính xác
         >
           Xem dụng cụ
         </Button>
       ),
     },
   ];
+  
 
   return (
     <div className="tool-type-table">
@@ -62,8 +63,9 @@ const ToolType = () => {
         columns={columns}
         dataSource={data}
         loading={loading}
-        rowKey={(record) => record.maLoaiDungCu} // Chỉ định khóa duy nhất cho mỗi dòng
+        rowKey={(record) => record.maLoaiDC} // Đảm bảo sử dụng trường đúng
       />
+
     </div>
   );
 };

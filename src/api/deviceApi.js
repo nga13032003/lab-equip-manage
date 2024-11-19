@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 export const fetchDevicesByType = async (maLoaiThietBi) => {
     const apiUrl = `https://localhost:7019/api/thietbi/LoaiThietBi/${maLoaiThietBi}`;
     try {

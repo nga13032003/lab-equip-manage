@@ -1,59 +1,96 @@
-// Proposal.scss
+$primary-color: #1890ff; // Example primary color
 
-$primary-color: #1890ff; // Example primary color, adjust as needed
-
-.proposal-title {
-  text-align: center; // Center the text
-  margin-bottom: 20px; // Spacing below the title
-  font-size: 24px; // Adjust font size as needed
-  color: #333; // Change color if necessary
+.proposal-container {
+  padding: 20px;
+  background-color: #f9f9f9; // Light background for the container
+  min-height: 100vh; // Full viewport height
 }
 
-// Continue with the rest of your SCSS...
+.proposal-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
 
-  
-  .proposal-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center; // Center the form horizontally
-    justify-content: center; // Center the form vertically
-    margin: 0 auto; // Center horizontally
-    max-width: 800px; // Maximum width for the form
-    padding: 20px;
-    border: 1px solid #d9d9d9; // Add a border around the form
-    border-radius: 8px; // Rounded corners
-    background-color: #fff; // White background
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Subtle shadow
-  
-    .ant-form-item {
-      margin-bottom: 20px; // Spacing between form items
-      width: 100%; // Ensure the form item takes full width
-  
-      &-label {
-        text-align: left; // Align labels to the left
-        margin-left: 20px; // Margin left for labels
-      }
-  
-      &:nth-child(5), // Specific fields with left margin
-      &:nth-child(9) {
-        .ant-form-item-label {
-          margin-left: 20px; // Additional left margin for specific labels
+.proposal-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  .ant-form-item {
+    margin-bottom: 20px;
+    width: 100%;
+
+    &-label {
+      text-align: left;
+    }
+  }
+
+  .ant-btn-primary {
+    background-color: $primary-color;
+    border-color: $primary-color;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+      border-color: darken($primary-color, 10%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 90%; // Adjust width for smaller screens
+  }
+}
+
+h2 {
+  font-size: 20px;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.ant-checkbox-wrapper {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.list-container {
+  .ant-list {
+    margin: 20px 0;
+
+    .ant-list-item {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+
+      .ant-form-item {
+        margin-bottom: 10px;
+
+        input {
+          width: 100%;
         }
       }
     }
-  
-    .ant-btn-primary {
-      background-color: $primary-color; // Primary button color
-      border-color: $primary-color; // Primary button border color
-  
-      &:hover {
-        background-color: darken($primary-color, 10%); // Darken on hover
-        border-color: darken($primary-color, 10%);
-      }
-    }
-  
-    @media (max-width: 600px) {
-      width: 90%; // Responsive width for smaller screens
-    }
   }
-  
+}
+
+.space-button-group {
+  display: flex;
+  justify-content: center;
+
+  .ant-btn {
+    margin: 5px;
+  }
+}
+
+.ant-input-number {
+  width: 100%;
+}

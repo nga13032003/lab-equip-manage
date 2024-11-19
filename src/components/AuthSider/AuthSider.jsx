@@ -28,7 +28,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
         setActiveComponent('Device');
         break;
       case '4':
-        setActiveComponent('Transfer');
+        setActiveComponent('Proposal');
         break;
       case '5':
         setActiveComponent('UsageManagement');

@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './features/Home/Home';
 import Login from './components/Auth/Login/login';
-import AuthSider from './components/AuthSider/AuthSider';
+// import AuthSider from './components/AuthSider/AuthSider';
 import Device from './features/Device/Device';
+import Tool from './features/Tool/Tool';
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
         <Route path="/device" element={<Device />} />
         {/* Add the dynamic route for loaithethicbi */}
         <Route path="/LoaiThietBi/:maLoaiThietBi" element={<Device />} />
-        {/* Default route */}
+        <Route path="/LoaiDungCu/:maLoaiDC" element={<Tool />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
