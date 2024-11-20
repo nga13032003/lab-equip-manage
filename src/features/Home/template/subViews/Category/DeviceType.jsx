@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { fetchDeviceTypes } from '../../../../../api/deviceTypeApi'; // Verify this API path
+import { Link } from 'react-router-dom';
 
 const DeviceTypeTable = () => {
     const [data, setData] = useState([]);
@@ -47,12 +48,12 @@ const DeviceTypeTable = () => {
             title: 'Xem chi tiết',
             key: 'action',
             render: (_, record) => (
+
                 <Button
-                    type="link"
-                    onClick={() => navigate(`/LoaiThietBi/${record.maLoaiThietBi}`)} 
-                >
-                    Xem thiết bị
-                </Button>
+                 >
+            <Link to={`/loai-thiet-bi/${record.maLoaiThietBi}`}> Xem thiết bị</Link>
+            
+            </Button>
             ),
         },
     ];

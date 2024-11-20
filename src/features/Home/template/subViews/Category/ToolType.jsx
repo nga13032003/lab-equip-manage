@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { fetchToolTypes } from '../../../../../api/toolTypeApi';
+import { Link } from 'react-router-dom';
 
 const ToolType = () => {
   const [data, setData] = useState([]);
@@ -46,10 +47,9 @@ const ToolType = () => {
       key: 'action',
       render: (_, record) => (
         <Button
-          type="link"
-          onClick={() => navigate(`/LoaiDungCu/${record.maLoaiDC}`)} // Điều hướng chính xác
         >
-          Xem dụng cụ
+        <Link to={`/loai-dung-cu/${record.maLoaiDC}`}> Xem dụng cụ</Link>
+         
         </Button>
       ),
     },

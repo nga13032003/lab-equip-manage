@@ -28,33 +28,7 @@ const Home = () => {
   }, [navigate]);
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <AuthSider
-        collapsed={collapsed}
-        role={role} // Pass the role to AuthSider
-        setCollapsed={setCollapsed}
-        setActiveComponent={setActiveComponent} // Pass setActiveComponent to AuthSider
-      />
-      <Layout>
-        <AuthHeader collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Content className="home-content">
-          <div className="home-welcome">
-            {role && (
-              <Title level={2}>
-                Chào mừng,{' '}
-                {role === 'Quản lý dụng cụ'
-                  ? 'Quản lý Dụng Cụ'
-                  : role === 'Chuyên viên phòng thí nghiệm'
-                  ? 'Chuyên viên Phòng Thí Nghiệm'
-                  : 'Người dùng'}
-              </Title>
-            )}
-          </div>
-          <ContentContainer activeComponent={activeComponent} /> {/* Pass activeComponent */}
-        </Content>
-        <AuthFooter />
-      </Layout>
-    </Layout>
+    <ContentContainer activeComponent={activeComponent} />
   );
 };
 

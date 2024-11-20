@@ -5,12 +5,10 @@ import {
   SwapOutlined,
   ClockCircleOutlined,
   ToolOutlined,
-  DeleteOutlined,
-  BarChartOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
 import { Menu, Layout } from 'antd';
 import './AuthSider.scss';
+import { Link } from 'react-router-dom';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -55,60 +53,60 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
   };
 
   const renderMenuItems = () => {
-    if (role === 'Quản lý dụng cụ') {
+    if (role === 'Quản lý dụng cụ') {// Giám đốc trung tâm 
       return (
         <>
           <Menu.Item key="1" icon={<SettingOutlined />}>
-            Phê duyệt đề xuất thiết bị, dụng cụ
+          <Link to="/phe-duyet-phieu-de-xuat">Phê duyệt đề xuất thiết bị, dụng cụ</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<FileAddOutlined />}>
-            Phê duyệt thanh lý
+          <Link to='/phe-duyet-thanh-ly'>Phê duyệt thanh lý</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<SwapOutlined />}>
-            Phê duyệt luân chuyển
+          <Link to='/phe-duyet-luan-chuyen'>  Phê duyệt luân chuyển</Link>
           </Menu.Item>
           <Menu.Item key="4" icon={<ClockCircleOutlined />}>
-            Phê duyệt đăng ký sử dụng
+          <Link to='/phe-duyet-dang-ky-su-dung'>Phê duyệt đăng ký sử dụng</Link>
           </Menu.Item>
           <Menu.Item key="5" icon={<ToolOutlined />}>
-            Nhập thiết bị mới
+          <Link to='/nhap-tt-dc-moi'> Nhập thiết bị, dung cụ mới</Link>
           </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
-            <Menu.Item key="9-1">Dụng cụ</Menu.Item>
-            <Menu.Item key="9-2">Thiết bị</Menu.Item>
+          <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
+          <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
           </SubMenu>
         </>
       );
-    } else if (role === 'Nhân viên phòng thí nghiệm') {
+    } else if (role === 'Nhân viên phòng thí nghiệm') {//Chuyên Viên
       return (
         <>
           <Menu.Item key="4" icon={<SwapOutlined />}>
-            Đề xuất luân chuyển thiết bị
+          <Link to="/de-xuat-luan-chuyen">Đề xuất luân chuyển thiết bị</Link>
           </Menu.Item>
           <Menu.Item key="5" icon={<ClockCircleOutlined />}>
-            Đề xuất thanh lý thiết bị
+          <Link to='/de-xuat-thanh-ly'> Đề xuất thanh lý thiết bị</Link>
           </Menu.Item>
           <Menu.Item key="6" icon={<ToolOutlined />}>
-            Bảo trì định kỳ
+          <Link to='/bao-tri-dinh-ky'>Bảo trì định kỳ</Link>
           </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
-            <Menu.Item key="9-1">Dụng cụ</Menu.Item>
-            <Menu.Item key="9-2">Thiết bị</Menu.Item>
+          <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
+          <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
           </SubMenu>
         </>
       );
-    } else if (role === 'Người dùng') {
+    } else if (role === 'Người dùng') {//Giáo viên
       return (
         <>
           <Menu.Item key="1" icon={<FileAddOutlined />}>
-            Đề xuất thiết bị, dụng cụ mới
+          <Link to='/lap-phieu-de-xuat'> Đề xuất thiết bị, dụng cụ mới</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<ClockCircleOutlined />}>
-            Đề xuất sử dụng
+          <Link to='/de-xuat-su-dung'>Đề xuất sử dụng thiết bị</Link>
           </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
-            <Menu.Item key="9-1">Dụng cụ</Menu.Item>
-            <Menu.Item key="9-2">Thiết bị</Menu.Item>
+            <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
+            <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
           </SubMenu>
         </>
       );

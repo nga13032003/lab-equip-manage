@@ -15,7 +15,8 @@ const Login = () => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
             localStorage.setItem('employeeName', data.employeeName); // Use the correct key from API response
-    
+            localStorage.setItem('employeeCode', data.maNV); // Mã nhân viên
+            console.log('tên', data.maNV)
             // Navigate to the home page
             navigate('/home');
         } catch (error) {

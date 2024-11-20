@@ -1,20 +1,64 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from 'antd';
-import { createPhieuDeXuat } from '../../api/phieuDeXuat';
+import { createPhieuDeXuat, getExistingPhieuDeXuat } from '../../api/phieuDeXuat';
 import './Proposal.scss';
 
 const Proposal = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
   const [toolList, setToolList] = useState([]);
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeCode, setEmployeeCode] = useState('');
+  const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
 
-  // Thêm một dụng cụ mới vào danh sách
+  useEffect(() => {
+    const storedEmployeeName = localStorage.getItem('employeeName');
+    if (storedEmployeeName) {
+      setEmployeeName(storedEmployeeName);
+    }
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
+    if (storedEmployeeCode) {
+      setEmployeeCode(storedEmployeeCode);
+    }
+  }, []);
+
+  // Function to generate a random MaPhieu
+  const generateRandomMaPhieu = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  };
+
+  // Memoize fetchAndGenerateUniqueMaPhieu with useCallback to avoid issues with closures
+  const fetchAndGenerateUniqueMaPhieu = useCallback(async () => {
+    try {
+      const existingPhieuDeXuats = await getExistingPhieuDeXuat(); // Fetch existing MaPhieu
+      let generatedMaPhieu = generateRandomMaPhieu();
+
+      // Check if the generated MaPhieu is unique
+      // eslint-disable-next-line
+      while (existingPhieuDeXuats.some((item) => item.MaPhieu === generatedMaPhieu)) {
+        generatedMaPhieu = generateRandomMaPhieu(); // Regenerate if not unique
+      }
+
+      setMaPhieu(generatedMaPhieu); // Set the unique MaPhieu
+    } catch (error) {
+      message.error('Error fetching existing MaPhieu values');
+    }
+  }, []); // Empty array ensures the function is only created once
+
+  useEffect(() => {
+    fetchAndGenerateUniqueMaPhieu(); // Call on initial render to generate MaPhieu
+  }, [fetchAndGenerateUniqueMaPhieu]); // Add memoized function as a dependency
+
   const handleAddTool = useCallback(() => {
     setToolList((prevList) => [...prevList, { MaDungCu: '', SoLuongDeXuat: 1 }]);
   }, []);
 
-  // Xử lý thay đổi thông tin của dụng cụ
   const handleToolChange = useCallback((index, field, value) => {
     setToolList((prevList) =>
       prevList.map((tool, idx) =>
@@ -23,24 +67,23 @@ const Proposal = () => {
     );
   }, []);
 
-  // Gửi dữ liệu phiếu đề xuất
   const handleSubmit = async (values) => {
     try {
       const payload = {
-        maPhieu: values.MaPhieu,
+        maPhieu: maPhieu,  // Use the generated MaPhieu here
         maThietBi: values.MaThietBi,
-        maNV: values.MaNV,
+        maNV: employeeCode, 
         lyDoDeXuat: values.LyDoDeXuat,
         ghiChu: values.GhiChu,
         ngayTao: new Date().toISOString(),
         trangThai: "Chưa phê duyệt",
-        // danhSachDungCu: toolList, // Gửi danh sách dụng cụ kèm theo
       };
-
-      await createPhieuDeXuat(payload); // Gọi hàm API
+  
+      await createPhieuDeXuat(payload);
       message.success("Phiếu đề xuất đã được lập thành công!");
       form.resetFields();
-      setToolList([]); // Xóa danh sách dụng cụ
+      setToolList([]);
+      fetchAndGenerateUniqueMaPhieu(); // Regenerate MaPhieu for next form
     } catch (error) {
       message.error(`Lỗi khi lập phiếu: ${error.message}`);
     }
@@ -48,7 +91,7 @@ const Proposal = () => {
 
   return (
     <div className="proposal-container">
-      <h1 className="proposal-title">Quản lý phiếu đề xuất</h1>
+      <h1 className="proposal-title">LẬP PHIẾU ĐỀ XUẤT</h1>
 
       <Checkbox
         checked={componentDisabled}
@@ -66,30 +109,29 @@ const Proposal = () => {
         disabled={componentDisabled}
         onFinish={handleSubmit}
       >
-        <h2>Thông tin phiếu đề xuất</h2>
         <Form.Item
           label="Mã phiếu"
           name="MaPhieu"
-          rules={[{ required: true, message: 'Vui lòng nhập mã phiếu!' }]}
         >
-          <Input />
+          <Input value={maPhieu} disabled /> {/* Displaying the generated MaPhieu */}
         </Form.Item>
+
+        {/* Other form fields */}
         <Form.Item
           label="Mã thiết bị"
           name="MaThietBi"
-          rules={[{ required: true, message: 'Vui lòng nhập mã thiết bị!' }]}
-        >
+          rules={[{ required: true, message: 'Vui lòng nhập mã thiết bị!' }]} >
           <Input />
         </Form.Item>
         <Form.Item label="Lý do đề xuất" name="LyDoDeXuat">
           <Input.TextArea rows={3} />
         </Form.Item>
+
         <Form.Item
-          label="Mã nhân viên"
+          label="Tên nhân viên"
           name="MaNV"
-          rules={[{ required: true, message: 'Vui lòng nhập mã nhân viên!' }]}
         >
-          <Input />
+          <Input value={employeeName} disabled /> {/* Disabled input for MaNV */}
         </Form.Item>
         <Form.Item label="Ghi chú" name="GhiChu">
           <Input.TextArea rows={3} />
@@ -105,8 +147,7 @@ const Proposal = () => {
                 <Form.Item
                   label="Mã DC"
                   validateStatus={!item.MaDungCu ? 'error' : ''}
-                  help={!item.MaDungCu && 'Vui lòng nhập mã dụng cụ'}
-                >
+                  help={!item.MaDungCu && 'Vui lòng nhập mã dụng cụ'}>
                   <Input
                     value={item.MaDungCu}
                     onChange={(e) => handleToolChange(index, 'MaDungCu', e.target.value)}
@@ -115,8 +156,7 @@ const Proposal = () => {
                 <Form.Item
                   label="Số lượng"
                   validateStatus={item.SoLuongDeXuat <= 0 ? 'error' : ''}
-                  help={item.SoLuongDeXuat <= 0 && 'Số lượng phải lớn hơn 0'}
-                >
+                  help={item.SoLuongDeXuat <= 0 && 'Số lượng phải lớn hơn 0'}>
                   <InputNumber
                     min={1}
                     value={item.SoLuongDeXuat}

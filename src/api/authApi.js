@@ -24,23 +24,3 @@ export const login = async (email, password) => {
 };
 
 
-export const getUserHomeData = async (userId) => {
-    try {
-        const response = await fetch(`${API_URL}/home/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            const errorDetails = await response.text(); 
-            throw new Error(`Failed to fetch user data: ${response.status} - ${errorDetails}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching user data:", error.message);
-        throw error;
-    }
-};
