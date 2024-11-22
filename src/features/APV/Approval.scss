@@ -1,56 +1,93 @@
 .duyet-phieu-table {
-    margin-top: 20px;
-  
-    h1 {
-      font-size: 24px;
-      text-align: center;
-      color: #333;
-      margin-bottom: 16px;
+  margin-top: 20px;
+
+  h1 {
+    font-size: 24px;
+    text-align: center;
+    color: #333;
+    margin-bottom: 16px;
+  }
+
+  .custom-table {
+    .ant-table-content {
+      border-radius: 8px;
+      overflow: hidden;
     }
-  
+
+    .ant-table-thead > tr > th {
+      background-color: #f0f2f5;
+      color: #333;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .ant-table-tbody > tr > td {
+      text-align: center;
+      font-size: 14px;
+      padding: 12px;
+    }
+
+    .action-link {
+      &.accept {
+        background-color: green; // Change to your preferred green shade
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        &:hover {
+          background-color: darkgreen; // Darker shade for hover
+        }
+      }
+
+      &.reject {
+        background-color: darkred; // Change to your preferred dark red shade
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        &:hover {
+          background-color: red; // Lighter shade for hover
+        }
+      }
+    }
+  }
+
+  // Media query for responsive design
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 20px;
+    }
+
     .custom-table {
-      .ant-table-content {
-        border-radius: 8px;
-        overflow: hidden;
-      }
-  
-      .ant-table-thead > tr > th {
-        background-color: #f0f2f5;
-        color: #333;
-        font-weight: 600;
-        text-align: center;
-      }
-  
+      .ant-table-thead > tr > th,
       .ant-table-tbody > tr > td {
-        text-align: center;
-        font-size: 14px;
-        padding: 12px;
+        font-size: 12px;
+        padding: 8px;
       }
 
       .action-link {
-        &.accept {
-          background-color: green; // Change to your preferred green shade
-          color: white;
-          padding: 5px 10px;
-          border-radius: 5px;
-          text-decoration: none;
-          &:hover {
-            background-color: darkgreen; // Darker shade for hover
-          }
-        }
-      
-        &.reject {
-          background-color: darkred; // Change to your preferred dark red shade
-          color: white;
-          padding: 5px 10px;
-          border-radius: 5px;
-          text-decoration: none;
-          &:hover {
-            background-color: red; // Lighter shade for hover
-          }
-          }  
-        
-        }
+        padding: 4px 8px;
+        font-size: 12px;
+      }
     }
   }
-  
+
+  @media (max-width: 576px) {
+    h1 {
+      font-size: 18px;
+    }
+
+    .custom-table {
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        font-size: 10px;
+        padding: 6px;
+      }
+
+      .action-link {
+        padding: 3px 6px;
+        font-size: 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+.chitiet-proposal-container {
+    padding: 20px;
+  }
+  
+  .card {
+    .ant-card-body {
+      padding: 20px; /* Thêm padding cho nội dung trong thẻ Card */
+    }
+  
+    .ant-card {
+      border-radius: 10px; /* Bo góc cho thẻ Card */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ cho thẻ Card */
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Canh giữa toàn bộ phần tử trong cột */
+    gap: 20px; /* Khoảng cách giữa các phần tử */
+  
+    .action-btns {
+      display: flex;
+      justify-content: center; /* Canh giữa các nút "Chấp nhận" và "Từ chối" */
+      gap: 20px; /* Khoảng cách giữa các nút */
+    }
+  
+    .action-btn {
+      width: 150px; /* Đặt chiều rộng cho các nút */
+      border-radius: 4px; /* Tạo bo góc nhẹ cho các nút */
+      font-weight: bold; /* Đặt font chữ đậm cho nút */
+      align-items: center;
+      margin-top: 10px;
+      transition: background-color 0.3s ease; /* Thêm hiệu ứng chuyển đổi màu nền */
+      text-align: center; /* Canh giữa văn bản trong nút */
+      padding: 10px; /* Thêm padding cho nút */
+    }
+  
+    
+    .accept {
+      background-color: #4caf50; /* Màu nền xanh cho nút "Chấp nhận" */
+      color: white;
+      &:hover {
+        background-color: #45a049; /* Màu nền khi hover */
+      }
+    }
+  
+    .reject {
+      background-color: #f44336; /* Màu nền đỏ cho nút "Từ chối" */
+      color: white;
+      &:hover {
+        background-color: #e53935; /* Màu nền khi hover */
+      }
+    }
+  
+    .back-btn {
+      background-color: #1890ff; /* Màu nền cho nút "Quay lại" */
+      color: white;
+      &:hover {
+        background-color: #40a9ff; /* Màu nền khi hover */
+      }
+    }
+  }
+  
+  .ant-list-item {
+    padding: 10px; /* Thêm padding cho các mục trong List */
+  }
+  
+  .ant-typography {
+    margin-bottom: 10px; /* Thêm khoảng cách dưới tiêu đề */
+  }
+  
+  .ant-typography strong {
+    font-weight: bold; /* Đặt chữ đậm cho các tiêu đề */
+  }
+  
+  .ant-list {
+    padding-left: 0; /* Bỏ padding trái mặc định */
+  }
+  
+  .ant-list-item {
+    border-bottom: 1px solid #f0f0f0; /* Thêm đường viền dưới cho mỗi mục */
+  }
+  
+  .ant-list-item:last-child {
+    border-bottom: none; /* Bỏ đường viền dưới cho mục cuối cùng */
+  }
+  
+  .ant-typography {
+    margin-bottom: 10px; /* Thêm khoảng cách dưới tiêu đề */
+  }
+  
+  

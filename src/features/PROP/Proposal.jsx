@@ -3,6 +3,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from 'antd';
 import { createPhieuDeXuat, getExistingPhieuDeXuat } from '../../api/phieuDeXuat';
 import './Proposal.scss';
+import { createChiTietDeXuatDungCu } from '../../api/chiTietDeXuatDC';
+import { useNavigate } from 'react-router-dom';
 
 const Proposal = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -11,6 +13,7 @@ const Proposal = () => {
   const [employeeCode, setEmployeeCode] = useState('');
   const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
@@ -69,26 +72,46 @@ const Proposal = () => {
 
   const handleSubmit = async (values) => {
     try {
+      // Step 1: Create PhieuDeXuat
       const payload = {
-        maPhieu: maPhieu,  // Use the generated MaPhieu here
+        maPhieu: maPhieu, // Use the generated MaPhieu here
         maThietBi: values.MaThietBi,
-        maNV: employeeCode, 
+        maNV: employeeCode,
         lyDoDeXuat: values.LyDoDeXuat,
         ghiChu: values.GhiChu,
         ngayTao: new Date().toISOString(),
         trangThai: "Chưa phê duyệt",
+        ngayHoanTat: null, 
       };
   
+      // Create the proposal (PhieuDeXuat)
       await createPhieuDeXuat(payload);
-      message.success("Phiếu đề xuất đã được lập thành công!");
+  
+      // Step 2: Insert details into ChiTietDeXuatDungCu for each tool
+      const toolDetailsPromises = toolList.map(tool => {
+        const newChiTiet = {
+          MaPhieu: maPhieu, // Linking the tools to the created MaPhieu
+          MaDungCu: tool.MaDungCu,
+          SoLuongDeXuat: tool.SoLuongDeXuat,
+        };
+        return createChiTietDeXuatDungCu(newChiTiet); // Insert the tool details
+      });
+  
+      // Wait for all tool details to be inserted
+      await Promise.all(toolDetailsPromises);
+  
+      message.success("Phiếu đề xuất đã được lập và dụng cụ đã được thêm thành công!");
+  
+      // Reset the form and tool list after successful submission
       form.resetFields();
       setToolList([]);
       fetchAndGenerateUniqueMaPhieu(); // Regenerate MaPhieu for next form
+      navigate(`/chi-tiet-phieu-de-xuat/${maPhieu}`);
     } catch (error) {
       message.error(`Lỗi khi lập phiếu: ${error.message}`);
     }
   };
-
+  
   return (
     <div className="proposal-container">
       <h1 className="proposal-title">LẬP PHIẾU ĐỀ XUẤT</h1>

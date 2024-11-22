@@ -10,6 +10,8 @@ import DefaultLayout from './components/Layouts/DefaultLayout/DefaultLayout';
 import ToolType from './features/Home/template/subViews/Category/ToolType';
 import DeviceTypeTable from './features/Home/template/subViews/Category/DeviceType';
 import DuyetPhieuTable from './features/APV/Approval';
+import ChiTietPhieuDeXuat from './features/PROP/ProposalDetails';
+import ApprovalDetails from './features/APV/ApprovalDetails';
 
 const App = () => {
   return (
@@ -40,6 +42,12 @@ const App = () => {
            <Route path='/loai-dung-cu/:maLoaiDC' element={
             <DefaultLayout> <Tool /> </DefaultLayout>
           }/>
+          <Route path="/chi-tiet-phieu-de-xuat/:maPhieu" element={
+            <DefaultLayout> <ChiTietPhieuDeXuat /> </DefaultLayout>}/>
+
+          <Route path="/phe-duyet-phieu-de-xuat/:maPhieu" element={
+            <DefaultLayout> <ApprovalDetails /> </DefaultLayout>}/>
+
           <Route path='/bao-tri-dinh-ky' element={
             <DefaultLayout></DefaultLayout>
           }/>

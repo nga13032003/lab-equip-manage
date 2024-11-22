@@ -124,7 +124,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
                 alt="Profile"
                 style={{ height: '40px', marginRight: '10px', borderRadius: '50%' }}
               />
-              <p>Xin chào {employeeName || '...'}</p>
+              <p>{employeeName || '...'}</p>
               <DownOutlined />
             </Button>
           )}
