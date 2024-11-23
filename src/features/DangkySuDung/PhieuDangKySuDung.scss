@@ -1,0 +1,131 @@
+// Container
+.phieu-dang-ky-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Title
+  .phieu-dang-ky-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  // Form
+  .phieu-dang-ky-form {
+    .ant-form-item {
+      margin-bottom: 16px;
+  
+      label {
+        font-weight: 500;
+        color: #555;
+      }
+    }
+  
+    textarea {
+      resize: none;
+    }
+  }
+  
+  // List and Tools
+  .phieu-dang-ky-form h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 30px;
+    color: #444;
+  }
+  
+  .ant-list {
+    margin-top: 10px;
+  }
+  
+  .ant-list-item {
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+  
+    .ant-form-item {
+      margin-bottom: 10px;
+  
+      input,
+      .ant-input-number {
+        width: 100%;
+      }
+    }
+  }
+  
+  // Buttons
+  button {
+    border-radius: 6px;
+  
+    &.ant-btn-dashed {
+      border-style: dashed;
+      background-color: #fafafa;
+      color: #555;
+  
+      &:hover {
+        background-color: #e6f7ff;
+        color: #1890ff;
+      }
+    }
+  
+    &.ant-btn-primary {
+      background-color: #1890ff;
+      border: none;
+  
+      &:hover {
+        background-color: #40a9ff;
+      }
+    }
+  }
+  
+  // Checkbox
+  .ant-checkbox-wrapper {
+    margin-bottom: 20px;
+  
+    .ant-checkbox {
+      margin-right: 8px;
+    }
+  
+    .ant-checkbox-inner {
+      border-radius: 4px;
+    }
+  }
+  
+  // Media Queries for Responsive Design
+  @media (max-width: 768px) {
+    .phieu-dang-ky-container {
+      padding: 15px;
+    }
+  
+    .phieu-dang-ky-title {
+      font-size: 20px;
+    }
+  
+    .phieu-dang-ky-form {
+      .ant-form-item {
+        label {
+          font-size: 14px;
+        }
+      }
+    }
+  
+    .ant-list-item {
+      padding: 12px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+  }
+  

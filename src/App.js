@@ -12,6 +12,10 @@ import DeviceTypeTable from './features/Home/template/subViews/Category/DeviceTy
 import DuyetPhieuTable from './features/APV/Approval';
 import ChiTietPhieuDeXuat from './features/PROP/ProposalDetails';
 import ApprovalDetails from './features/APV/ApprovalDetails';
+import PhieuDangKySuDung from './features/DangkySuDung/PhieuDangKySuDung';
+import ChiTietPhieuDangKi from './features/DangkySuDung/ChiTietDK';
+import ApprovalRegisteredDetails from './features/DangkySuDung/ChiTietDuyetPhieuDK';
+import DuyetPhieuDKTable from './features/DangkySuDung/PheDuyetPhieuDangKy';
 
 const App = () => {
   return (
@@ -51,6 +55,17 @@ const App = () => {
           <Route path='/bao-tri-dinh-ky' element={
             <DefaultLayout></DefaultLayout>
           }/>
+          <Route path='/de-xuat-su-dung' element={
+            <DefaultLayout><PhieuDangKySuDung></PhieuDangKySuDung></DefaultLayout>
+          }/>
+          <Route path='/phe-duyet-phieu-dang-ki' element={
+          <DefaultLayout> <DuyetPhieuDKTable/> </DefaultLayout>}/>
+
+          <Route path="/chi-tiet-phieu-dang-ky/:maPhieuDK" element={
+            <DefaultLayout> <ChiTietPhieuDangKi /> </DefaultLayout>}/>
+
+          <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
+            <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
            <Route path="*" element={<Navigate to="/login" replace />} />
       
       </Routes>
