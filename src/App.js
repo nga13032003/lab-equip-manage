@@ -12,6 +12,7 @@ import DeviceTypeTable from './features/Home/template/subViews/Category/DeviceTy
 import DuyetPhieuTable from './features/APV/Approval';
 import ChiTietPhieuDeXuat from './features/PROP/ProposalDetails';
 import ApprovalDetails from './features/APV/ApprovalDetails';
+import PhieuNhap from './features/PhieuNhap/PhieuNhap';
 
 const App = () => {
   return (
@@ -25,6 +26,9 @@ const App = () => {
           <DefaultLayout> <DuyetPhieuTable/> </DefaultLayout>}/>
           <Route path='/lap-phieu-de-xuat' element={
             <DefaultLayout> <Proposal /> </DefaultLayout>
+          }/>
+           <Route path='/phieu-nhap' element={
+            <DefaultLayout> <PhieuNhap /> </DefaultLayout>
           }/>
           <Route path="/login" element={<Login/>}/>
           <Route path='/loai-dung-cu' element={
