@@ -4,6 +4,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { createPhieuNhap, createChiTietNhapTB, createChiTietNhapDC, createNewItem } from "../../api/phieuNhap";
 import NewDeviceForm from "../Device/NewDeviceForm";
 import NewToolForm from "../Tool/NewToolForm";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -14,7 +15,7 @@ const PhieuNhap = () => {
   const [modalForm] = Form.useForm();
   const [modalItemType, setModalItemType] = useState(""); // Track the item type (device or tool)
   const [maPhieuNhap, setMaPhieuNhap] = useState("");
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     generateMaPhieuNhap();
   }, []);
@@ -40,32 +41,31 @@ const PhieuNhap = () => {
 
   const handleModalSubmit = async () => {
     try {
-      const values = await modalForm.validateFields(); // Get the values from the modal form
-  
-      // Assuming createNewItem is a function that creates the item in the backend
+      const values = await modalForm.validateFields();
+      
+      // Add the new item (either device or tool)
       await createNewItem(modalItemType, values);
-  
       message.success(`Mới đã được thêm thành công!`);
-  
+      
+      // Add the new item to the list
       const newItem = {
         type: modalItemType === "ThietBi" ? "ThietBi" : "DungCu",
-        Ma: modalItemType === "ThietBi" ? values.maThietBi : values.maDungCu, 
+        Ma: modalItemType === "ThietBi" ? values.maThietBi : values.maDungCu,
         Ten: modalItemType === "ThietBi" ? values.tenThietBi : values.tenDungCu,
-        SoLuong: modalItemType === "ThietBi" ? 1 : values.soLuong, 
-        GiaNhap: 0,
+        SoLuong: modalItemType === "ThietBi" ? 1 : values.soLuong,
+        GiaNhap: 0, // Default GiaNhap is 0
       };
-
-  
+      
       setItemList((prev) => [...prev, newItem]);
-  
-      setIsModalVisible(false);
-      modalForm.resetFields();
-  
+      
+      // Close the modal and reset form fields
+      setModalItemType("");  // This closes the modal
+      modalForm.resetFields(); // Resets the form fields
+      
     } catch (error) {
       message.error("Lỗi khi thêm mới.");
     }
   };
-  
 
   const handleSubmit = async (values) => {
     try {
@@ -99,6 +99,7 @@ const PhieuNhap = () => {
       await Promise.all(detailPromises);
 
       message.success("Phiếu nhập đã được lập thành công!");
+      navigate(`/chi-tiet-phieu-nhap/${maPhieuNhap}`);
       form.resetFields();
       setItemList([]);
       generateMaPhieuNhap();
@@ -165,82 +166,99 @@ const PhieuNhap = () => {
   ];
 
   return (
-    <div className="phieu-nhap-container">
-      <h1>Phiếu Nhập</h1>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item label="Mã Phiếu Nhập">
-          <Input value={maPhieuNhap} disabled />
-        </Form.Item>
-        <Form.Item
-          name="NgayNhap"
-          label="Ngày Nhập"
-          rules={[{ required: true, message: "Vui lòng chọn ngày nhập!" }]}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item
-          name="TongTien"
-          label="Tổng Tiền"
-          rules={[{ required: true, message: "Vui lòng nhập tổng tiền!" }]}
-        >
-          <InputNumber min={0} />
-        </Form.Item>
-        <Table dataSource={itemList} columns={columns} rowKey={(item, index) => index} />
+    <>
+      <div className="phieu-nhap-container" style={{ 
+        borderRadius: "8px", 
+        padding: "20px", 
+        backgroundColor: "#fff", 
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        maxWidth: "900px", 
+        margin: "20px auto", 
+        
+      }}>
+      <h1 style={{
+        textTransform: "uppercase",
+        textAlign: "center",
+        fontSize: "24px",  // Optional, adjust size as needed
+        fontWeight: "bold", // Optional, makes it bold
+        color: "#333", // Optional, sets color
+      }}>Phiếu Nhập</h1>
 
-        <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddItem}>
-          Thêm Thiết Bị/Dụng Cụ
-        </Button>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item label="Mã Phiếu Nhập">
+            <Input value={maPhieuNhap} disabled />
+          </Form.Item>
+          <Form.Item
+            name="NgayNhap"
+            label="Ngày Nhập"
+            rules={[{ required: true, message: "Vui lòng chọn ngày nhập!" }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          {/* <Form.Item
+            name="TongTien"
+            label="Tổng Tiền"
+            rules={[{ required: true, message: "Vui lòng nhập tổng tiền!" }]}
+          >
+            <InputNumber min={0} />
+          </Form.Item> */}
+          <Table dataSource={itemList} columns={columns} rowKey={(item, index) => index} />
 
-        <Button type="primary" htmlType="submit" style={{ marginTop: "16px" }}>
-          Lập Phiếu Nhập
-        </Button>
-      </Form>
+          <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddItem}>
+            Thêm Thiết Bị/Dụng Cụ
+          </Button>
 
-      {/* Modal for item type selection */}
-      <Modal
-        visible={isModalVisible}
-        title="Chọn Loại Mặt Hàng"
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-      >
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            setModalItemType("ThietBi");
-            setIsModalVisible(false); // Close the modal
-          }}
-        >
-          Thêm Thiết Bị Mới
-        </Button>
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            setModalItemType("DungCu");
-            setIsModalVisible(false); // Close the modal
-          }}
-        >
-          Thêm Dụng Cụ Mới
-        </Button>
-      </Modal>
-
-      {/* Modal for item form (device or tool) */}
-      <Modal
-        visible={modalItemType !== ""}
-        title={`Thêm ${modalItemType === "ThietBi" ? "Thiết Bị" : "Dụng Cụ"} Mới`}
-        onCancel={() => setModalItemType("")}
-        onOk={handleModalSubmit}
-      >
-        <Form form={modalForm} layout="vertical">
-          {modalItemType === "ThietBi" ? (
-            <NewDeviceForm form={modalForm} />
-          ) : (
-            <NewToolForm form={modalForm} />
-          )}
+          <Button type="primary" htmlType="submit" style={{ marginTop: "16px" }}>
+            Lập Phiếu Nhập
+          </Button>
         </Form>
-      </Modal>
-    </div>
+
+        {/* Modal for item type selection */}
+        <Modal
+          visible={isModalVisible}
+          title="Chọn Loại Mặt Hàng"
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+        >
+          <Button
+            type="primary"
+            block
+            onClick={() => {
+              setModalItemType("ThietBi");
+              setIsModalVisible(false); // Close the modal
+            }}
+          >
+            Thêm Thiết Bị Mới
+          </Button>
+          <Button
+            type="primary"
+            block
+            onClick={() => {
+              setModalItemType("DungCu");
+              setIsModalVisible(false); // Close the modal
+            }}
+          >
+            Thêm Dụng Cụ Mới
+          </Button>
+        </Modal>
+
+        {/* Modal for item form (device or tool) */}
+        <Modal
+          visible={modalItemType !== ""}
+          title={`Thêm ${modalItemType === "ThietBi" ? "Thiết Bị" : "Dụng Cụ"} Mới`}
+          onCancel={() => setModalItemType("")}
+          onOk={handleModalSubmit}  // Call handleModalSubmit when OK is clicked
+        >
+          <Form form={modalForm} layout="vertical">
+            {modalItemType === "ThietBi" ? (
+              <NewDeviceForm form={modalForm} />
+            ) : (
+              <NewToolForm form={modalForm} />
+            )}
+          </Form>
+        </Modal>
+      </div>
+    </>
   );
 };
 

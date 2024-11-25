@@ -13,14 +13,15 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
   } = theme.useToken();
 
   const [isDropdownVisible, setDropdownVisible] = useState(true);
-  const [employeeName, setEmployeeName] = useState(''); // State to store the employee's name
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeCode, setEmployeeCode] = useState(''); // State để lưu mã nhân viên
 
   const menuItems = [
     {
       label: (
         <Button
           type="text"
-          onClick={() => window.location.href = '#'}
+          onClick={() => navigate(`/profile/${employeeCode}`)} // Chuyển hướng đến trang profile
           style={{ width: '100%' }}
         >
           Hồ sơ cá nhân
@@ -32,7 +33,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
       label: (
         <Button
           type="text"
-          onClick={() => window.location.href = '#'}
+          onClick={() => window.location.href = '#' }
           style={{ width: '100%' }}
         >
           Thiết lập tài khoản
@@ -60,11 +61,13 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
     },
   ];
 
-  // Fetch the employee's name from localStorage when the component mounts
+  // Fetch the employee's name and code from localStorage when the component mounts
   useEffect(() => {
     const name = localStorage.getItem('employeeName');
-    if (name) {
+    const code = localStorage.getItem('employeeCode'); // Fetch the employee code
+    if (name && code) {
       setEmployeeName(name); // Update the employee name state
+      setEmployeeCode(code); // Update the employee code state
     }
 
     const handleResize = () => {

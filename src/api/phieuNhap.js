@@ -110,3 +110,66 @@ export const createNewItem = async (itemType, data) => {
     throw error;
   }
 };
+export const getPhieuNhap = async (maPhieu) => {
+  const apiUrl = `https://localhost:7019/api/PhieuNhap/${maPhieu}`;
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Lỗi khi lấy dữ liệu thiết bị');
+    }
+
+    const data = await response.json();
+    return data; // Trả về danh sách thiết bị
+  } catch (error) {
+    console.error('Error fetching devices by type:', error);
+    throw error;
+  }
+};
+export const getChiTietNhapTB = async (maPhieu) => {
+  const apiUrl = `https://localhost:7019/api/ChiTietNhapTB/${maPhieu}`;
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Lỗi khi lấy dữ liệu thiết bị');
+    }
+
+    const data = await response.json();
+    return data; // Trả về danh sách thiết bị
+  } catch (error) {
+    console.error('Error fetching devices by type:', error);
+    throw error;
+  }
+};
+export const getChiTietNhapDC = async (maPhieu) => {
+  const apiUrl = `https://localhost:7019/api/ChiTietNhapDC/${maPhieu}`;
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Lỗi khi lấy dữ liệu thiết bị');
+    }
+
+    const data = await response.json();
+    return data; // Trả về danh sách thiết bị
+  } catch (error) {
+    console.error('Error fetching devices by type:', error);
+    throw error;
+  }
+};

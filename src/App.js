@@ -13,6 +13,10 @@ import DuyetPhieuTable from './features/APV/Approval';
 import ChiTietPhieuDeXuat from './features/PROP/ProposalDetails';
 import ApprovalDetails from './features/APV/ApprovalDetails';
 import PhieuNhap from './features/PhieuNhap/PhieuNhap';
+import Maintenance from './features/BaoTri/PhieuBaoTri';
+import ChiTietPhieuBaoDuong from './features/BaoTri/ChiTietPhieuBaoDuong';
+import Profile from './components/Auth/Profile/profile';
+import ChiTietPhieuNhap from './features/PhieuNhap/ChiTietPhieuNhap';
 
 const App = () => {
   return (
@@ -53,10 +57,12 @@ const App = () => {
             <DefaultLayout> <ApprovalDetails /> </DefaultLayout>}/>
 
           <Route path='/bao-tri-dinh-ky' element={
-            <DefaultLayout></DefaultLayout>
+            <DefaultLayout><Maintenance/></DefaultLayout>
           }/>
            <Route path="*" element={<Navigate to="/login" replace />} />
-      
+           <Route path="/chi-tiet-phieu-bao-duong/:maPhieu" element={  <DefaultLayout><ChiTietPhieuBaoDuong /></DefaultLayout>} />
+           <Route path="/profile/:maNV" element={  <DefaultLayout><Profile/></DefaultLayout>} />
+           <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
       </Routes>
     </Router>
   );

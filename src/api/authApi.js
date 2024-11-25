@@ -22,5 +22,28 @@ export const login = async (email, password) => {
         throw error;
     }
 };
-
-
+export const getNhanVien = async (ma) => {
+    const apiUrl = `https://localhost:7019/api/NhanVien/${ma}`;
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      // Kiểm tra trạng thái phản hồi từ API
+      if (!response.ok) {
+        throw new Error(`Lỗi khi lấy thông tin nhân viên với mã: ${ma}`);
+      }
+  
+      // Chuyển đổi phản hồi JSON thành đối tượng JavaScript
+      const data = await response.json();
+      return data; // Trả về dữ liệu nhân viên
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu nhân viên:', error.message);
+      throw error;
+    }
+  };
+  

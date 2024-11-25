@@ -1,26 +1,23 @@
-.profile-title {
-  text-align: center; // Center the title
-  margin-bottom: 20px; // Spacing below the title
+.profile-spin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
 }
 
-.profile-form {
-  max-width: 600px; // Set a maximum width for the form
-  margin: 0 auto; // Center the form horizontally
-  background-color: #fff; // Set a background color for the form
-  padding: 20px; // Add padding inside the form
-  border-radius: 8px; // Set border radius for rounded corners
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optional: Add a subtle shadow
+.error-message {
+  color: red;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
 }
 
-.profile-form .ant-form-item {
-  margin-bottom: 16px; // Space between form items
-  text-align: left; // Align text to the left for form items
-}
-
-.profile-form .ant-form-item-label {
-  text-align: left; // Ensure labels are left aligned
-}
-
-.profile-form .ant-form-item-control {
-  text-align: left; // Ensure control elements are left aligned
+.profile-card {
+  max-width: 800px;
+  margin: 20px auto;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
 }

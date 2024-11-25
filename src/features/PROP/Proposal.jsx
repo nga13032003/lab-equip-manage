@@ -76,7 +76,7 @@ const Proposal = () => {
       const payload = {
         maPhieu: maPhieu, // Use the generated MaPhieu here
         maThietBi: values.MaThietBi,
-        maNV: employeeCode,
+        maNV: 'NV002',
         lyDoDeXuat: values.LyDoDeXuat,
         ghiChu: values.GhiChu,
         ngayTao: new Date().toISOString(),
