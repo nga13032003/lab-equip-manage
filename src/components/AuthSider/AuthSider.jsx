@@ -66,7 +66,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Link to='/phe-duyet-luan-chuyen'>  Phê duyệt luân chuyển</Link>
           </Menu.Item>
           <Menu.Item key="4" icon={<ClockCircleOutlined />}>
-          <Link to='/phe-duyet-dang-ky-su-dung'>Phê duyệt đăng ký sử dụng</Link>
+          <Link to='/phe-duyet-phieu-dang-ki'>Phê duyệt đăng ký sử dụng</Link>
           </Menu.Item>
           <Menu.Item key="5" icon={<ToolOutlined />}>
           <Link to='/phieu-nhap'> Nhập thiết bị, dung cụ mới</Link>
