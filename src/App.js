@@ -21,6 +21,10 @@ import PhieuDangKySuDung from './features/DangkySuDung/PhieuDangKySuDung';
 import ChiTietPhieuDangKi from './features/DangkySuDung/ChiTietDK';
 import ApprovalRegisteredDetails from './features/DangkySuDung/ChiTietDuyetPhieuDK';
 import DuyetPhieuDKTable from './features/DangkySuDung/PheDuyetPhieuDangKy';
+import PhieuThanhLy from './features/ThanhLy/PhieuThanhLy';
+import ChiTietPhieuThanhLy from './features/ThanhLy/ChiTietPhieuThanhLy';
+import DuyetPhieuThanhLyTable from './features/ThanhLy/PheDuyetPhieuThanhLy';
+import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
 
 const App = () => {
   return (
@@ -71,13 +75,18 @@ const App = () => {
 
           <Route path="/chi-tiet-phieu-dang-ky/:maPhieuDK" element={
             <DefaultLayout> <ChiTietPhieuDangKi /> </DefaultLayout>}/>
-
+          <Route path="/de-xuat-thanh-ly" element={
+            <DefaultLayout> <PhieuThanhLy/> </DefaultLayout>}/>
           <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
             <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
            <Route path="*" element={<Navigate to="/login" replace />} />
            <Route path="/chi-tiet-phieu-bao-duong/:maPhieu" element={  <DefaultLayout><ChiTietPhieuBaoDuong /></DefaultLayout>} />
            <Route path="/profile/:maNV" element={  <DefaultLayout><Profile/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
+           <Route path="/chi-tiet-phieu-thanh-ly/:maPhieu" element={<DefaultLayout><ChiTietPhieuThanhLy/></DefaultLayout>} />
+           <Route path="/phe-duyet-phieu-thanh-ly" element={
+            <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
+            <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
       </Routes>
     </Router>
   );
