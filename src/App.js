@@ -82,11 +82,11 @@ const App = () => {
            <Route path="*" element={<Navigate to="/login" replace />} />
            <Route path="/chi-tiet-phieu-bao-duong/:maPhieu" element={  <DefaultLayout><ChiTietPhieuBaoDuong /></DefaultLayout>} />
            <Route path="/profile/:maNV" element={  <DefaultLayout><Profile/></DefaultLayout>} />
-           <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-thanh-ly/:maPhieu" element={<DefaultLayout><ChiTietPhieuThanhLy/></DefaultLayout>} />
            <Route path="/phe-duyet-phieu-thanh-ly" element={
             <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
+           <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
       </Routes>
     </Router>
   );
