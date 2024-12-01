@@ -1,0 +1,39 @@
+.phieu-nhap-container {
+    // Add padding to the form container for spacing on the left and right
+    padding: 0 20px;  // Adjust the value as needed for the desired margin
+  
+    // Apply general styling to the form
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .ant-form {
+      // Set a margin on the left and right for the form
+      margin: 0 auto;
+      max-width: 1200px; // You can adjust this to limit the form's maximum width
+    }
+  
+    .ant-form-item {
+      margin-bottom: 16px;  // Adjust the spacing between form fields
+    }
+  
+    .ant-btn {
+      margin-top: 16px;
+    }
+  
+    .ant-table {
+      margin-top: 20px;
+    }
+  
+    .ant-modal-body {
+      padding: 20px;  // Add padding to the modal body if needed
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .phieu-nhap-container {
+      padding: 0 10px;  // Adjust the margin for smaller screens
+    }
+  }
+  

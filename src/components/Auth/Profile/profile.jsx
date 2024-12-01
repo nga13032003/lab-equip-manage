@@ -1,109 +1,71 @@
-import React, { useState } from 'react';
-import { PlusOutlined, UserOutlined } from '@ant-design/icons';
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Upload,
-  Select,
-  Checkbox,
-  Avatar,
-  Space,
-} from 'antd';
-import './profile.scss'; // Import your SCSS file
+import React, { useEffect, useState } from 'react';
+import { Descriptions, Spin, Card, Typography } from 'antd';
+import { getNhanVien } from '../../../api/authApi';
+import './profile.scss'; // SCSS file cho styling
+
+const { Title } = Typography;
 
 const Profile = () => {
-  const [componentDisabled, setComponentDisabled] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const [employeeCode, setEmployeeCode] = useState(null); // Mã nhân viên
+  const [employeeData, setEmployeeData] = useState(null); // Dữ liệu nhân viên
+  const [loading, setLoading] = useState(true); // Trạng thái loading
 
-  const handleUploadChange = (info) => {
-    if (info.file.status === 'done') {
-      // Get the uploaded file and set it as avatar
-      setAvatar(info.file.originFileObj);
+  // Lấy mã nhân viên từ localStorage
+  useEffect(() => {
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
+    if (storedEmployeeCode) {
+      setEmployeeCode(storedEmployeeCode);
     }
-  };
+  }, []);
 
-  const handleSubmit = (values) => {
-    console.log('Form values: ', values);
-    // Here you would typically send the values to your backend
-  };
+  // Lấy thông tin nhân viên từ API khi có mã nhân viên
+  useEffect(() => {
+    if (employeeCode) {
+      const fetchData = async () => {
+        try {
+          const data = await getNhanVien(employeeCode);
+          setEmployeeData(data);
+        } catch (error) {
+          console.error('Lỗi khi lấy thông tin nhân viên:', error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
 
+      fetchData();
+    }
+  }, [employeeCode]);
+
+  if (loading) {
+    return (
+      <div className="profile-spin">
+        <Spin size="large" tip="Đang tải thông tin nhân viên..." />
+      </div>
+    );
+  }
+
+  if (!employeeData) {
+    return <div className="error-message">Không thể tải thông tin nhân viên.</div>;
+  }
+
+  // Hiển thị thông tin nhân viên
   return (
-    <>
-      <h1 className="profile-title">HỒ SƠ CÁ NHÂN GIÁO VIÊN</h1>
-      <Checkbox
-        checked={componentDisabled}
-        onChange={(e) => setComponentDisabled(e.target.checked)}
-      >
-        Disable Form
-      </Checkbox>
-      <Form
-        className="profile-form" // Add class to the Form
-        labelCol={{ span: 8 }} // Adjust the label column span
-        wrapperCol={{ span: 16 }} // Adjust the wrapper column span
-        layout="horizontal"
-        disabled={componentDisabled}
-        onFinish={handleSubmit}
-      >
-        {/* Avatar Display */}
-        <Form.Item label="Avatar" name="Avatar">
-          <Space wrap size={16} style={{ justifyContent: 'flex-start' }}>
-            <Avatar
-              shape="square"
-              size={128} // Size doubled
-              icon={avatar ? <img src={URL.createObjectURL(avatar)} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '8px' }} /> : <UserOutlined />}
-            />
-            <Upload
-              name="avatar"
-              showUploadList={false}
-              onChange={handleUploadChange}
-              beforeUpload={() => false} // Prevent automatic upload
-            >
-              <Button icon={<PlusOutlined />}>Upload Avatar</Button>
-            </Upload>
-          </Space>
-        </Form.Item>
-
-        {/* Teacher Information Fields */}
-        <Form.Item
-          label="Mã Giáo Viên"
-          name="MaGV"
-          rules={[{ required: true, message: 'Vui lòng nhập mã giáo viên!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Tên Giáo Viên"
-          name="TenGV"
-          rules={[{ required: true, message: 'Vui lòng nhập tên giáo viên!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Giới Tính" name="GioiTinh">
-          <Select>
-            <Select.Option value="Nam">Nam</Select.Option>
-            <Select.Option value="Nữ">Nữ</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="Ngày Sinh" name="NgaySinh">
-          <DatePicker />
-        </Form.Item>
-        <Form.Item label="Địa Chỉ" name="DiaChi">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Số Điện Thoại" name="SoDT">
-          <Input />
-        </Form.Item>
-
-        {/* Update Button */}
-        <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
-          <Button type="primary" htmlType="submit">
-            CẬP NHẬT
-          </Button>
-        </Form.Item>
-      </Form>
-    </>
+    <Card className="profile-card">
+      <Title level={3}>Thông Tin Nhân Viên</Title>
+      <Descriptions bordered column={1}>
+        <Descriptions.Item label="Mã nhân viên">{employeeData.maNV}</Descriptions.Item>
+        <Descriptions.Item label="Tên nhân viên">{employeeData.tenNV}</Descriptions.Item>
+        <Descriptions.Item label="Giới tính">{employeeData.gioiTinh}</Descriptions.Item>
+        <Descriptions.Item label="Ngày sinh">
+          {new Date(employeeData.ngaySinh).toLocaleDateString()}
+        </Descriptions.Item>
+        <Descriptions.Item label="Địa chỉ">{employeeData.diaChi}</Descriptions.Item>
+        <Descriptions.Item label="Số điện thoại">{employeeData.soDT}</Descriptions.Item>
+        <Descriptions.Item label="Email">{employeeData.email}</Descriptions.Item>
+        <Descriptions.Item label="Chức vụ">{employeeData.chucVu?.tenCV}</Descriptions.Item>
+        <Descriptions.Item label="Nhóm quyền">{employeeData.nhomQuyen?.tenNhom}</Descriptions.Item>
+      </Descriptions>
+    </Card>
   );
 };
 

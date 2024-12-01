@@ -21,51 +21,32 @@ export const fetchDevicesByType = async (maLoaiThietBi) => {
     }
   };
   
-const API_URL = 'https://localhost:7019/api/ThietBi';
+// const API_URL = 'https://localhost:7019/api/ThietBi';
 // deviceApi.js
 
-export const getAllDevices = async () => {
-  try {
-    const response = await fetch(API_URL, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
 
-    if (!response.ok) {
-      throw new Error('Lỗi khi lấy danh sách thiết bị');
-    }
+  
+  
+// const DeviceApi = {
+//     async getAllDevices() {
+//         try {
+//             const response = await axios.get(API_URL);
+//             return response.data;
+//         } catch (error) {
+//             console.error("Error fetching devices:", error);
+//             throw error;
+//         }
+//     },
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching all devices:', error);
-    throw error;
-  }
-};
-
-// Phương thức lấy thiết bị theo ID
-export const getDeviceById = async (id) => {
-  try {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Lỗi khi lấy thiết bị với ID: ${id}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Error fetching device with id ${id}:`, error);
-    throw error;
-  }
-};
+//     async getDeviceById(id) {
+//         try {
+//             const response = await axios.get(`${API_URL}/${id}`);
+//             return response.data;
+//         } catch (error) {
+//             console.error(`Error fetching device with id ${id}:`, error);
+//             throw error;
+//         }
+//     },
 
 //     async createDevice(device) {
 //         try {
