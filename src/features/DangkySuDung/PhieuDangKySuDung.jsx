@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker } from 'antd';
+import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select } from 'antd';
 import { createPhieuDangKi, getExistingPhieuDangKi } from '../../api/phieuDangKi';
 import './PhieuDangKySuDung.scss';
 import { useNavigate } from 'react-router-dom';
 import { createChiTietDeXuatDungCu } from '../../api/dangKiDC';
 import { createChiTietDangKiThietBi } from '../../api/dangKiThietBi';
+import { fetchDeviceTypes } from '../../api/deviceTypeApi';
+import { fetchDevicesByType } from '../../api/deviceApi';
+import { fetchToolTypes } from '../../api/toolTypeApi';
+import { fetchToolsByType } from '../../api/toolApi';
 
 const PhieuDangKySuDung = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -14,7 +18,13 @@ const PhieuDangKySuDung = () => {
   const [toolList, setToolList] = useState([]);
   const [employeeName, setEmployeeName] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
-  const [maphieudk, setmaphieudk] = useState('');
+  const [deviceTypes, setDeviceTypes] = useState([]); // Danh sách loại thiết bị
+  const [selectedDeviceType, setSelectedDeviceType] = useState(''); // Mã loại thiết bị được chọn
+  const [filteredDevices, setFilteredDevices] = useState([]); // Danh sách thiết bị theo loại
+  const [toolTypes, setToolTypes] = useState([]); // Danh sách loại thiết bị
+  const [selectedToolType, setSelectedToolType] = useState(''); // Mã loại thiết bị được chọn
+  const [filteredTools, setFilteredTools] = useState([]); // Danh sách thiết bị theo loại
+  const [maphieudk, setMaphieudk] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
@@ -28,6 +38,50 @@ const PhieuDangKySuDung = () => {
       setEmployeeCode(storedEmployeeCode);
     }
   }, []);
+  useEffect(() => {
+    const fetchDeviceTypesData = async () => {
+      try {
+        const types = await fetchDeviceTypes();
+        setDeviceTypes(types);
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách loại thiết bị');
+      }
+    };
+    fetchDeviceTypesData();
+  }, []);
+
+  useEffect(() => {
+    const fetchToolTypesData = async () => {
+      try {
+        const types = await fetchToolTypes();
+        setToolTypes(types);
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách loại dụng cụ');
+      }
+    };
+    fetchToolTypesData();
+  }, []);
+
+  const handleDeviceTypeChange = async (maLoaiThietBi) => {
+    setSelectedDeviceType(maLoaiThietBi);
+    try {
+      const devices = await fetchDevicesByType(maLoaiThietBi);
+      setFilteredDevices(devices);
+    } catch (error) {
+      message.error('Lỗi khi tải danh sách thiết bị');
+    }
+  };
+
+  const handleToolTypeChange = async (maLoaiDC) => {
+    setSelectedToolType(maLoaiDC);
+    try {
+      const tools = await fetchToolsByType(maLoaiDC);
+      setFilteredTools(tools);
+    } catch (error) {
+      message.error('Lỗi khi tải danh sách dụng cụ');
+    }
+  };
+  
 
   const generateRandomMaPhieuDK = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -37,75 +91,93 @@ const PhieuDangKySuDung = () => {
     }
     return result;
   };
-  const isDuplicateMaPhieu = (existingPhieuDangKis, maPhieu) => {
-    return existingPhieuDangKis.some((item) => item.MaPhieuDK === maPhieu);
-  };
-
-//   const resetPhieuDangKy = () => {
-//     localStorage.removeItem('maphieudk'); // Xóa mã cũ khỏi localStorage
-//     setmaphieudk('');
-//     setIsGenerated(false);
-//   };
-  const fetchAndGenerateUniqueMaPhieuDK = useCallback(async () => {
-    const storedMaPhieu = localStorage.getItem('maphieudk');
-  if (storedMaPhieu) {
-    setmaphieudk(storedMaPhieu);
-    return;
-  }
+  
+const fetchAndGenerateUniqueMaPhieu = useCallback(async () => {
   try {
-    const existingPhieuDangKis = await getExistingPhieuDangKi();
+    const existingPhieuDKs = await getExistingPhieuDangKi(); // Fetch existing MaPhieu
     let generatedMaPhieu = generateRandomMaPhieuDK();
-    while (isDuplicateMaPhieu(existingPhieuDangKis, generatedMaPhieu)) {
-      generatedMaPhieu = generateRandomMaPhieuDK();
+
+    // Check if the generated MaPhieu is unique
+    // eslint-disable-next-line
+    while (existingPhieuDKs.some((item) => item.MaPhieuDK === generatedMaPhieu)) {
+      generatedMaPhieu = generateRandomMaPhieuDK(); // Regenerate if not unique
     }
 
-    console.log('Generated Ma Phieu DK:', generatedMaPhieu);
-    setmaphieudk(generatedMaPhieu);
-    localStorage.setItem('maphieudk', generatedMaPhieu); // Lưu mã vào localStorage
+    setMaphieudk(generatedMaPhieu); // Set the unique MaPhieu
   } catch (error) {
-    console.error('Error fetching existing maphieudk values:', error);
-    message.error('Không thể lấy dữ liệu mã phiếu đăng ký.');
+    message.error('Error fetching existing MaPhieu values');
   }
-}, []);
+}, []); // Empty array ensures the function is only created once
 
-  useEffect(() => {
-    fetchAndGenerateUniqueMaPhieuDK();
-  }, [fetchAndGenerateUniqueMaPhieuDK]);
+useEffect(() => {
+  fetchAndGenerateUniqueMaPhieu(); // Call on initial render to generate MaPhieu
+}, [fetchAndGenerateUniqueMaPhieu]); // Add memoized function as a dependency
+
 
   useEffect(() => {
     form.setFieldsValue({ MaPhieuDK: maphieudk });
   }, [maphieudk, form]);
 
   const handleAddDevice = useCallback(() => {
-    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: '' }]);
+    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: moment().toISOString(), NgayKetThuc: null  }]);
   }, []);
 
   const handleDeviceChange = useCallback((index, field, value) => {
     setDeviceList((prevList) =>
-      prevList.map((device, idx) =>
-        idx === index ? { ...device, [field]: value } : device
-      )
+      prevList.map((device, idx) => {
+        if (idx === index) {
+          if (field === 'MaThietBi') {
+            const selectedDevice = filteredDevices.find(
+              (device) => device.maThietBi === value
+            );
+            return {
+              ...device,
+              MaThietBi: value,
+              tenThietBi: selectedDevice ? selectedDevice.tenThietBi : '',
+            };
+          }
+          return { ...device, [field]: value };
+        }
+        return device;
+      })
     );
-  }, []);
+  }, [filteredDevices]);
+  
 
   
 
   const handleAddTool = useCallback(() => {
-    setToolList((prevList) => [...prevList, { MaDungCu: '', SoLuongDangKi: 1, NgayDangKi: '' }]);
+    setToolList((prevList) => [
+      ...prevList,
+      { MaDungCu: '', SoLuong: 1, NgayDangKi: moment().toISOString(), NgayKetThuc: null  }
+    ]);
   }, []);
 
   const handleToolChange = useCallback((index, field, value) => {
     setToolList((prevList) =>
-      prevList.map((tool, idx) =>
-        idx === index ? { ...tool, [field]: value } : tool
-      )
+      prevList.map((tool, idx) => {
+        if (idx === index) {
+          if (field === 'MaDungCu') {
+            const selectedTool = filteredTools.find(
+              (tool) => tool.maDungCu === value
+            );
+            return {
+              ...tool,
+              MaDungCu: value,
+              tenDungCu: selectedTool ? selectedTool.tenDungCu : '',
+            };
+          }
+          return { ...tool, [field]: value };
+        }
+        return tool;
+      })
     );
-  }, []);
+  }, [filteredTools]);
 
 
   const handleSubmit = async (values) => {
     if (!maphieudk) {
-        await fetchAndGenerateUniqueMaPhieuDK(); // Chỉ tạo mã nếu chưa tồn tại
+        await fetchAndGenerateUniqueMaPhieu(); // Chỉ tạo mã nếu chưa tồn tại
       }
     try {
       const payload = {
@@ -126,7 +198,9 @@ const PhieuDangKySuDung = () => {
         const newChitietThietBi = {
             maphieudk: maphieudk,
             MaThietBi: device.MaThietBi,
-            NgayDangKi: device.NgayDangKi
+            tenThietBi: device.tenThietBi,
+            NgayDangKi: new Date().toISOString(),
+            ngayKetThuc: device.ngayKetThuc ? moment(device.ngayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
             
         };
         return createChiTietDangKiThietBi(newChitietThietBi);
@@ -136,9 +210,13 @@ const PhieuDangKySuDung = () => {
         const newChiTiet = {
             maphieudk: maphieudk,
             MaDungCu: tool.MaDungCu,
+            tenDungCu: tool.tenDungCu,
             SoLuong: tool.SoLuong,
-            NgayDangKi: tool.NgayDangKi
+            NgayDangKi: new Date().toISOString(),
+            NgayKetThuc: tool.NgayKetThuc ? moment(tool.NgayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
         };
+
+        console.log('Device Details:', newChiTiet);
         return createChiTietDeXuatDungCu(newChiTiet);
         });
         
@@ -149,7 +227,7 @@ const PhieuDangKySuDung = () => {
       form.resetFields();
       setDeviceList([]);
       setToolList([]);
-      //fetchAndGenerateUniqueMaPhieuDK();
+      fetchAndGenerateUniqueMaPhieu();
       navigate(`/chi-tiet-phieu-dang-ky/${maphieudk}`);
     } catch (error) {
       message.error(`Lỗi khi lập phiếu: ${error.message}`);
@@ -200,29 +278,57 @@ const PhieuDangKySuDung = () => {
           bordered
           dataSource={deviceList}
           renderItem={(item, index) => (
-            <List.Item>
+            <List.Item key={index}>
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Form.Item
-                  label="Mã thiết bị"
-                  validateStatus={!item.MaThietBi ? 'error' : ''}
-                  help={!item.MaThietBi && 'Vui lòng nhập mã thiết bị'}
-                >
-                  <Input
+              <Form.Item label="Loại thiết bị">
+                  <Select
+                    placeholder="Chọn loại thiết bị"
+                    onChange={handleDeviceTypeChange}
+                    value={selectedDeviceType}
+                  >
+                    {deviceTypes.map((type) => (
+                      <Select.Option key={type.maLoaiThietBi} value={type.maLoaiThietBi}>
+                        {type.tenLoaiThietBi}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item label="Tên thiết bị">
+                  <Select
+                    placeholder="Chọn tên thiết bị"
+                    onChange={(value) =>
+                      handleDeviceChange(index, 'MaThietBi', value)
+                    } // Thay đổi mã thiết bị được chọn
                     value={item.MaThietBi}
-                    onChange={(e) => handleDeviceChange(index, 'MaThietBi', e.target.value)}
-                  />
-                
-                <Form.Item
-                  label="Ngày đăng ký"
-                  name={`NgayDangKi-${index}`}
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày đăng ký' }]}
-                >
-                <DatePicker
-                    format="YYYY-MM-DD"
-                    disabledDate={(current) => current && current < moment().startOf('day')}
-                    onChange={(date) => handleDeviceChange(index, 'NgayDangKi', date ? moment(date).format('YYYY-MM-DD') : null)}
-                />
+                  >
+                    {filteredDevices.map((device) => (
+                      <Select.Option key={device.maThietBi} value={device.maThietBi}>
+                        {device.tenThietBi}
+                      </Select.Option>
+                    ))}
+                  </Select>
 
+                <Form.Item label="Ngày đăng ký">
+                  <Input
+                    value={moment().format('DD-MM-YYYY HH:mm:ss')}
+                    disabled
+                  />
+                </Form.Item>
+                <Form.Item
+                   label="Ngày kết thúc"
+                   name={`ngayKetThuc-${index}`}
+                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
+                 >
+                   <DatePicker
+                    format="YYYY-MM-DD HH:mm:ss"
+                    showTime
+                    disabledDate={(current) => current && current < moment().startOf('day')}
+                    onChange={(date) => {
+                      if (date) {
+                        handleDeviceChange(index, 'ngayKetThuc', date.toISOString());
+                      }
+                    }}
+                  />
                 </Form.Item>
                 </Form.Item>
               </Space>
@@ -239,39 +345,73 @@ const PhieuDangKySuDung = () => {
           bordered
           dataSource={toolList}
           renderItem={(item, index) => (
-            <List.Item>
+            <List.Item key={index}>
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Form.Item
-                  label="Mã dụng cụ"
-                  validateStatus={!item.MaDungCu ? 'error' : ''}
-                  help={!item.MaDungCu && 'Vui lòng nhập mã dụng cụ'}
-                >
-                  <Input
+              <Form.Item label="Loại dụng cụ">
+                  <Select
+                    placeholder="Chọn loại dụng cụ"
+                    onChange={handleToolTypeChange}
+                    value={selectedToolType}
+                  >
+                    {toolTypes.map((type) => (
+                      <Select.Option key={type.maLoaiDC} value={type.maLoaiDC}>
+                        {type.tenLoaiDC}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item label="Tên dụng cụ">
+                  <Select
+                    placeholder="Chọn tên dụng cụ"
+                    onChange={(value) =>
+                      handleToolChange(index, 'MaDungCu', value)
+                    } 
                     value={item.MaDungCu}
-                    onChange={(e) => handleToolChange(index, 'MaDungCu', e.target.value)}
-                  />
+                  >
+                    {filteredTools.map((tool) => (
+                      <Select.Option key={tool.maDungCu} value={tool.maDungCu}>
+                        {tool.tenDungCu}
+                      </Select.Option>
+                    ))}
+                  </Select>
+
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
-                  validateStatus={item.SoLuongDangKi <= 0 ? 'error' : ''}
-                  help={item.SoLuongDangKi <= 0 && 'Số lượng phải lớn hơn 0'}
+                  validateStatus={item.SoLuong <= 0 ? 'error' : ''}
+                  help={item.SoLuong <= 0 && 'Số lượng phải lớn hơn 0'}
                 >
                   <InputNumber
                     min={1}
-                    value={item.SoLuongDangKi}
-                    onChange={(value) => handleToolChange(index, 'SoLuongDangKi', value)}
+                    value={item.SoLuong}
+                    onChange={(value) => handleToolChange(index, 'SoLuong', value)}
                   />
                 </Form.Item>
                 <Form.Item
                 label="Ngày đăng ký"
-                validateStatus={!item.NgayDangKi ? 'error' : ''}
-                help={!item.NgayDangKi && 'Vui lòng chọn ngày đăng ký'}
+                
                 >
-                <DatePicker
-                format="YYYY-MM-DD"
-                disabledDate={(current) => current && current < moment().startOf('day')}
-                onChange={(date) => handleToolChange(index, 'NgayDangKi', date ? moment(date).format('YYYY-MM-DD') : null)}
+                    <Input
+                  value={moment().format('DD-MM-YYYY HH:mm:ss')}
+                  disabled
                 />
+                
+                <Form.Item
+                  label="Ngày kết thúc"
+                  name={`NgayKetThuc-${index}`}
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
+                >
+                  <DatePicker
+                    format="YYYY-MM-DD HH:mm:ss"
+                    showTime
+                    disabledDate={(current) => current && current < moment().startOf('day')}
+                    onChange={(date) => {
+                      if (date) {
+                        handleToolChange(index, 'NgayKetThuc', date.toISOString());
+                      }
+                    }}
+                  />
+                </Form.Item>
 
                 </Form.Item>
               </Space>

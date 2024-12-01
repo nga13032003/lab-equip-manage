@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Button, message, Spin, Modal, Input, Alert } from 'antd';
+import { Card, List, Typography, Button, message, Spin, Modal, Input, Alert, Table } from 'antd';
 import { getPhieuDetails } from '../../api/phieuDangKi';
 import { approveRegistered } from '../../api/duyetPhieuDangKi';
 import { useLocation } from 'react-router-dom';
+import { getDeviceById } from '../../api/deviceApi';
+import { getToolById } from '../../api/toolApi';
+import './ApprovalRegisteredDetails.scss';
+
 
 const { Title, Text } = Typography;
 
@@ -24,8 +28,32 @@ const ApprovalRegisteredDetails = () => {
         const { registeredDetails, deviceDetails, toolDetails } = await getPhieuDetails(maPhieuDK);
   
         setProposalDetails(registeredDetails || {});
-        setDeviceDetails(deviceDetails || []);
-        setToolDetails(toolDetails || []);
+        const deviceDetailsWithNames = await Promise.all(
+          (deviceDetails || []).map(async (device) => {
+            try {
+              const deviceInfo = await getDeviceById(device.maThietBi);
+              return { ...device, tenThietBi: deviceInfo.tenThietBi || 'Không tìm thấy tên thiết bị' };
+            } catch (error) {
+              console.error(`Lỗi khi lấy thông tin thiết bị: ${device.maThietBi}`, error);
+              return { ...device, tenThietBi: 'Không tìm thấy tên thiết bị' };
+            }
+          })
+        );
+
+        // Fetch tool names based on IDs
+        const toolDetailsWithNames = await Promise.all(
+          (toolDetails || []).map(async (tool) => {
+            try {
+              const toolInfo = await getToolById(tool.maDungCu);
+              return { ...tool, tenDungCu: toolInfo.tenDungCu || 'Không tìm thấy tên dụng cụ' };
+            } catch (error) {
+              console.error(`Lỗi khi lấy thông tin dụng cụ: ${tool.maDungCu}`, error);
+              return { ...tool, tenDungCu: 'Không tìm thấy tên dụng cụ' };
+            }
+          })
+        );
+        setDeviceDetails(deviceDetailsWithNames);
+        setToolDetails(toolDetailsWithNames);
   
         if (!deviceDetails?.length && !toolDetails?.length) {
         } else if (deviceDetails?.length && !toolDetails?.length) {
@@ -85,6 +113,7 @@ const ApprovalRegisteredDetails = () => {
         trangThai: 'Từ chối',
         lyDoTuChoi: rejectionReason,
       });
+      
       console.log('API Response:', response);
       if (response && response.maPhieuDK) {
         message.success('Phiếu đăng ký đã bị từ chối');
@@ -123,65 +152,155 @@ const ApprovalRegisteredDetails = () => {
     <div className="chitiet-proposal-container">
       <Card title="Chi Tiết Phiếu Đăng Ký" bordered={false}>
         <Title level={2}>Thông Tin Phiếu Đăng Ký</Title>
-        <Text strong>Mã phiếu:</Text> <Text>{proposalDetails.maPhieuDK}</Text><br />
-        <Text strong>Mã nhân viên đề xuất:</Text> <Text>{proposalDetails.maNV}</Text><br />
-        <Text strong>Lý do đăng ký:</Text> <Text>{proposalDetails.lyDoDK}</Text><br />
-        <Text strong>Ghi chú:</Text> <Text>{proposalDetails.ghiChu}</Text><br />
-        <Text strong>Ngày Lập:</Text> <Text>{proposalDetails.ngayLap}</Text><br />
-        <Text strong>Trạng thái:</Text> <Text>{proposalDetails.trangThai}</Text><br />
+        <div className="info-table-container">
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <th>Mã phiếu</th>
+                <td>{proposalDetails.maPhieuDK}</td>
+              </tr>
+              <tr>
+                <th>Mã nhân viên đề xuất</th>
+                <td>{proposalDetails.maNV}</td>
+              </tr>
+              <tr>
+                <th>Lý do đăng ký</th>
+                <td>{proposalDetails.lyDoDK}</td>
+              </tr>
+              <tr>
+                <th>Ghi chú</th>
+                <td>{proposalDetails.ghiChu}</td>
+              </tr>
+              <tr>
+                <th>Ngày lập</th>
+                <td>{proposalDetails.ngayLap}</td>
+              </tr>
+              <tr>
+                <th>Trạng thái</th>
+                <td>{proposalDetails.trangThai}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        {deviceDetails.length > 0 ? (
-          <>
-            <Title level={3} style={{ marginTop: '20px' }}>Danh Sách Thiết Bị Đăng Ký</Title>
-            <List
-              bordered
-              dataSource={deviceDetails}
-              renderItem={(item) => (
-                <List.Item>
-                  <Text strong>Mã thiết bị:</Text> <Text>{item.maThietBi}</Text><br />
-                  <Text strong>Ngày Đăng Ký:</Text> <Text>{item.ngayDangKi}</Text>
-                </List.Item>
-              )}
+          {deviceDetails.length > 0 ? (
+            <>
+              <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+              <Table
+                className="custom-table"
+                dataSource={deviceDetails}
+                rowKey="maThietBi"
+                bordered
+                columns={[
+                  {
+                    title: "Mã Thiết Bị",
+                    dataIndex: "maThietBi",
+                    key: "maThietBi",
+                    align: "center",
+                  },
+                  {
+                    title: "Tên Thiết Bị",
+                    dataIndex: "tenThietBi",
+                    key: "tenThietBi",
+                    align: "center",
+                  },
+                  {
+                    title: "Ngày Đăng Ký",
+                    dataIndex: "ngayDangKi",
+                    key: "ngayDangKi",
+                    align: "center",
+                    render: (date) =>
+                      date
+                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
+                        : "Chưa có",
+                  },
+                  {
+                    title: "Ngày Kết Thúc",
+                    dataIndex: "ngayKetThuc",
+                    key: "ngayKetThuc",
+                    align: "center",
+                    render: (date) =>
+                      date
+                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
+                        : "Chưa có",
+                  },
+                ]}
+              />
+            </>
+          ) : (
+            <Alert
+              message="Không có thiết bị đăng ký"
+              type="info"
+              showIcon
+              className="alert-box"
             />
-          </>
-        ) : (
-          <Alert
-            message="Không có thiết bị đăng ký"
-            type="info"
-            showIcon
-            style={{ marginTop: '20px' }}
-          />
-        )}
+          )}
 
-        {toolDetails.length > 0 ? (
-          <>
-            <Title level={3} style={{ marginTop: '20px' }}>Danh Sách Dụng Cụ Đăng Ký</Title>
-            <List
-              bordered
-              dataSource={toolDetails}
-              renderItem={(item) => (
-                <List.Item>
-                  <Text strong>Mã dụng cụ:</Text> <Text>{item.maDungCu}</Text><br />
-                  <Text strong>Số lượng:</Text> <Text>{item.soLuong}</Text>
-                  <Text strong>Ngày Đăng Ký:</Text> <Text>{item.ngayDangKi}</Text>
-                </List.Item>
-              )}
+          {toolDetails.length > 0 ? (
+            <>
+              <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+              <Table
+                className="custom-table"
+                dataSource={toolDetails}
+                rowKey="maDungCu"
+                bordered
+                columns={[
+                  {
+                    title: "Mã Dụng Cụ",
+                    dataIndex: "maDungCu",
+                    key: "maDungCu",
+                    align: "center",
+                  },
+                  {
+                    title: "Tên Dụng Cụ",
+                    dataIndex: "tenDungCu",
+                    key: "tenDungCu",
+                    align: "center",
+                  },
+                  {
+                    title: "Số Lượng",
+                    dataIndex: "soLuong",
+                    key: "soLuong",
+                    align: "center",
+                  },
+                  {
+                    title: "Ngày Đăng Ký",
+                    dataIndex: "ngayDangKi",
+                    key: "ngayDangKi",
+                    align: "center",
+                    render: (date) =>
+                      date
+                        ? `${new Date(date).toLocaleDateString()}`
+                        : "Chưa có",
+                  },
+                  {
+                    title: "Ngày Kết Thúc",
+                    dataIndex: "ngayKetThuc",
+                    key: "ngayKetThuc",
+                    align: "center",
+                    render: (date) =>
+                      date
+                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
+                        : "Chưa có",
+                  },
+                ]}
+              />
+            </>
+          ) : (
+            <Alert
+              message="Không có dụng cụ đăng ký"
+              type="info"
+              showIcon
+              className="alert-box"
             />
-          </>
-        ) : (
-          <Alert
-            message="Không có dụng cụ đăng ký"
-            type="info"
-            showIcon
-            style={{ marginTop: '20px' }}
-          />
-        )}
+          )}
+
 
         <div className="action-buttons">
-          <Button type="primary" size="large" onClick={handleAccept}>
+          <Button type="primary" size="large" onClick={handleAccept} className='btn-accept'>
             Chấp nhận
           </Button>
-          <Button size="large" onClick={showRejectModal}>
+          <Button size="large" onClick={showRejectModal} className='btn-reject'>
             Từ chối
           </Button>
           <Button type="default" size="large" onClick={handleBack}>

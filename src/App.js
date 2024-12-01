@@ -16,6 +16,7 @@ import PhieuDangKySuDung from './features/DangkySuDung/PhieuDangKySuDung';
 import ChiTietPhieuDangKi from './features/DangkySuDung/ChiTietDK';
 import ApprovalRegisteredDetails from './features/DangkySuDung/ChiTietDuyetPhieuDK';
 import DuyetPhieuDKTable from './features/DangkySuDung/PheDuyetPhieuDangKy';
+import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung';
 
 const App = () => {
   return (
@@ -66,6 +67,9 @@ const App = () => {
 
           <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
             <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
+
+          <Route path="/thoi-gian-su-dung" element={
+                      <DefaultLayout> <ThoiGianSuDung /> </DefaultLayout>}/> 
            <Route path="*" element={<Navigate to="/login" replace />} />
       
       </Routes>
