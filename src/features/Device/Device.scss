@@ -44,7 +44,6 @@
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           transform: translateY(-3px);
         }
-  
         // Container hình ảnh
         .device-image {
           width: 100%;
@@ -70,4 +69,20 @@
         }
       }
     }
+  }
+
+  .device-card {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .device-card.bg-red-200 {
+    background-color: #fee2e2; /* Màu đỏ nhạt */
+  }
+  
+  .device-card.bg-yellow-200 {
+    background-color: #fef3c7; /* Màu vàng nhạt */
+  }
+  
+  .device-card:hover {
+    transform: scale(1.05); /* Phóng to khi hover */
   }
