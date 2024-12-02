@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Button, message, Form } from 'antd';
+import moment from 'moment';
+import { Card, List, Typography, Button, message, Alert, Spin, Table } from 'antd';
 import { getPhieuDetails } from '../../api/phieuDangKi';
 import { useLocation } from 'react-router-dom';
-
+import './ApprovalRegisteredDetails.scss';
+import { getDeviceById } from '../../api/deviceApi';
+import { getToolById } from '../../api/toolApi';
 const { Title, Text } = Typography;
 
 const ChiTietPhieuDangKi = () => {
@@ -11,6 +14,7 @@ const ChiTietPhieuDangKi = () => {
   const [registerdDetails, setRegisteredDetails] = useState(null);
   const [deviceDetail, setDeviceDetails] = useState([]);
   const [toolDetails, setToolDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,87 +23,215 @@ const ChiTietPhieuDangKi = () => {
     const fetchDetails = async () => {
       try {
         const { registeredDetails, deviceDetails, toolDetails } = await getPhieuDetails(maPhieuDK);
+  
+        setRegisteredDetails(registeredDetails || {});
+  
+        // Định dạng ngày cho deviceDetails
+        const formattedDeviceDetails = (deviceDetails || []).map((device) => ({
+          ...device,
+          ngayDangKi: formatDate(device.ngayDangKi),
+          ngayKetThuc: formatDate(device.ngayKetThuc),
+        }));
+        const deviceDetailsWithNames = await Promise.all(
+          formattedDeviceDetails.map(async (device) => {
+            try {
+              const deviceInfo = await getDeviceById(device.maThietBi);
+              return { ...device, tenThietBi: deviceInfo.tenThietBi };
+            } catch (error) {
+              console.error(`Lỗi khi lấy thông tin thiết bị: ${device.maThietBi}`, error);
+              return { ...device, tenThietBi: 'Không tìm thấy tên thiết bị' };
+            }
+          })
+        );
+  
+        // Định dạng ngày cho toolDetails
+        const formattedToolDetails = (toolDetails || []).map((tool) => ({
+          ...tool,
+          ngayDangKi: formatDate(tool.ngayDangKi),
+          ngayKetThuc: formatDate(tool.ngayKetThuc),
+        }));
 
-        setRegisteredDetails(registeredDetails);
-        setDeviceDetails(deviceDetails);
-        setToolDetails(toolDetails);
+        const toolDetailsWithNames = await Promise.all(
+          formattedToolDetails.map(async (tool) => {
+            try {
+              const toolInfo = await getToolById(tool.maDungCu);
+              return { ...tool, tenDungCu: toolInfo.tenDungCu };
+            } catch (error) {
+              console.error(`Lỗi khi lấy thông tin dụng cụ: ${tool.maDungCu}`, error);
+              return { ...tool, tenDungCu: 'Không tìm thấy tên dụng cụ' };
+            }
+          })
+        );
 
-        // Áp dụng logic của `displayPhieuDetails`
-        if (!deviceDetails && !toolDetails) {
-          console.log('Không có thiết bị hoặc dụng cụ đăng ký.');
-        } else if (deviceDetails && !toolDetails) {
-          console.log('Có thiết bị nhưng không có dụng cụ.', deviceDetails);
-        } else if (!deviceDetails && toolDetails) {
-          console.log('Có dụng cụ nhưng không có thiết bị.', toolDetails);
-        } else {
-          console.log('Có cả thiết bị và dụng cụ.', deviceDetails, toolDetails);
-        }
+        setDeviceDetails(deviceDetailsWithNames);
+        setToolDetails(toolDetailsWithNames);
       } catch (error) {
         message.error('Không thể tải dữ liệu phiếu đăng kí.');
+      } finally {
+        setLoading(false);
       }
     };
-
+  
     if (maPhieuDK) {
       fetchDetails();
-    } else {
-      message.error('Không tìm thấy phiếu đăng kí.');
     }
-  }, [maPhieuDK, { state: { refresh: true }}]);
+  }, [maPhieuDK, location.state?.refresh]);
+  
 
   
 
   const handleBack = () => {
     navigate(-1);
   };
-
-  if (!registerdDetails) {
-    return <div>Loading...</div>; // Loading state
+  const formatDate = (date) => {
+    if (!date) return ""; // Xử lý trường hợp không có giá trị ngày
+    // Kiểm tra xem ngày đã được format sẵn chưa
+    if (moment(date, "DD-MM-YYYY HH:mm:ss", true).isValid()) {
+      return date; // Trả về nguyên format ban đầu nếu đã đúng
+    }
+    // Nếu chưa đúng format, mới sử dụng moment để format lại
+    return moment(date).format("DD-MM-YYYY HH:mm:ss");
+  };
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <Spin size="large" />
+        <div>Đang tải dữ liệu...</div>
+      </div>
+    );
   }
 
   return (
     <div className="chitiet-register-container">
       <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
-        <Title level={2}>Thông Tin Phiếu Đăng Kí</Title>
-        <Text strong>Mã phiếu:</Text> <Text>{registerdDetails.maPhieu}</Text><br />
-        <Text strong>Mã nhân viên:</Text> <Text>{registerdDetails.maNV}</Text><br />
-        <Text strong>Lý do đăng kí:</Text> <Text>{registerdDetails.lyDoDK}</Text><br />
-        <Text strong>Ghi chú:</Text> <Text>{registerdDetails.ghiChu}</Text><br />
-        <Text strong>Ngày lập:</Text> <Text>{registerdDetails.ngayLap}</Text><br />
-        <Text strong>Trạng thái:</Text> <Text>{registerdDetails.trangThai}</Text><br />
-        <Text strong>Ngày hoàn tất:</Text> <Text>{registerdDetails.ngayHoanTat ? new Date(registerdDetails.NgayHoanTat).toLocaleDateString() : 'Chưa có'}</Text><br />
+      <Title level={2}>Thông Tin Phiếu Đăng Ký</Title>
+        <div className="info-table-container">
+  <table className="info-table">
+    <tbody>
+      <tr>
+        <th>Mã phiếu</th>
+        <td>{registerdDetails.maPhieuDK}</td>
+      </tr>
+      <tr>
+        <th>Mã nhân viên đề xuất</th>
+        <td>{registerdDetails.maNV}</td>
+      </tr>
+      <tr>
+        <th>Lý do đăng ký</th>
+        <td>{registerdDetails.lyDoDK}</td>
+      </tr>
+      <tr>
+        <th>Ghi chú</th>
+        <td>{registerdDetails.ghiChu}</td>
+      </tr>
+      <tr>
+        <th>Ngày lập</th>
+        <td>{registerdDetails.ngayLap}</td>
+      </tr>
+      <tr>
+        <th>Trạng thái</th>
+        <td>{registerdDetails.trangThai}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        <Title level={3} style={{ marginTop: '20px' }}>Danh Sách Thiết Bị Đăng Kí</Title>
-            {deviceDetail.length > 0 ? (
-            <List
-                bordered
-                dataSource={deviceDetail}
-                renderItem={(item) => (
-                <List.Item>
-                    <Text strong>Mã thiết bị:</Text> <Text>{item.maThietBi}</Text><br />
-                    <Text strong>Ngày Đăng Kí:</Text> <Text>{item.ngayDangKi}</Text>
-                </List.Item>
-                )}
-            />
-            ) : (
-            <Text italic>Không đăng kí sử dụng</Text>
-        )}
         
-        <Title level={3} style={{ marginTop: '20px' }}>Danh Sách Dụng Cụ Đăng Kí</Title>
-        {toolDetails.length > 0 ? (
-        <List
-            bordered
-            dataSource={toolDetails}
-            renderItem={(item) => (
-            <List.Item>
-                <Text strong>Mã dụng cụ:</Text> <Text>{item.maDungCu}</Text><br />
-                <Text strong>Số lượng:</Text> <Text>{item.soLuong}</Text><br />
-                <Text strong>Ngày Đăng Kí:</Text> <Text>{item.ngayDangKi}</Text>
-            </List.Item>
-            )}
-        />
-        ) : (
-        <Text italic>Không đăng kí sử dụng</Text>
-        )}
+{deviceDetail.length > 0 ? (
+  <>
+    <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+    <Table
+  className="custom-table"
+  dataSource={deviceDetail}
+  rowKey="maThietBi"
+  bordered
+  columns={[
+    {
+      title: "Mã Thiết Bị",
+      dataIndex: "maThietBi",
+      key: "maThietBi",
+      align: "center",
+    },
+    {
+      title: "Tên Thiết Bị",
+      dataIndex: "tenThietBi",
+      key: "tenThietBi",
+      align: "center",
+    },
+    {
+      title: "Ngày Đăng Ký",
+      dataIndex: "ngayDangKi",
+      key: "ngayDangKi",
+      align: "center",
+    },
+    {
+      title: "Ngày Kết Thúc",
+      dataIndex: "ngayKetThuc",
+      key: "ngayKetThuc",
+      align: "center",
+    },
+  ]}
+/>
+  </>
+) : (
+  <Alert
+    message="Không có thiết bị đăng ký"
+    type="info"
+    showIcon
+    className="alert-box"
+  />
+)}
+
+{toolDetails.length > 0 ? (
+  <>
+    <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+    <Table
+  className="custom-table"
+  dataSource={toolDetails}
+  rowKey="maDungCu"
+  bordered
+  columns={[
+    {
+      title: "Mã Dụng Cụ",
+      dataIndex: "maDungCu",
+      key: "maDungCu",
+      align: "center",
+    },
+    {
+      title: "Tên Dụng Cụ",
+      dataIndex: "tenDungCu",
+      key: "tenDungCu",
+      align: "center",
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "soLuong",
+      key: "soLuong",
+      align: "center",
+    },
+    {
+      title: "Ngày Đăng Ký",
+      dataIndex: "ngayDangKi",
+      key: "ngayDangKi",
+      align: "center",
+    },
+    {
+      title: "Ngày Kết Thúc",
+      dataIndex: "ngayKetThuc",
+      key: "ngayKetThuc",
+      align: "center",
+    },
+  ]}
+/>
+  </>
+) : (
+  <Alert
+    message="Không có dụng cụ đăng ký"
+    type="info"
+    showIcon
+    className="alert-box"
+  />
+)}
 
         <Button type="primary" style={{ marginTop: '20px' }} onClick={handleBack}>Quay lại</Button>
       </Card>

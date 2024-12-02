@@ -1,25 +1,20 @@
 const BASE_URL = 'https://localhost:7019/api/PhieuDangKi';
 
 // Phương thức tạo phiếu đăng ký
-export const createPhieuDangKi = async (data) => {
+export const createPhieuDangKi = async (payload) => {
     const apiUrl = 'https://localhost:7019/api/PhieuDangKi';
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-  
       if (!response.ok) {
-        throw new Error('Lỗi khi tạo Phiếu Đăng Kí');
+        throw new Error('Lỗi server: ' + response.statusText);
       }
-  
-      const result = await response.json();
-      return result; // Trả về dữ liệu sau khi tạo
+      return await response.json();
     } catch (error) {
-      console.error('Error creating PhieuDangKi:', error.message);
+      console.error('Lỗi khi tạo Phiếu Đăng Ký:', error);
       throw error;
     }
   };
