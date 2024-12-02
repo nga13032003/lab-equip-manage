@@ -87,6 +87,7 @@ const App = () => {
             <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
+           <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
       </Routes>
     </Router>
   );

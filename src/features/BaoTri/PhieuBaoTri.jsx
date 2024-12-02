@@ -4,7 +4,7 @@ import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from
 import { createChiTietPhieuBaoDuong } from '../../api/ChiTietPhieuBaoDuong';
 import { createPhieuBaoDuong, getPhieuBaoDuong } from '../../api/PhieuBaoDuongAPI';
 import { useNavigate } from 'react-router-dom';
-
+import './PhieuBaoTri.scss';
 const Maintenance = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
   const [toolList, setToolList] = useState([]);
@@ -119,7 +119,8 @@ const Maintenance = () => {
   };
 
   return (
-    <div className="maintenance-container">
+    <>
+         <div className="maintenance-container">
       <h1 className="maintenance-title">LẬP PHIẾU BẢO DƯỠNG</h1>
 
       <Checkbox
@@ -201,6 +202,8 @@ const Maintenance = () => {
         </Form.Item>
       </Form>
     </div>
+    </>
+   
   );
 };
 

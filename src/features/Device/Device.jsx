@@ -98,9 +98,9 @@ const Device = () => {
                   className="device-image w-full aspect-square object-cover rounded-lg mb-3"
                 />
                 <h3 className="text-lg font-medium text-gray-800">{device.tenThietBi}</h3>
-                <p className="text-sm text-gray-600">
+                {/* <p className="text-sm text-gray-600">
                   Loại: {device.loaiThietBi?.tenLoaiThietBi || 'Không rõ'}
-                </p>
+                </p> */}
                 <p className="text-sm text-gray-600">Xuất xứ: {device.xuatXu}</p>
                 <p className="text-sm text-gray-600">
                   Tình trạng: {device.tinhTrang}
