@@ -74,6 +74,9 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
           <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
           <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
+          <Menu.Item key="11" icon={<ToolOutlined />}>
+          <Link to='/luan-chuyen'>Bảo trì định kỳ</Link>
+          </Menu.Item>
           </SubMenu>
         </>
       );
@@ -92,6 +95,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="10" icon={<ToolOutlined />}>
           <Link to='/bao-tri-dinh-ky'>Lịch sử bảo trì thiết bị</Link>
           </Menu.Item>
+          
           <Menu.Item key="11" icon={<ClockCircleOutlined />}>
           <Link to='/de-xuat-thanh-ly'> Lịch sử đề xuất thanh lý</Link>
           </Menu.Item>

@@ -10,9 +10,20 @@ export const createPhieuDangKi = async (payload) => {
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
-        throw new Error('Lỗi server: ' + response.statusText);
+        const contentType = response.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await response.json();
+        console.error("Lỗi server:", errorData);
+        throw new Error(`Lỗi server: ${errorData.message}`);
+      } else {
+        const text = await response.text();
+        console.error("Lỗi server (không phải JSON):", text);
+        throw new Error(`Lỗi server: ${text}`);
       }
-      return await response.json();
+    }
+
+    const result = await response.json();
     } catch (error) {
       console.error('Lỗi khi tạo Phiếu Đăng Ký:', error);
       throw error;

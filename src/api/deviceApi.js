@@ -21,7 +21,7 @@ export const fetchDevicesByType = async (maLoaiThietBi) => {
     }
   };
   
-// const API_URL = 'https://localhost:7019/api/ThietBi';
+const API_URL = 'https://localhost:7019/api/ThietBi';
 // deviceApi.js
 
 
@@ -38,15 +38,26 @@ export const fetchDevicesByType = async (maLoaiThietBi) => {
 //         }
 //     },
 
-//     async getDeviceById(id) {
-//         try {
-//             const response = await axios.get(`${API_URL}/${id}`);
-//             return response.data;
-//         } catch (error) {
-//             console.error(`Error fetching device with id ${id}:`, error);
-//             throw error;
-//         }
-//     },
+export const getDeviceById = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Lỗi khi lấy dụng cụ với ID: ${id}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error fetching tool with id ${id}:`, error);
+    throw error;
+  }
+};
 
 //     async createDevice(device) {
 //         try {
