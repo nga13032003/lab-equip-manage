@@ -164,6 +164,10 @@ const ApprovalRegisteredDetails = () => {
                 <td>{proposalDetails.maNV}</td>
               </tr>
               <tr>
+              <th>Mã phòng thí nghiệm</th>
+              <td>{proposalDetails.maPhong}</td>
+            </tr>
+              <tr>
                 <th>Lý do đăng ký</th>
                 <td>{proposalDetails.lyDoDK}</td>
               </tr>

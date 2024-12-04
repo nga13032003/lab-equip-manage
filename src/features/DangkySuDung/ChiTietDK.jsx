@@ -1,64 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import moment from 'moment';
-import { Card, List, Typography, Button, message, Alert, Spin, Table } from 'antd';
+import { Card, List, Typography, Button, message, Alert, Spin, Table, Row, Col } from 'antd';
 import { getPhieuDetails } from '../../api/phieuDangKi';
-import { useLocation } from 'react-router-dom';
-import './ApprovalRegisteredDetails.scss';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
-const { Title, Text } = Typography;
+import { getPhongThiNghiemById } from '../../api/labApi';
+import { getNhanVienById } from '../../api/staff';
+import './ApprovalRegisteredDetails.scss';
+
+const { Title } = Typography;
 
 const ChiTietPhieuDangKi = () => {
-  const { maPhieuDK} = useParams();
+  const { maPhieuDK } = useParams();
   const [registerdDetails, setRegisteredDetails] = useState(null);
   const [deviceDetail, setDeviceDetails] = useState([]);
   const [toolDetails, setToolDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [nhanVienDetails, setNhanVienDetails] = useState(null);
+  const [phongThiNghiemDetails, setPhongThiNghiemDetails] = useState(null);
 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const { registeredDetails, deviceDetails, toolDetails } = await getPhieuDetails(maPhieuDK);
-  
         setRegisteredDetails(registeredDetails || {});
-  
-        // Định dạng ngày cho deviceDetails
-        const formattedDeviceDetails = (deviceDetails || []).map((device) => ({
-          ...device,
-          ngayDangKi: formatDate(device.ngayDangKi),
-          ngayKetThuc: formatDate(device.ngayKetThuc),
-        }));
+
+        // Fetch laboratory details
+        const phongThiNghiem = await getPhongThiNghiemById(registeredDetails.maPhong);
+        setPhongThiNghiemDetails({
+          maPhong: phongThiNghiem.maPhong,
+          loaiPhong: phongThiNghiem.loaiPhong,
+        });
+
+        // Fetch staff member details based on employee ID
+        const employee = await getNhanVienById(registeredDetails.maNV);
+        setNhanVienDetails({
+          tenNV: employee.tenNV,
+          soDT: employee.soDT,
+        });
+
+        // Device details
         const deviceDetailsWithNames = await Promise.all(
-          formattedDeviceDetails.map(async (device) => {
+          deviceDetails.map(async (device) => {
             try {
               const deviceInfo = await getDeviceById(device.maThietBi);
               return { ...device, tenThietBi: deviceInfo.tenThietBi };
             } catch (error) {
-              console.error(`Lỗi khi lấy thông tin thiết bị: ${device.maThietBi}`, error);
-              return { ...device, tenThietBi: 'Không tìm thấy tên thiết bị' };
+              console.error(`Error fetching device: ${device.maThietBi}`, error);
+              return { ...device, tenThietBi: 'Device not found' };
             }
           })
         );
-  
-        // Định dạng ngày cho toolDetails
-        const formattedToolDetails = (toolDetails || []).map((tool) => ({
-          ...tool,
-          ngayDangKi: formatDate(tool.ngayDangKi),
-          ngayKetThuc: formatDate(tool.ngayKetThuc),
-        }));
 
+        // Tool details
         const toolDetailsWithNames = await Promise.all(
-          formattedToolDetails.map(async (tool) => {
+          toolDetails.map(async (tool) => {
             try {
               const toolInfo = await getToolById(tool.maDungCu);
               return { ...tool, tenDungCu: toolInfo.tenDungCu };
             } catch (error) {
-              console.error(`Lỗi khi lấy thông tin dụng cụ: ${tool.maDungCu}`, error);
-              return { ...tool, tenDungCu: 'Không tìm thấy tên dụng cụ' };
+              console.error(`Error fetching tool: ${tool.maDungCu}`, error);
+              return { ...tool, tenDungCu: 'Tool not found' };
             }
           })
         );
@@ -66,37 +70,26 @@ const ChiTietPhieuDangKi = () => {
         setDeviceDetails(deviceDetailsWithNames);
         setToolDetails(toolDetailsWithNames);
       } catch (error) {
-        message.error('Không thể tải dữ liệu phiếu đăng kí.');
+        message.error('Failed to load registration details.');
       } finally {
         setLoading(false);
       }
     };
-  
+
     if (maPhieuDK) {
       fetchDetails();
     }
-  }, [maPhieuDK, location.state?.refresh]);
-  
-
-  
+  }, [maPhieuDK]);
 
   const handleBack = () => {
     navigate(-1);
   };
-  const formatDate = (date) => {
-    if (!date) return ""; // Xử lý trường hợp không có giá trị ngày
-    // Kiểm tra xem ngày đã được format sẵn chưa
-    if (moment(date, "DD-MM-YYYY HH:mm:ss", true).isValid()) {
-      return date; // Trả về nguyên format ban đầu nếu đã đúng
-    }
-    // Nếu chưa đúng format, mới sử dụng moment để format lại
-    return moment(date).format("DD-MM-YYYY HH:mm:ss");
-  };
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <Spin size="large" />
-        <div>Đang tải dữ liệu...</div>
+        <div>Loading data...</div>
       </div>
     );
   }
@@ -104,136 +97,124 @@ const ChiTietPhieuDangKi = () => {
   return (
     <div className="chitiet-register-container">
       <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
-      <Title level={2}>Thông Tin Phiếu Đăng Ký</Title>
-        <div className="info-table-container">
-  <table className="info-table">
-    <tbody>
-      <tr>
-        <th>Mã phiếu</th>
-        <td>{registerdDetails.maPhieuDK}</td>
-      </tr>
-      <tr>
-        <th>Mã nhân viên đề xuất</th>
-        <td>{registerdDetails.maNV}</td>
-      </tr>
-      <tr>
-        <th>Lý do đăng ký</th>
-        <td>{registerdDetails.lyDoDK}</td>
-      </tr>
-      <tr>
-        <th>Ghi chú</th>
-        <td>{registerdDetails.ghiChu}</td>
-      </tr>
-      <tr>
-        <th>Ngày lập</th>
-        <td>{registerdDetails.ngayLap}</td>
-      </tr>
-      <tr>
-        <th>Trạng thái</th>
-        <td>{registerdDetails.trangThai}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <Title level={2}>THÔNG TIN PHIẾU ĐĂNG KÝ</Title>
 
+        <div className="info-section">
+          <Title level={3}>Thông Tin Đăng Ký</Title>
+          <table className="info-table">
+            <tbody>
+            <tr>
+                <th>Mã phiếu</th>
+                <td>{registerdDetails.maPhieuDK}</td>
+              </tr>
+              <tr>
+                <th>Lý do đăng ký</th>
+                <td>{registerdDetails.lyDoDK}</td>
+              </tr>
+              <tr>
+                <th>Ghi chú</th>
+                <td>{registerdDetails.ghiChu}</td>
+              </tr>
+              <tr>
+                <th>Ngày lập</th>
+                <td>{registerdDetails.ngayLap}</td>
+              </tr>
+              <tr>
+                <th>Trạng thái</th>
+                <td>{registerdDetails.trangThai}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Information of the Registrant */}
+        <div className="info-section">
+          <Title level={3}>Thông Tin Người Đăng Ký</Title>
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <th>Mã nhân viên đăng ký</th>
+                <td>{registerdDetails.maNV}</td>
+              </tr>
+              <tr>
+                <th>Tên nhân viên</th>
+                <td>{nhanVienDetails?.tenNV}</td>
+              </tr>
+              <tr>
+                <th>Số điện thoại</th>
+                <td>{nhanVienDetails?.soDT}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Laboratory Registration Information */}
+        <div className="info-section">
+          <Title level={3}>Thông Tin Phòng Thí Nghiệm</Title>
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <th>Mã phòng thí nghiệm</th>
+                <td>{registerdDetails.maPhong}</td>
+              </tr>
+              <tr>
+                <th>Loại phòng</th>
+                <td>{phongThiNghiemDetails?.loaiPhong}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         
-{deviceDetail.length > 0 ? (
-  <>
-    <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
-    <Table
-  className="custom-table"
-  dataSource={deviceDetail}
-  rowKey="maThietBi"
-  bordered
-  columns={[
-    {
-      title: "Mã Thiết Bị",
-      dataIndex: "maThietBi",
-      key: "maThietBi",
-      align: "center",
-    },
-    {
-      title: "Tên Thiết Bị",
-      dataIndex: "tenThietBi",
-      key: "tenThietBi",
-      align: "center",
-    },
-    {
-      title: "Ngày Đăng Ký",
-      dataIndex: "ngayDangKi",
-      key: "ngayDangKi",
-      align: "center",
-    },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
-      align: "center",
-    },
-  ]}
-/>
-  </>
-) : (
-  <Alert
-    message="Không có thiết bị đăng ký"
-    type="info"
-    showIcon
-    className="alert-box"
-  />
-)}
+        {/* Device List */}
+        {deviceDetail.length > 0 ? (
+          <>
+            <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+            <Table
+              className="custom-table"
+              dataSource={deviceDetail}
+              rowKey="maThietBi"
+              bordered
+              columns={[
+                { title: "Mã Thiết Bị", dataIndex: "maThietBi", key: "maThietBi", align: "center" },
+                { title: "Tên Thiết Bị", dataIndex: "tenThietBi", key: "tenThietBi", align: "center" },
+                { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
+              ]}
+            />
+          </>
+        ) : (
+          <Alert message="Không có thiết bị đăng ký" type="info" showIcon className="alert-box" />
+        )}
 
-{toolDetails.length > 0 ? (
-  <>
-    <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
-    <Table
-  className="custom-table"
-  dataSource={toolDetails}
-  rowKey="maDungCu"
-  bordered
-  columns={[
-    {
-      title: "Mã Dụng Cụ",
-      dataIndex: "maDungCu",
-      key: "maDungCu",
-      align: "center",
-    },
-    {
-      title: "Tên Dụng Cụ",
-      dataIndex: "tenDungCu",
-      key: "tenDungCu",
-      align: "center",
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "soLuong",
-      key: "soLuong",
-      align: "center",
-    },
-    {
-      title: "Ngày Đăng Ký",
-      dataIndex: "ngayDangKi",
-      key: "ngayDangKi",
-      align: "center",
-    },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
-      align: "center",
-    },
-  ]}
-/>
-  </>
-) : (
-  <Alert
-    message="Không có dụng cụ đăng ký"
-    type="info"
-    showIcon
-    className="alert-box"
-  />
-)}
+        {/* Tool List */}
+        {toolDetails.length > 0 ? (
+          <>
+            <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+            <Table
+              className="custom-table"
+              dataSource={toolDetails}
+              rowKey="maDungCu"
+              bordered
+              columns={[
+                { title: "Mã Dụng Cụ", dataIndex: "maDungCu", key: "maDungCu", align: "center" },
+                { title: "Tên Dụng Cụ", dataIndex: "tenDungCu", key: "tenDungCu", align: "center" },
+                { title: "Số Lượng", dataIndex: "soLuong", key: "soLuong", align: "center" },
+                { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
+              ]}
+            />
+          </>
+        ) : (
+          <Alert message="Không có dụng cụ đăng ký" type="info" showIcon className="alert-box" />
+        )}
 
-        <Button type="primary" style={{ marginTop: '20px' }} onClick={handleBack}>Quay lại</Button>
+        <Row gutter={[16, 16]}>
+          <Col span={24} sm={12} md={8} lg={6}>
+            <Button type="primary" onClick={handleBack} block>
+              Trở về
+            </Button>
+          </Col>
+        </Row>
       </Card>
     </div>
   );

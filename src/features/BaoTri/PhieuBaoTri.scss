@@ -1,0 +1,122 @@
+.maintenance-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  
+    .maintenance-title {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+  
+    .ant-checkbox-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+  
+      .ant-checkbox + span {
+        font-size: 0.9rem;
+        color: #555;
+      }
+    }
+  
+    .maintenance-form {
+      .ant-form-item {
+        margin-bottom: 1.2rem;
+  
+        label {
+          font-weight: 500;
+          font-size: 1rem;
+        }
+  
+        .ant-input,
+        .ant-input-number {
+          border-radius: 6px;
+          padding: 0.5rem;
+        }
+  
+        .ant-input:focus,
+        .ant-input-number:focus {
+          box-shadow: 0 0 6px rgba(24, 144, 255, 0.2);
+          border-color: #1890ff;
+        }
+  
+        .ant-form-item-explain {
+          color: #ff4d4f;
+        }
+      }
+  
+      .ant-form-item-label > label {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #333;
+      }
+  
+      .ant-btn {
+        border-radius: 6px;
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+  
+        &-primary {
+          background-color: #1890ff;
+          border-color: #1890ff;
+          &:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+          }
+        }
+  
+        &-dashed {
+          color: #555;
+          &:hover {
+            color: #1890ff;
+          }
+        }
+      }
+  
+      .tool-list {
+        margin-top: 1.5rem;
+  
+        h2 {
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: #333;
+          margin-bottom: 1rem;
+        }
+  
+        .ant-list-item {
+          background: #fff;
+          border: 1px solid #d9d9d9;
+          border-radius: 6px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+  
+          &:hover {
+            border-color: #1890ff;
+          }
+  
+          .ant-input,
+          .ant-input-number {
+            margin-top: 0.5rem;
+          }
+  
+          .ant-form-item {
+            margin-bottom: 0.5rem;
+          }
+        }
+      }
+  
+      .submit-section {
+        text-align: right;
+        .ant-btn {
+          margin-top: 1rem;
+        }
+      }
+    }
+  }
+  

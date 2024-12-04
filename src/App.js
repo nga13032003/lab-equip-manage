@@ -22,10 +22,11 @@ import ChiTietPhieuDangKi from './features/DangkySuDung/ChiTietDK';
 import ApprovalRegisteredDetails from './features/DangkySuDung/ChiTietDuyetPhieuDK';
 import DuyetPhieuDKTable from './features/DangkySuDung/PheDuyetPhieuDangKy';
 import PhieuThanhLy from './features/ThanhLy/PhieuThanhLy';
-import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung';
 import ChiTietPhieuThanhLy from './features/ThanhLy/ChiTietPhieuThanhLy';
 import DuyetPhieuThanhLyTable from './features/ThanhLy/PheDuyetPhieuThanhLy';
 import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
+import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung'
+
 const App = () => {
   return (
     <Router>
@@ -90,6 +91,7 @@ const App = () => {
             <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
+           <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
       </Routes>
     </Router>
   );

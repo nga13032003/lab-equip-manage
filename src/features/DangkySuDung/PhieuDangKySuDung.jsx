@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select } from 'antd';
 import { createPhieuDangKi, getExistingPhieuDangKi } from '../../api/phieuDangKi';
@@ -11,6 +11,7 @@ import { fetchDeviceTypes } from '../../api/deviceTypeApi';
 import { fetchDevicesByType } from '../../api/deviceApi';
 import { fetchToolTypes } from '../../api/toolTypeApi';
 import { fetchToolsByType } from '../../api/toolApi';
+import { getAllPhongThiNghiem } from '../../api/labApi';
 
 const PhieuDangKySuDung = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -24,6 +25,8 @@ const PhieuDangKySuDung = () => {
   const [toolTypes, setToolTypes] = useState([]); // Danh sách loại thiết bị
   const [selectedToolType, setSelectedToolType] = useState(''); // Mã loại thiết bị được chọn
   const [filteredTools, setFilteredTools] = useState([]); // Danh sách thiết bị theo loại
+  const [phongThiNghiemList, setPhongThiNghiemList] = useState([]);
+  const [selectedPhong, setSelectedPhong] = useState(null);  
   const [maphieudk, setMaphieudk] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -60,6 +63,18 @@ const PhieuDangKySuDung = () => {
       }
     };
     fetchToolTypesData();
+  }, []);
+
+  useEffect(() => {
+    const fetchPhongThiNghiemList = async () => {
+      try {
+        const data = await getAllPhongThiNghiem();
+        setPhongThiNghiemList(data || []); // Lưu danh sách phòng thí nghiệm vào state
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách phòng thí nghiệm');
+      }
+    };
+    fetchPhongThiNghiemList();
   }, []);
 
   const handleDeviceTypeChange = async (maLoaiThietBi) => {
@@ -119,7 +134,8 @@ useEffect(() => {
   }, [maphieudk, form]);
 
   const handleAddDevice = useCallback(() => {
-    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: moment().toISOString(), NgayKetThuc: null  }]);
+    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: dayjs().format('YYYY-MM-DDTHH:mm:ss')
+      , NgayKetThuc: null  }]);
   }, []);
 
   const handleDeviceChange = useCallback((index, field, value) => {
@@ -149,7 +165,8 @@ useEffect(() => {
   const handleAddTool = useCallback(() => {
     setToolList((prevList) => [
       ...prevList,
-      { MaDungCu: '', SoLuong: 1, NgayDangKi: moment().toISOString(), NgayKetThuc: null  }
+      { MaDungCu: '', SoLuong: 1, NgayDangKi: dayjs().format('YYYY-MM-DDTHH:mm:ss')
+        , NgayKetThuc: null  }
     ]);
   }, []);
 
@@ -183,9 +200,10 @@ useEffect(() => {
       const payload = {
         maphieudk: maphieudk,
         maNV: employeeCode,
+        maPhong: selectedPhong, 
         lyDoDK: values.LyDoDK,
         ghiChu: values.GhiChu,
-        ngayLap: new Date().toISOString(),
+        ngayLap: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         trangThai: 'Chưa phê duyệt',
         ngayHoanTat: null, 
       };
@@ -199,9 +217,10 @@ useEffect(() => {
             maphieudk: maphieudk,
             MaThietBi: device.MaThietBi,
             tenThietBi: device.tenThietBi,
-            NgayDangKi: new Date().toISOString(),
-            ngayKetThuc: device.ngayKetThuc ? moment(device.ngayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
-            
+            NgayDangKi: dayjs(device.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            ngayKetThuc: device.ngayKetThuc 
+            ? dayjs(device.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
+            : null,
         };
         return createChiTietDangKiThietBi(newChitietThietBi);
         });
@@ -212,8 +231,10 @@ useEffect(() => {
             MaDungCu: tool.MaDungCu,
             tenDungCu: tool.tenDungCu,
             SoLuong: tool.SoLuong,
-            NgayDangKi: new Date().toISOString(),
-            NgayKetThuc: tool.NgayKetThuc ? moment(tool.NgayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
+            NgayDangKi: dayjs(tool.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            NgayKetThuc: tool.NgayKetThuc 
+            ? dayjs(tool.NgayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
+            : null,
         };
 
         console.log('Device Details:', newChiTiet);
@@ -227,6 +248,7 @@ useEffect(() => {
       form.resetFields();
       setDeviceList([]);
       setToolList([]);
+      setSelectedPhong(null);
       fetchAndGenerateUniqueMaPhieu();
       navigate(`/chi-tiet-phieu-dang-ky/${maphieudk}`);
     } catch (error) {
@@ -268,6 +290,23 @@ useEffect(() => {
         >
           <Input value={employeeName} disabled /> {/* Disabled input for MaNV */}
         </Form.Item>
+        <Form.Item
+          label="Phòng thí nghiệm"
+          name="MaPhong"
+          rules={[{ required: true, message: 'Vui lòng chọn phòng thí nghiệm' }]}
+        >
+          <Select
+            placeholder="Chọn phòng thí nghiệm"
+            onChange={(value) => setSelectedPhong(value)} // Cập nhật mã phòng được chọn
+          >
+            {phongThiNghiemList.map((phong) => (
+              <Select.Option key={phong.maPhong} value={phong.maPhong}>
+                {phong.loaiPhong}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
 
         <Form.Item label="Ghi chú" name="GhiChu">
           <Input.TextArea rows={3} />
@@ -309,25 +348,19 @@ useEffect(() => {
                   </Select>
 
                 <Form.Item label="Ngày đăng ký">
-                  <Input
-                    value={moment().format('DD-MM-YYYY HH:mm:ss')}
-                    disabled
-                  />
+                  <Input value={dayjs().format('YYYY-MM-DD HH:mm:ss')} disabled />
                 </Form.Item>
                 <Form.Item
                    label="Ngày kết thúc"
                    name={`ngayKetThuc-${index}`}
                    rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                  >
-                   <DatePicker
-                    format="YYYY-MM-DD HH:mm:ss"
-                    showTime
-                    disabledDate={(current) => current && current < moment().startOf('day')}
-                    onChange={(date) => {
-                      if (date) {
-                        handleDeviceChange(index, 'ngayKetThuc', date.toISOString());
-                      }
-                    }}
+                  <DatePicker
+                  showTime
+                  format="YYYY-MM-DDTHH:mm:ss"
+                  onChange={(value) =>
+                    handleDeviceChange(index, 'ngayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                  }
                   />
                 </Form.Item>
                 </Form.Item>
@@ -389,27 +422,19 @@ useEffect(() => {
                 </Form.Item>
                 <Form.Item
                 label="Ngày đăng ký"
-                
                 >
-                    <Input
-                  value={moment().format('DD-MM-YYYY HH:mm:ss')}
-                  disabled
-                />
-                
+                  <Input value={dayjs().format('YYYY-MM-DD HH:mm:ss')} disabled />
                 <Form.Item
                   label="Ngày kết thúc"
                   name={`NgayKetThuc-${index}`}
                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                 >
                   <DatePicker
-                    format="YYYY-MM-DD HH:mm:ss"
-                    showTime
-                    disabledDate={(current) => current && current < moment().startOf('day')}
-                    onChange={(date) => {
-                      if (date) {
-                        handleToolChange(index, 'NgayKetThuc', date.toISOString());
-                      }
-                    }}
+                  showTime
+                  format="YYYY-MM-DDTHH:mm:ss"
+                  onChange={(value) =>
+                    handleToolChange(index, 'NgayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                  }
                   />
                 </Form.Item>
 

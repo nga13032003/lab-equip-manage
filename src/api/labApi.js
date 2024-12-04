@@ -53,5 +53,26 @@ export const getAllPhongThiNghiem = async () => {
       return null;
     }
   }
+  const API_URL = 'https://localhost:7019/api/PhongThiNghiem';
+  export const getPhongThiNghiemById = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Lỗi khi lấy dụng cụ với ID: ${id}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching tool with id ${id}:`, error);
+      throw error;
+    }
+  };
   
   
