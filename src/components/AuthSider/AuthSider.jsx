@@ -93,7 +93,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Link to='/bao-tri-dinh-ky'>Lịch sử bảo trì thiết bị</Link>
           </Menu.Item>
           <Menu.Item key="11" icon={<ClockCircleOutlined />}>
-          <Link to='/de-xuat-thanh-ly'> Lịch sử đề xuất thanh lý</Link>
+          <Link to='/ds-phieu-thanh-ly'> Lịch sử đề xuất thanh lý</Link>
           </Menu.Item>
           <Menu.Item key="12" icon={<ClockCircleOutlined />}>
           <Link to='/de-xuat-thanh-ly'> Lịch sử đề xuất luân chuyển thiết bị</Link>

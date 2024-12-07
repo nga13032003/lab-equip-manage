@@ -1,0 +1,69 @@
+.dao-tao-container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background: #f9f9f9;
+    padding: 20px;
+  
+    .article-header {
+      text-align: center;
+      margin-bottom: 20px;
+  
+      h1 {
+        font-size: 2rem;
+        color: #1a73e8;
+      }
+  
+      .sub-title {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 10px;
+      }
+    }
+  
+    .article-content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
+      .section {
+        margin-bottom: 20px;
+  
+        h2 {
+          font-size: 1.5rem;
+          color: #1a73e8;
+          margin-bottom: 10px;
+        }
+  
+        p {
+          margin: 10px 0;
+        }
+  
+        .article-image {
+          display: block;
+          max-width: 100%;
+          margin: 15px auto;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+  
+        ul {
+          margin: 10px 0 0 20px;
+          list-style-type: disc;
+  
+          li {
+            margin: 5px 0;
+          }
+        }
+      }
+    }
+  
+    .article-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #555;
+    }
+  }
+  

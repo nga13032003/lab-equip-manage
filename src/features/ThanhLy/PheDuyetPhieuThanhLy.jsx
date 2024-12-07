@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Space, Table, Tag, Button } from 'antd';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import { getPhieuThanhLy } from '../../api/phieuThanhLy'; // Import the function to fetch data
-// import './Approval.scss';
+import { getPhieuThanhLy} from '../../api/phieuThanhLy'; 
+import { createLichSuPhieuThanhLy } from '../../api/lichSuPhieuTL';
+import './PheDuyetPhieuThanhLy.scss';
 
 const { Column } = Table;
 
@@ -37,7 +38,7 @@ const DuyetPhieuThanhLyTable = () => {
         <Column title="Mã Nhân Viên" dataIndex="maNV" key="maNV" />
         <Column title="Ngày Lập Phiếu" dataIndex="ngayLapPhieu" key="ngayLapPhieu" render={(date) => new Date(date).toLocaleDateString('vi-VN')} />
         <Column title="Trạng Thái" dataIndex="trangThai" key="trangThai" render={(status) => {
-          const color = status === 'Chờ duyệt' ? 'geekblue' : status === 'Duyệt' ? 'green' : 'volcano';
+          const color = status === 'Chờ duyệt' ? 'geekblue' : status === 'Đã duyệt' ? 'green' : 'volcano';
           return <Tag color={color}>{status || 'Chưa có trạng thái'}</Tag>;
         }} />
         <Column title="Lý Do Chung" dataIndex="lyDoChung" key="lyDoChung" />
@@ -61,8 +62,9 @@ const DuyetPhieuThanhLyTable = () => {
           key="action"
           render={(text, record) => (
             <Space size="middle">
-            <Button>  <Link to={`/duyet-phieu-thanh-ly/${record.maPhieuTL}`} className="action-link accept">Xem chi tiết</Link></Button>
-            
+              <Button>  
+                <Link to={`/duyet-phieu-thanh-ly/${record.maPhieuTL}`} className="action-link accept">Xem chi tiết</Link>
+              </Button>
             </Space>
           )}
         />

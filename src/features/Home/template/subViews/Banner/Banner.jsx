@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 import { banner1Img, banner2Img, banner3Img, card1, card2, card3 } from '../../../../../assets';
 import './Banner.scss';
 import { FaFileAlt, FaBell, FaSyncAlt } from 'react-icons/fa';
@@ -114,6 +115,7 @@ export default function Banner() {
 
           {/* Card 2 */}
           <div className="col">
+          <Link to="/bao-dao-tao" className="card-link">
             <div className="card">
               <img src={card2} className="card-img-top" alt="Card 2" />
               <div className="card-body">
@@ -123,7 +125,8 @@ export default function Banner() {
                 </p>
               </div>
             </div>
-          </div>
+          </Link>
+        </div>
 
           {/* Card 3 */}
           <div className="col">

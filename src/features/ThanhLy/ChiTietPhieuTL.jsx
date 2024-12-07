@@ -4,6 +4,7 @@ import { Table, Button, message, Spin, Input, Modal } from 'antd';
 import { getPhieuThanhLyByMaPhieu } from '../../api/phieuThanhLy';
 import { duyetPhieuThanhLy } from '../../api/duyetPhieuTL';
 import './ChiTietPhieuThanhLy.scss';
+import { createLichSuPhieuThanhLy } from '../../api/lichSuPhieuTL';
 
 const ChiTietDuyetPhieuTL = () => {
   const { maPhieuTL } = useParams();
@@ -14,7 +15,7 @@ const ChiTietDuyetPhieuTL = () => {
   const [employeeCode, setEmployeeCode] = useState('');
   const [rejectReason, setRejectReason] = useState('');
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);  // New state to disable buttons
+  const [buttonsDisabled, setButtonsDisabled] = useState(false);
 
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
@@ -27,19 +28,20 @@ const ChiTietDuyetPhieuTL = () => {
     }
   }, []);
 
+  const fetchPhieuThanhLyDetails = async () => {
+    try {
+      setLoading(true);
+      const data = await getPhieuThanhLyByMaPhieu(maPhieuTL);
+      setPhieuDetails(data.phieuDetails);
+      setChiTietList(data.deviceDetails);
+    } catch (error) {
+      message.error('Không thể tải thông tin phiếu thanh lý.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPhieuThanhLyDetails = async () => {
-      try {
-        setLoading(true);
-        const data = await getPhieuThanhLyByMaPhieu(maPhieuTL);
-        setPhieuDetails(data.phieuDetails);
-        setChiTietList(data.deviceDetails);
-      } catch (error) {
-        message.error('Không thể tải thông tin phiếu thanh lý.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPhieuThanhLyDetails();
   }, [maPhieuTL]);
 
@@ -54,6 +56,7 @@ const ChiTietDuyetPhieuTL = () => {
     };
 
     try {
+      handleDuyet(maPhieuTL, employeeCode);
       await duyetPhieuThanhLy(approvalData);
       message.success(`Phiếu thanh lý ${maPhieuTL} đã được duyệt.`);
       setButtonsDisabled(true); // Disable buttons after approval
@@ -83,8 +86,10 @@ const ChiTietDuyetPhieuTL = () => {
     };
 
     try {
+      
       await duyetPhieuThanhLy(rejectData);
       message.success(`Phiếu thanh lý ${maPhieuTL} đã bị từ chối.`);
+      handleTuChoi(maPhieuTL, employeeCode);
       setIsRejectModalVisible(false); // Close the modal
       setButtonsDisabled(true); // Disable buttons after rejection
       fetchPhieuThanhLyDetails(); // Reload data after rejection
@@ -92,7 +97,36 @@ const ChiTietDuyetPhieuTL = () => {
       message.error(error.message || 'Lỗi khi từ chối phiếu thanh lý.');
     }
   };
-
+  const handleDuyet = async (maPhieuTL, maNV) => {
+  
+    // Call the function to post history data when the "Duyệt" button is clicked
+    try {
+      await createLichSuPhieuThanhLy ({
+        maNV,
+        maPhieuTL,
+        ngayThayDoi: new Date().toISOString(),
+        trangThaiTruoc: 'Chờ duyệt',
+        trangThaiSau: 'Đã duyệt',
+      });
+    } catch (error) {
+      console.error('Error posting LichSuPhieuThanhLy:', error);
+    }
+  };
+  
+  const handleTuChoi = async (maPhieuTL, maNV) => {
+    try {
+      await createLichSuPhieuThanhLy ({
+        maNV,
+        maPhieuTL,
+        ngayThayDoi: new Date().toISOString(),
+        trangThaiTruoc: 'Chờ duyệt',
+        trangThaiSau: 'Từ chối',
+      });
+    } catch (error) {
+      console.error('Error posting LichSuPhieuThanhLy:', error);
+    }
+  };
+  
   const columns = [
     {
       title: 'Mã thiết bị',
@@ -112,19 +146,6 @@ const ChiTietDuyetPhieuTL = () => {
     },
   ];
 
-  const fetchPhieuThanhLyDetails = async () => {
-    try {
-      setLoading(true);
-      const data = await getPhieuThanhLyByMaPhieu(maPhieuTL);
-      setPhieuDetails(data.phieuDetails);
-      setChiTietList(data.deviceDetails);
-    } catch (error) {
-      message.error('Không thể tải thông tin phiếu thanh lý.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return <Spin size="large" tip="Đang tải dữ liệu..." />;
   }
@@ -135,21 +156,54 @@ const ChiTietDuyetPhieuTL = () => {
 
   return (
     <div className="chi-tiet-phieu-thanh-ly">
-      <h1>Chi tiết Phiếu Thanh Lý: {maPhieuTL}</h1>
+      <h1>PHIẾU THANH LÝ {maPhieuTL}</h1>
+      
+      {phieuDetails && (
+        <div className="phieu-details">
+          <table>
+            <tbody>
+              <tr>
+                <th>Mã phiếu:</th>
+                <td>{phieuDetails.maPhieuTL}</td>
+              </tr>
+              <tr>
+                <th>Mã công ty:</th>
+                <td>{phieuDetails.maCty}</td>
+              </tr>
+              <tr>
+                <th>Mã nhân viên:</th>
+                <td>{phieuDetails.maNV}</td>
+              </tr>
+              <tr>
+                <th>Trạng thái:</th>
+                <td>{phieuDetails.trangThai}</td>
+              </tr>
+              <tr>
+                <th>Ngày lập phiếu:</th>
+                <td>{phieuDetails.ngayLapPhieu}</td>
+              </tr>
+              <tr>
+                <th>Lý do chung:</th>
+                <td>{phieuDetails.lyDoChung}</td>
+              </tr>
+              <tr>
+                <th>Tổng tiền:</th>
+                <td>{phieuDetails.tongTien}</td>
+              </tr>
+              <tr>
+                <th>Trạng thái thanh lý:</th>
+                <td>{phieuDetails.trangThaiThanhLy}</td>
+              </tr>
+              <tr>
+                <th>Ngày thanh lý:</th>
+                <td>{phieuDetails.ngayThanhLy}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      <div className="phieu-details">
-        <div><strong>Mã phiếu:</strong> {phieuDetails.maPhieuTL}</div>
-        <div><strong>Mã công ty:</strong> {phieuDetails.maCty}</div>
-        <div><strong>Mã nhân viên:</strong> {phieuDetails.maNV}</div>
-        <div><strong>Trạng thái:</strong> {phieuDetails.trangThai}</div>
-        <div><strong>Ngày lập phiếu:</strong> {new Date(phieuDetails.ngayLapPhieu).toLocaleDateString('vi-VN')}</div>
-        <div><strong>Lý do chung:</strong> {phieuDetails.lyDoChung}</div>
-        <div><strong>Tổng tiền:</strong> {phieuDetails.tongTien.toLocaleString('vi-VN')}</div>
-        <div><strong>Trạng thái thanh lý:</strong> {phieuDetails.trangThaiThanhLy}</div>
-        <div><strong>Ngày thanh lý:</strong> {phieuDetails.ngayThanhLy ? new Date(phieuDetails.ngayThanhLy).toLocaleDateString('vi-VN') : '--'}</div>
-      </div>
-
-      <h1>Danh sách thiết bị</h1>
+      <h1>DANH SÁCH THIẾT BỊ THANH LÝ</h1>
       <Table
         columns={columns}
         dataSource={chiTietList}
@@ -159,37 +213,53 @@ const ChiTietDuyetPhieuTL = () => {
       />
 
       <div className="actions">
-        {phieuDetails.trangThai !== 'Duyệt' && (
+        {phieuDetails.trangThai !== 'Đã duyệt' && phieuDetails.trangThai !== 'Từ chối' ? (
           <Button
             type="primary"
             onClick={handleApprove}
-            disabled={buttonsDisabled} // Disable if button state is true
+            disabled={buttonsDisabled}
+          >
+            Duyệt
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            disabled
+            onClick={() => message.info(`Phiếu ${maPhieuTL} đã duyệt!`)}
           >
             Duyệt
           </Button>
         )}
-        {phieuDetails.trangThai !== 'Từ chối' && (
+
+        {phieuDetails.trangThai !== 'Từ chối' && phieuDetails.trangThai !== 'Đã duyệt' ? (
           <Button
             type="danger"
             onClick={handleReject}
-            disabled={buttonsDisabled} // Disable if button state is true
+            disabled={buttonsDisabled}
+          >
+            Từ chối
+          </Button>
+        ) : (
+          <Button
+            type="danger"
+            disabled
+            onClick={() => message.info(`Phiếu ${maPhieuTL} đã từ chối!`)}
           >
             Từ chối
           </Button>
         )}
       </div>
 
-      {/* Reject Modal */}
       <Modal
         title="Lý do từ chối"
         visible={isRejectModalVisible}
         onOk={handleRejectSubmit}
         onCancel={() => setIsRejectModalVisible(false)}
       >
-        <Input
+        <Input.TextArea
+          rows={4}
           value={rejectReason}
           onChange={(e) => setRejectReason(e.target.value)}
-          placeholder="Nhập lý do từ chối"
         />
       </Modal>
     </div>

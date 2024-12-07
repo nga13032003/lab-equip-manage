@@ -93,3 +93,45 @@ export const getPhieuThanhLyByMaPhieu = async (maPhieu) => {
       throw new Error('Failed to fetch PhieuThanhLy data: ' + error.message);
     }
   };
+  // Update Phiếu Thanh Lý
+export const updatePhieuThanhLy = async (id, updatedPhieuThanhLy) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/PhieuThanhLy/${id}`, updatedPhieuThanhLy);
+    return response.data; // Return the response data (if any)
+  } catch (error) {
+    // Throw an error with a detailed message if the request fails
+    throw error.response?.data || 'Lỗi khi cập nhật phiếu thanh lý';
+  }
+};
+
+
+export const updateOrCreateChiTietPhieuThanhLy = async (maPhieuTL, maThietBi, chiTietPhieuThanhLy) => { 
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/ChiTietPhieuThanhLy/${maPhieuTL}/${maThietBi}`,
+      chiTietPhieuThanhLy
+    );
+    return response.data; // Return the response data (either the updated or created object)
+  } catch (error) {
+    // Log the error details for debugging
+    console.error('API error details:', error.response?.data);
+    
+    // Handle and throw a detailed error message if the request fails
+    throw error.response?.data || 'Lỗi khi cập nhật hoặc tạo chi tiết phiếu thanh lý';
+  }
+};
+// Adjusted deleteChiTietThietBi function using query parameters
+export const deleteChiTietThietBi = async (maPhieuTL, maThietBi) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/ChiTietPhieuThanhLy/${maPhieuTL}/${maThietBi}`
+    );
+    return response.data; // Return the response data
+  } catch (error) {
+    console.error('API error details:', error.response?.data);
+    throw error.response?.data || 'Lỗi khi xóa chi tiết phiếu thanh lý'; 
+  }
+};
+
+
+

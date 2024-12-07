@@ -1,0 +1,122 @@
+.duyet-phieu-thanh-ly-table {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+  
+    /* Centering the h1 element */
+    h1 {
+      font-size: 30px;
+      font-weight: 600;
+      color: #3b85df;
+      text-align: center;  /* Center the heading */
+      margin-bottom: 20px;  /* Add margin bottom for spacing */
+    }
+  
+    .ant-table {
+      margin: 20px 0; /* Add margin to the top and bottom of the table */
+      border-radius: 8px;
+      overflow: hidden;
+  
+      &.custom-table {
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(210, 210, 210, 0.1);
+      }
+  
+      .ant-table-thead {
+        background-color: #e6f7ff;
+  
+        .ant-table-cell {
+          font-weight: 600;
+          background-color: #e6f7ff;
+          color: #1890ff;
+          font-size: 14px;
+        }
+      }
+  
+      .ant-table-tbody {
+        .ant-table-cell {
+          font-size: 14px;
+          color: #0e0e0e;
+          padding: 12px 16px;
+  
+          &:hover {
+            background-color: #f7fafc;
+          }
+        }
+      }
+  
+      .ant-tag {
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 16px;
+        padding: 5px 10px;
+      }
+  
+      .ant-table-pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+  
+        .ant-pagination-prev,
+        .ant-pagination-next {
+          background-color: #f0f2f5;
+          border-radius: 4px;
+        }
+  
+        .ant-pagination-item {
+          border-radius: 4px;
+          font-weight: 500;
+        }
+  
+        .ant-pagination-item-active {
+          background-color: #1890ff;
+          color: #fff;
+          border-color: #1890ff;
+        }
+      }
+    }
+
+    
+  
+    .action-link {
+      text-decoration: none;
+      color: #1890ff;
+      font-weight: 500;
+  
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  
+    .ant-btn {
+      padding: 6px 16px;
+      font-weight: 500;
+      font-size: 14px;
+  
+      &.ant-btn-primary {
+        background-color: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+  
+        &:hover,
+        &:focus {
+          background-color: #40a9ff;
+          border-color: #40a9ff;
+        }
+      }
+  
+      &.ant-btn-danger {
+        background-color: #ff4d4f;
+        border-color: #ff4d4f;
+        color: #fff;
+  
+        &:hover,
+        &:focus {
+          background-color: #ff7875;
+          border-color: #ff7875;
+        }
+        
+      }
+    }
+  }
+  

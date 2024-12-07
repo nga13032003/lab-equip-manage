@@ -61,7 +61,11 @@
     .cards-section {
       background-color: #fcfcfc;
     }
-  
+    .card-link {
+      text-decoration: none; 
+      color: inherit;        
+    }
+    
     .cards-section {
       background-color: #fcfcfc;
       padding: 30px 0;

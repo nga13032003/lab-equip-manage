@@ -26,6 +26,8 @@ import ChiTietPhieuThanhLy from './features/ThanhLy/ChiTietPhieuThanhLy';
 import DuyetPhieuThanhLyTable from './features/ThanhLy/PheDuyetPhieuThanhLy';
 import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
 import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung'
+import DaoTao from './features/Instruct/DaoTao';
+import DSPhieuThanhLyTable from './features/ThanhLy/DSPhieuThanhLy';
 
 const App = () => {
   return (
@@ -80,7 +82,7 @@ const App = () => {
             <DefaultLayout> <PhieuThanhLy/> </DefaultLayout>}/>
           <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
             <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
-
+          <Route path="/ds-phieu-thanh-ly" element={<DefaultLayout><DSPhieuThanhLyTable/></DefaultLayout>} />
           <Route path="/thoi-gian-su-dung" element={<DefaultLayout> <ThoiGianSuDung /> </DefaultLayout>}/> 
            <Route path="*" element={<Navigate to="/login" replace />} />
            <Route path="/chi-tiet-phieu-bao-duong/:maPhieu" element={  <DefaultLayout><ChiTietPhieuBaoDuong /></DefaultLayout>} />
@@ -91,6 +93,7 @@ const App = () => {
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
            <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
+           <Route path="/bao-dao-tao" element={<DefaultLayout><DaoTao/></DefaultLayout>} />
       </Routes>
     </Router>
   );

@@ -1,0 +1,55 @@
+.timeline-container {
+    padding: 16px;
+    background-color: #f9f9f9; /* Light background color for the page */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .timeline-item {
+    margin-bottom: 16px;
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #1890ff; /* Default blue border */
+  }
+  
+  .timeline-item-text {
+    color: #333; /* Default text color */
+  }
+  
+  .timeline-item-date {
+    color: #8c8c8c; /* Grey color for date */
+  }
+  
+  .timeline-item-staff {
+    color: #8c8c8c; /* Grey color for staff */
+  }
+  
+  .timeline-item-divider {
+    margin: 8px 0;
+  }
+  
+  .timeline-item .ant-typography strong {
+    font-size: 16px;
+  }
+  
+  .timeline-item .ant-typography {
+    font-size: 14px;
+  }
+  
+  .timeline-status {
+    &.chao-duyet {
+      color: rgb(0, 225, 233);
+    }
+    &.khong-duoc-phe-duyet {
+      color: rgb(234, 0, 20);
+    }
+    &.cap-nhat-phieu {
+      color: rgb(10, 29, 241);
+    }
+    &.da-duyet {
+      color: rgba(0, 248, 17, 0.836);
+    }
+  }
+  

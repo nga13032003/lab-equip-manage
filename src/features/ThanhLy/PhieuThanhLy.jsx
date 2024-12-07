@@ -18,7 +18,16 @@ const PhieuThanhLy = () => {
   const [companies, setCompanies] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newCompanyForm] = Form.useForm();
-
+  useEffect(() => {
+    const storedEmployeeName = localStorage.getItem('employeeName');
+    if (storedEmployeeName) {
+      setEmployeeName(storedEmployeeName);
+    }
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
+    if (storedEmployeeCode) {
+      setEmployeeCode(storedEmployeeCode);
+    }
+  }, []);
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -60,16 +69,7 @@ const PhieuThanhLy = () => {
   }, []);
 
 
-  useEffect(() => {
-    const storedEmployeeName = localStorage.getItem('employeeName');
-    if (storedEmployeeName) {
-      setEmployeeName(storedEmployeeName);
-    }
-    const storedEmployeeCode = localStorage.getItem('employeeCode');
-    if (storedEmployeeCode) {
-      setEmployeeCode(storedEmployeeCode);
-    }
-  }, []);
+  
 
   // Tạo mã phiếu ngẫu nhiên
   const generateRandomMaPhieu = () => {
@@ -241,18 +241,20 @@ const PhieuThanhLy = () => {
                     <p>Mã Thiết Bị:</p>
                   </Col>
                   <Col span={16}>
-                    <Select
-                      placeholder="Chọn thiết bị"
-                      value={item.MaThietBi}
-                      onChange={(value) => handleToolChange(index, 'MaThietBi', value)}
-                      style={{ width: '100%' }}
-                    >
-                      {devices.map((device) => (
+                  <Select
+                    placeholder="Chọn thiết bị"
+                    value={item.MaThietBi}
+                    onChange={(value) => handleToolChange(index, 'MaThietBi', value)}
+                    style={{ width: '100%' }}
+                  >
+                    {devices
+                      .filter((device) => !device.isDeleted) 
+                      .map((device) => (
                         <Select.Option key={device.maThietBi} value={device.maThietBi}>
                           {device.maThietBi} - {device.tenThietBi}
                         </Select.Option>
                       ))}
-                    </Select>
+                  </Select>
                   </Col>
                 </Row>
 
