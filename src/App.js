@@ -81,8 +81,7 @@ const App = () => {
           <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
             <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
 
-          <Route path="/thoi-gian-su-dung" element={
-                      <DefaultLayout> <ThoiGianSuDung /> </DefaultLayout>}/> 
+          <Route path="/thoi-gian-su-dung" element={<DefaultLayout> <ThoiGianSuDung /> </DefaultLayout>}/> 
            <Route path="*" element={<Navigate to="/login" replace />} />
            <Route path="/chi-tiet-phieu-bao-duong/:maPhieu" element={  <DefaultLayout><ChiTietPhieuBaoDuong /></DefaultLayout>} />
            <Route path="/profile/:maNV" element={  <DefaultLayout><Profile/></DefaultLayout>} />

@@ -9,12 +9,12 @@ import { useNavigate } from 'react-router-dom';
 const Proposal = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
   const [toolList, setToolList] = useState([]);
-  const [employeeName, setEmployeeName] = useState('');
-  const [employeeCode, setEmployeeCode] = useState('');
+
   const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
-
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeCode, setEmployeeCode] = useState('');
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
     if (storedEmployeeName) {
@@ -190,14 +190,14 @@ const Proposal = () => {
             </List.Item>
           )}
         />
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+        <Form.Item wrapperCol={{ offset: 3, span: 18 }}>
           <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
             Thêm dụng cụ
           </Button>
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+        <Form.Item wrapperCol={{ offset: 3, span: 18 }}>
           <Button type="primary" htmlType="submit">
-            Lập phiếu đề xuất
+             Lập phiếu đề xuất
           </Button>
         </Form.Item>
       </Form>

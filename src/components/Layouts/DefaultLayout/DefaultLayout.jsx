@@ -25,14 +25,14 @@ const DefaultLayout = ({children}) => {
   }, [navigate]);
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#1a1a2e' }}>
       <AuthSider
         collapsed={collapsed}
         role={role} 
         setCollapsed={setCollapsed}
         setActiveComponent={setActiveComponent} 
       />
-      <Layout>
+      <Layout style={{backgroundColor: 'white'}}>
         <AuthHeader collapsed={collapsed} setCollapsed={setCollapsed} />
         <Content className="home-content">
           <div className="home-welcome">

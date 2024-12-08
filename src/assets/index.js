@@ -8,8 +8,12 @@ import eyeSee from './images/png/eye-see.png';
 import thietbi from './images/png/thietbi.jpg';
 import dungcu from './images/png/dungcu.jpg';
 import thinghiem from './images/png/thinghiemhoasinh.jpg';
+import loginimage from './images/png/login.jpg';
 
 import SearchIcon from './images/svg/searchIcon.svg';
+import card1 from './images/png/card1.jpg';
+import card2 from './images/png/card2.jpg';
+import card3 from './images/png/card3.jpg'; 
 
 export{
     profileImage,
@@ -22,5 +26,9 @@ export{
     SearchIcon,
     thietbi,
     dungcu,
-    thinghiem
+    thinghiem,
+    loginimage,
+    card1, 
+    card2,
+    card3
 }

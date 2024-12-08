@@ -14,18 +14,19 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
 
   const [isDropdownVisible, setDropdownVisible] = useState(true);
   const [employeeName, setEmployeeName] = useState('');
-  const [employeeCode, setEmployeeCode] = useState(''); // State để lưu mã nhân viên
-
+  const [employeeCode, setEmployeeCode] = useState(''); 
+  
   const menuItems = [
     {
       label: (
         <Button
           type="text"
-          onClick={() => navigate(`/profile/${employeeCode}`)} // Chuyển hướng đến trang profile
+          onClick={() => navigate(`/profile/${employeeCode}`)}
           style={{ width: '100%' }}
         >
           Hồ sơ cá nhân
         </Button>
+
       ),
       key: '0',
     },
@@ -68,6 +69,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
     if (name && code) {
       setEmployeeName(name); // Update the employee name state
       setEmployeeCode(code); // Update the employee code state
+      console.log("Nga",employeeCode)
     }
 
     const handleResize = () => {
@@ -103,6 +105,12 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
           height: 64,
         }}
       />
+    <img
+          src={dashboard} 
+          alt="Navigate to HomePage"
+          onClick={() => navigate('/home')} 
+          style={{ cursor: 'pointer' }} 
+        />
       <CustomInput
         type="text"
         placeholder="Tìm kiếm..."
@@ -110,12 +118,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
       />
       <Dropdown menu={{ items: menuItems }} trigger={['click']} overlayStyle={{ zIndex: 1000 }}>
         <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-          <img
-            src={dashboard}
-            alt="Navigate to HomePage"
-            onClick={() => navigate('/home')}
-            className="img-dashboard"
-          />
+          
           {isDropdownVisible && (
             <Button
               type="text"

@@ -1,12 +1,11 @@
 // AuthSider.scss
 .ant-layout-sider {
-    background-color: white;
-    height: 80vh;
-    position: fixed;
+  
+    background-color: #fcfcfc;
+    height: auto;
     left: 0;
     top: 10px;
     bottom: 10px;
-    z-index: 1000;
 
     .ant-menu-submenu > .ant-menu > .ant-menu-item {
       background-color: white; // Màu nền trắng cho các mục trong sub-menu
@@ -19,7 +18,3 @@
     
   }
 
-  
-  .demo-logo-vertical {
-  }
-  
