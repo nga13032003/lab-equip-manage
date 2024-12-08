@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Space, Table, Tag, Button } from 'antd';
+import { Space, Table, Tag } from 'antd';
 import { fetchPhieuDeXuat } from '../../api/phieuDeXuat'; // Import the fetchPhieuDeXuat function
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import './Approval.scss';
+import './LichSuPhieuDeXuat.scss';
 
 const { Column } = Table;
 
-const DuyetPhieuTable = () => {
+const LichSuPhieuDeXuat = () => {
   const [approvalData, setApprovalData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +30,7 @@ const DuyetPhieuTable = () => {
 
   return (
     <div className="duyet-phieu-table">
-      <h1>PHÊ DUYỆT ĐỀ XUẤT</h1>
+      <h1>DANH SÁCH PHIẾU ĐỀ XUẤT</h1>
       <Table dataSource={approvalData} className="custom-table">
         <Column title="Mã Phiếu" dataIndex="maPhieu" key="MaPhieu" />
         <Column title="Ngày Tạo" dataIndex="ngayTao" key="NgayTao" render={(date) => new Date(date).toLocaleDateString('vi-VN')} />
@@ -57,14 +57,8 @@ const DuyetPhieuTable = () => {
           key="action"
           render={(text, record) => (
             <Space size="middle">
-              {record.trangThai === 'Đã phê duyệt' ? (
-                <Link to={`/phe-duyet-phieu-de-xuat/${record.maPhieu}`} className="action-link enter">Nhập hàng</Link>
-              ) : (
-                <Link to={`/phe-duyet-phieu-de-xuat/${record.maPhieu}`} className="action-link accept">Xem chi tiết</Link>
-              )}
+              <Link to={`/chi-tiet-phieu-de-xuat/${record.maPhieu}`} className="action-link accept">Xem chi tiết</Link>
             </Space>
-
-
           )}
         />
       </Table>
@@ -72,4 +66,4 @@ const DuyetPhieuTable = () => {
   );
 };
 
-export default DuyetPhieuTable;
+export default LichSuPhieuDeXuat;

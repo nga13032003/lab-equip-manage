@@ -1,60 +1,108 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { message, Table } from "antd";
-import { getPhieuNhap, getChiTietNhapTB, getChiTietNhapDC } from "../../api/phieuNhap"; // Adjust import paths accordingly
+import { message, Table, Row, Col, Card, Spin } from "antd";
+import { getPhieuNhapDetails } from "../../api/phieuNhap"; // Adjust import paths accordingly
 
 const ChiTietPhieuNhap = () => {
   const { maPhieuNhap } = useParams(); // Retrieve the maPhieuNhap from the URL
-//   const [phieuNhapDetails, setPhieuNhapDetails] = useState(null);
-//   const [chiTietTB, setChiTietTB] = useState([]);
-//   const [chiTietDC, setChiTietDC] = useState([]);
+  const [phieuNhapDetails, setPhieuNhapDetails] = useState(null);
+  const [dungCuDetails, setDungCuDetails] = useState([]);
+  const [thietBiDetails, setThietBiDetails] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-//   useEffect(() => {
-//     const fetchDetails = async () => {
-//       try {
-//         // Fetch main PhieuNhap details
-//         const response = await getPhieuNhap(maPhieuNhap);
-//         setPhieuNhapDetails(response.data);
+  // Fetch PhieuNhap details when the component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { phieuNhapDetails, dungCuDetails, thietBiDetails } = await getPhieuNhapDetails(maPhieuNhap);
+        setPhieuNhapDetails(phieuNhapDetails);
+        setDungCuDetails(dungCuDetails);
+        setThietBiDetails(thietBiDetails);
+      } catch (error) {
+        message.error("Không thể lấy thông tin phiếu nhập");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//         // Fetch details for Thiet Bi and Dung Cu
-//         const [thietBiResponse, dungCuResponse] = await Promise.all([
-//           getChiTietNhapTB(maPhieuNhap),
-//           getChiTietNhapDC(maPhieuNhap),
-//         ]);
-//         setChiTietTB(thietBiResponse.data);
-//         setChiTietDC(dungCuResponse.data);
-//       } catch (error) {
-//         message.error("Lỗi khi tải chi tiết phiếu nhập.");
-//       }
-//     };
+    fetchData();
+  }, [maPhieuNhap]);
 
-//     fetchDetails();
-//   }, [maPhieuNhap]);
-
-  const columns = [
-    { title: "Mã", dataIndex: "ma", key: "ma" },
-    { title: "Tên", dataIndex: "ten", key: "ten" },
-    { title: "Số Lượng", dataIndex: "soLuongNhap", key: "soLuongNhap" },
-    { title: "Giá Nhập", dataIndex: "giaNhap", key: "giaNhap" },
+  // Define columns for the tables
+  const dungCuColumns = [
+    {
+      title: "Mã Dụng Cụ",
+      dataIndex: "maDungCu",
+      key: "maDungCu",
+    },
+    {
+      title: "Giá Nhập",
+      dataIndex: "giaNhap",
+      key: "giaNhap",
+      render: (text) => text.toLocaleString(),
+    },
+    {
+      title: "Số Lượng Nhập",
+      dataIndex: "soLuongNhap",
+      key: "soLuongNhap",
+    },
   ];
 
+  const thietBiColumns = [
+    {
+      title: "Mã Thiết Bị",
+      dataIndex: "maThietBi",
+      key: "maThietBi",
+    },
+    {
+      title: "Giá Nhập",
+      dataIndex: "giaNhap",
+      key: "giaNhap",
+      render: (text) => text.toLocaleString(),
+    },
+  ];
+
+  // Render the component
   return (
-    <div>
-      <h1>Chi Tiết Phiếu Nhập - {maPhieuNhap}</h1>
-      
-      {/* {phieuNhapDetails && (
-        <div>
-          <p>Mã Phiếu Nhập: {phieuNhapDetails.maPhieuNhap}</p>
-          <p>Ngày Nhập: {phieuNhapDetails.ngayNhap}</p>
-          <p>Tổng Tiền: {phieuNhapDetails.tongTien}</p>
-        </div>
+    <div style={{ padding: "24px" }}>
+      {loading ? (
+        <Spin size="large" />
+      ) : (
+        <>
+          {phieuNhapDetails && (
+            <Card title="Chi Tiết Phiếu Nhập">
+              <Row gutter={16}>
+                <Col span={8}>
+                  <strong>Mã Phiếu Nhập:</strong> {phieuNhapDetails.maPhieuNhap}
+                </Col>
+                <Col span={8}>
+                  <strong>Nhân Viên:</strong> {phieuNhapDetails.maNV}
+                </Col>
+                <Col span={8}>
+                  <strong>Ngày Nhập:</strong> {new Date(phieuNhapDetails.ngayNhap).toLocaleDateString()}
+                </Col>
+                <Col span={8}>
+                  <strong>Tổng Tiền:</strong> {phieuNhapDetails.tongTien.toLocaleString()} VND
+                </Col>
+                <Col span={8}>
+                  <strong>Mã Phiếu Đề Xuất:</strong> {phieuNhapDetails.maPhieu}
+                </Col>
+              </Row>
+            </Card>
+          )}
+
+          {/* Table for Dụng Cụ */}
+          <Card title="Chi Tiết Dụng Cụ" style={{ marginBottom: "24px" }}>
+            <Table dataSource={dungCuDetails} columns={dungCuColumns} rowKey="maDungCu" pagination={false} />
+          </Card>
+
+          {/* Table for Thiết Bị */}
+          <Card title="Chi Tiết Thiết Bị" style={{ marginBottom: "24px" }}>
+            <Table dataSource={thietBiDetails} columns={thietBiColumns} rowKey="maThietBi" pagination={false} />
+          </Card>
+        </>
       )}
-      
-      <h2>Chi Tiết Thiết Bị</h2>
-      <Table dataSource={chiTietTB} columns={columns} rowKey="maThietBi" />
-      
-      <h2>Chi Tiết Dụng Cụ</h2>
-      <Table dataSource={chiTietDC} columns={columns} rowKey="maDungCu" /> */}
     </div>
   );
 };

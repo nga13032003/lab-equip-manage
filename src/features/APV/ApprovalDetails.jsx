@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Button, message, Spin, Modal, Input } from 'antd';
+import { Card, Table, Typography, Button, message, Spin, Modal, Input } from 'antd';
 import { getProposalDetailsAndTools } from '../../api/phieuDeXuat';
 import { approveProposal } from '../../api/duyetPhieuDeXuat';  
 import './ApprovalDetails.scss';
@@ -10,18 +10,75 @@ const { Title, Text } = Typography;
 const ApprovalDetails = () => {
   const { maPhieu } = useParams();
   const [proposalDetails, setProposalDetails] = useState(null);
-  const [toolDetails, setToolDetails] = useState([]);
+  const [toolList, setToolList] = useState([]);
+  const [deviceList, setDeviceList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false); 
   const [rejectionReason, setRejectionReason] = useState(''); 
   const navigate = useNavigate();
 
+  // Define columns for Tool Table
+  const toolColumns = [
+    {
+      title: 'Mã Loại Dụng Cụ',
+      dataIndex: 'maLoaiDC',
+      key: 'maLoaiDC',
+    },
+    {
+      title: 'Tên Dụng Cụ',
+      dataIndex: 'tenDungCu',
+      key: 'tenDungCu',
+    },
+    {
+      title: 'Số Lượng Đề Xuất',
+      dataIndex: 'soLuongDeXuat',
+      key: 'soLuongDeXuat',
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'moTa',
+      key: 'moTa',
+    },
+  ];
+
+  // Define columns for Device Table
+  const deviceColumns = [
+    {
+      title: 'Mã loại thiết bị',
+      dataIndex: 'maLoaiThietBi',
+      key: 'maLoaiThietBi',
+    },
+    {
+      title: 'Tên Thiết Bị',
+      dataIndex: 'tenThietBi',
+      key: 'tenThietBi',
+    },
+    {
+      title: 'Số Lượng Đề Xuất',
+      dataIndex: 'soLuongDeXuat',
+      key: 'soLuongDeXuat',
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'moTa',
+      key: 'moTa',
+    },
+  ];
+  const handleNhapHang = () => {
+    const dataToPass = {
+      tools: toolList, 
+      devices: deviceList, 
+    };
+  
+    navigate(`/nhap-hang/${maPhieu}`, { state: dataToPass });
+  };  
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const { proposalDetails, toolDetails } = await getProposalDetailsAndTools(maPhieu);
+        const { proposalDetails, toolDetails, deviceDetails } = await getProposalDetailsAndTools(maPhieu);
         setProposalDetails(proposalDetails);
-        setToolDetails(toolDetails);
+        setToolList(toolDetails); // Update tool list
+        setDeviceList(deviceDetails); // Update device list
       } catch (error) {
         message.error('Không thể tải dữ liệu phiếu đề xuất.');
       } finally {
@@ -43,7 +100,6 @@ const ApprovalDetails = () => {
   const handleAccept = async () => {
     const maNV = localStorage.getItem('employeeCode');
     const ngayDuyet = new Date().toISOString();
-    const lyDoTuChoi = '';
 
     try {
       const response = await approveProposal({
@@ -111,53 +167,92 @@ const ApprovalDetails = () => {
 
   return (
     <div className="chitiet-proposal-container">
-      <Card title="Chi Tiết Phiếu Đề Xuất" bordered={false}>
-        <Title level={2}>Thông Tin Phiếu Đề Xuất</Title>
-        <Text strong>Mã phiếu:</Text> <Text>{proposalDetails.maPhieu}</Text><br />
-        <Text strong>Mã nhân viên đề xuất:</Text> <Text>{proposalDetails.maNV}</Text><br />
-        <Text strong>Mã thiết bị:</Text> <Text>{proposalDetails.maThietBi}</Text><br />
-        <Text strong>Lý do đề xuất:</Text> <Text>{proposalDetails.lyDoDeXuat}</Text><br />
-        <Text strong>Ghi chú:</Text> <Text>{proposalDetails.ghiChu}</Text><br />
-        <Text strong>Ngày tạo:</Text> <Text>{new Date(proposalDetails.ngayTao).toLocaleDateString()}</Text><br />
-        <Text strong>Trạng thái:</Text> <Text>{proposalDetails.trangThai}</Text><br />
+      <Card bordered={false}>
+      <Title level={2}>Thông Tin Phiếu Đề Xuất {proposalDetails.maPhieu}</Title>
 
-        {toolDetails.length > 0 ? (
-          <>
-            <Title level={3} style={{ marginTop: '20px' }}>Danh Sách Dụng Cụ Đề Xuất</Title>
-            <List
-              bordered
-              dataSource={toolDetails}
-              renderItem={(item) => (
-                <List.Item>
-                  <Text strong>Mã dụng cụ:</Text> <Text>{item.maDungCu}</Text><br />
-                  <Text strong>Số lượng đề xuất:</Text> <Text>{item.soLuongDeXuat}</Text>
-                </List.Item>
-              )}
-            />
-          </>
-        ) : (
-          <Text type="secondary" style={{ marginTop: '20px' }}>Không có dụng cụ đề xuất.</Text>
-        )}
+      <Table
+        bordered
+        pagination={false}
+        className="proposal-details-table"
+        dataSource={[
+          { key: 'maPhieu', label: 'Mã phiếu', value: proposalDetails.maPhieu },
+          { key: 'maNV', label: 'Mã nhân viên đề xuất', value: proposalDetails.maNV },
+          { key: 'lyDoDeXuat', label: 'Lý do đề xuất', value: proposalDetails.lyDoDeXuat },
+          { key: 'ghiChu', label: 'Ghi chú', value: proposalDetails.ghiChu },
+          { key: 'ngayTao', label: 'Ngày tạo', value: new Date(proposalDetails.ngayTao).toLocaleDateString() },
+          { key: 'trangThai', label: 'Trạng thái', value: proposalDetails.trangThai },
+          { key: 'ngayHoanTat', label: 'Ngày hoàn tất', value: proposalDetails.ngayHoanTat || 'Chưa hoàn tất' },
+        ]}
+        columns={[
+          {
+            title: 'Thông Tin',
+            dataIndex: 'label',
+            key: 'label',
+            width: '30%',
+          },
+          {
+            title: 'Chi Tiết',
+            dataIndex: 'value',
+            key: 'value',
+          },
+        ]}
+      />
+
+
+        {/* Tool List Table */}
+        <h2 className="section-title">Danh sách dụng cụ</h2>
+        <Table
+          dataSource={toolList}
+          columns={toolColumns}
+          rowKey="maLoaiDC"
+          bordered
+          pagination={false}
+          className="tools-table"
+        />
+
+        {/* Device List Table */}
+        <h2 className="section-title">Danh sách thiết bị</h2>
+        <Table
+          dataSource={deviceList}
+          columns={deviceColumns}
+          rowKey="maLoaiThietBi"
+          bordered
+          pagination={false}
+          className="devices-table"
+        />
 
         <div className="action-buttons">
-          <Button
-            className="action-btn accept"
-            type="primary"
-            size="large"
-            onClick={handleAccept} 
-          >
-            Chấp nhận
-          </Button>
-          <Button
-            className="action-btn reject"
-            type="default"
-            size="large"
-            onClick={showRejectModal} 
-          >
-            Từ chối
-          </Button>
-          <Button type="primary" size="large" className="action-btn" onClick={handleBack}>Quay lại</Button>
+          {proposalDetails.trangThai === 'Đã phê duyệt' ? (
+            <Button
+              className="action-btn enter"
+              type="primary"
+              size="large"
+               onClick={handleNhapHang}>
+              Nhập hàng
+            </Button>
+          ) : (
+            <>
+              <Button
+                className="action-btn accept"
+                type="primary"
+                size="large"
+                onClick={handleAccept} 
+              >
+                Chấp nhận
+              </Button>
+              <Button
+                className="action-btn reject"
+                type="default"
+                size="large"
+                onClick={showRejectModal} 
+              >
+                Từ chối
+              </Button>
+              <Button type="primary" size="large" className="action-btn" onClick={handleBack}>Quay lại</Button>
+            </>
+          )}
         </div>
+
 
         {/* Reject Modal */}
         <Modal
@@ -171,7 +266,7 @@ const ApprovalDetails = () => {
           <Input.TextArea
             rows={4}
             value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)} // Update rejection reason as user types
+            onChange={(e) => setRejectionReason(e.target.value)}
             placeholder="Nhập lý do từ chối"
           />
         </Modal>

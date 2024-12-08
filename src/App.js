@@ -28,6 +28,9 @@ import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
 import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung'
 import DaoTao from './features/Instruct/DaoTao';
 import DSPhieuThanhLyTable from './features/ThanhLy/DSPhieuThanhLy';
+import LichSuPhieuDeXuat from './features/PROP/LichSuDeXuat';
+import PhieuNhapDeXuat from './features/PhieuNhap/NhapHangDeXuat';
+import DSPhieuNhapTable from './features/PhieuNhap/DSPhieuNhap';
 
 const App = () => {
   return (
@@ -94,6 +97,9 @@ const App = () => {
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
            <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
            <Route path="/bao-dao-tao" element={<DefaultLayout><DaoTao/></DefaultLayout>} />
+           <Route path="/lich-su-de-xuat" element={<DefaultLayout><LichSuPhieuDeXuat/></DefaultLayout>} />
+           <Route path="/nhap-hang/:maPhieu" element={<DefaultLayout><PhieuNhapDeXuat/></DefaultLayout>} />
+           <Route path="/danh-sach-phieu-nhap" element={<DefaultLayout><DSPhieuNhapTable/></DefaultLayout>} />
       </Routes>
     </Router>
   );

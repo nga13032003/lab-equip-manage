@@ -4,26 +4,28 @@ import { PlusOutlined } from "@ant-design/icons";
 import { createPhieuNhap, createChiTietNhapTB, createChiTietNhapDC, createNewItem } from "../../api/phieuNhap";
 import NewDeviceForm from "../Device/NewDeviceForm";
 import NewToolForm from "../Tool/NewToolForm";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
+import './PhieuNhap.scss'
 
 const { Option } = Select;
 
-const PhieuNhap = () => {
-  
+const PhieuNhapDeXuat = () => {
+  const { maPhieu } = useParams();
   const [form] = Form.useForm();
   const [itemList, setItemList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalForm] = Form.useForm();
-  const [modalItemType, setModalItemType] = useState(""); // Track the item type (device or tool)
+  const [modalItemType, setModalItemType] = useState(""); 
   const [maPhieuNhap, setMaPhieuNhap] = useState("");
   const navigate = useNavigate(); 
-  useEffect(() => {
-    generateMaPhieuNhap();
-  }, []);
   form.setFieldsValue({
     NgayNhap: moment(), // Use moment() instead of new Date()
   });
+  useEffect(() => {
+    generateMaPhieuNhap();
+  }, []);
+
   const generateMaPhieuNhap = () => {
     const randomCode = "PN" + Math.random().toString(36).substring(2, 10).toUpperCase();
     setMaPhieuNhap(randomCode);
@@ -80,6 +82,7 @@ const PhieuNhap = () => {
         MaNV: localStorage.getItem("employeeCode"),
         NgayNhap,
         TongTien,
+        maPhieu
       });
 
       const detailPromises = itemList.map((item) => {
@@ -170,9 +173,9 @@ const PhieuNhap = () => {
   ];
 
   return (
-      <div className="phieu-nhap-container">
+    <>
+     <div className="phieu-nhap-container">
       <h1>PHIẾU NHẬP</h1>
-
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item label="Mã Phiếu Nhập">
             <Input value={maPhieuNhap} disabled />
@@ -184,13 +187,19 @@ const PhieuNhap = () => {
           >
              <DatePicker value={moment()} disabled />
           </Form.Item>
+          <Form.Item
+            name="MaPhieu"
+            label="Mã phiếu đề xuất:"
+          >
+             <Input value={maPhieu} disabled /><p></p>
+          </Form.Item>
           <Table dataSource={itemList} columns={columns} rowKey={(item, index) => index} />
 
           <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddItem}>
-            Thêm
+            Thêm 
           </Button>
-          <br></br>
-          <Button type="primary" htmlType="submit">
+
+          <Button type="primary" htmlType="submit" style={{ marginTop: "16px" }}>
             Lập Phiếu Nhập
           </Button>
         </Form>
@@ -240,7 +249,8 @@ const PhieuNhap = () => {
           </Form>
         </Modal>
       </div>
+    </>
   );
 };
 
-export default PhieuNhap;
+export default PhieuNhapDeXuat;

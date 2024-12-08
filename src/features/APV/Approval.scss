@@ -29,28 +29,36 @@
 
     .action-link {
       &.accept {
-        background-color: green; // Change to your preferred green shade
+        background-color: rgb(39, 156, 224); // Change to your preferred green shade
         color: white;
         padding: 5px 10px;
         border-radius: 5px;
         text-decoration: none;
-        &:hover {
-          background-color: darkgreen; // Darker shade for hover
+      
+          &:hover {
+            background-color: #40a9ff; // Màu hover sáng hơn
+            border-color: #40a9ff;
+          }
+        }
+      
+        // Tùy chỉnh "Nhập hàng" button màu xanh lá
+        &.enter {
+          background-color: #80d082; // Change to your preferred green shade
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          text-decoration: none;
+      
+          &:hover {
+            background-color: #4caf50; // Màu hover sáng hơn
+            border-color: #4caf50;
+          }
         }
       }
-
-      &.reject {
-        background-color: darkred; // Change to your preferred dark red shade
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        text-decoration: none;
-        &:hover {
-          background-color: red; // Lighter shade for hover
-        }
-      }
+      
+      
     }
-  }
+
 
   // Media query for responsive design
   @media (max-width: 768px) {
