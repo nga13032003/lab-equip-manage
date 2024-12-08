@@ -1,35 +1,30 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Form, Input, InputNumber, message } from 'antd';
 import { createChiTietPhieuBaoDuong } from '../../api/ChiTietPhieuBaoDuong';
 import { createPhieuBaoDuong, getPhieuBaoDuong } from '../../api/PhieuBaoDuongAPI';
-import { useNavigate } from 'react-router-dom';
-import './PhieuBaoTri.scss';
-const Maintenance = () => {
-  const [componentDisabled, setComponentDisabled] = useState(false);
-  const [toolList, setToolList] = useState([]);
-  const [employeeName, setEmployeeName] = useState('');
-  const [employeeCode, setEmployeeCode] = useState('');
-  const [maPhieu, setMaPhieu] = useState('');
-  const [form] = Form.useForm();
-  const navigate = useNavigate();
+import { useLocation, useNavigate } from 'react-router-dom';
 
+const Maintenance = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { device } = location.state || {}; // Nhận thông tin thiết bị từ state
+
+  const [tool, setTool] = useState({
+    MaDungCu: device?.maThietBi || '',
+    TenDungCu: device?.tenThietBi || '',
+    DonGia: device?.donGia || 0,
+  });
+  const [employeeName, setEmployeeName] = useState(''); // Lưu tên nhân viên
+  const [maPhieu, setMaPhieu] = useState(''); // Mã phiếu tự động
+  const [form] = Form.useForm();
+
+  // Lấy thông tin nhân viên từ localStorage
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
-    if (storedEmployeeName) {
-      setEmployeeName(storedEmployeeName);
-    }
-    const storedEmployeeCode = localStorage.getItem('employeeCode');
-    if (storedEmployeeCode) {
-      setEmployeeCode(storedEmployeeCode);
-    }
-  
-    console.log('Employee Name:', storedEmployeeName);
-    console.log('Employee Code:', storedEmployeeCode);
+    if (storedEmployeeName) setEmployeeName(storedEmployeeName);
   }, []);
-  
 
-  // Function to generate a random MaPhieu
+  // Tạo mã phiếu ngẫu nhiên
   const generateRandomMaPhieu = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -39,162 +34,115 @@ const Maintenance = () => {
     return result;
   };
 
-  // Memoize fetchAndGenerateUniqueMaPhieu with useCallback to avoid issues with closures
-  const fetchAndGenerateUniqueMaPhieu = useCallback(async () => {
-    try {
-      const existingPhieuBaoDuongs = await getPhieuBaoDuong(); // Fetch existing MaPhieu
-      let generatedMaPhieu = generateRandomMaPhieu();
-
-      // Ensure the MaPhieu is unique
-      while (existingPhieuBaoDuongs.some((item) => item.maPhieuBD === generatedMaPhieu)) {
-        generatedMaPhieu = generateRandomMaPhieu(); // Regenerate if not unique
-      }
-
-      setMaPhieu(generatedMaPhieu); // Set the unique MaPhieu
-    } catch (error) {
-      message.error('Error fetching existing MaPhieu values');
-    }
-  }, []);
-
+  // Lấy mã phiếu tự động
   useEffect(() => {
-    fetchAndGenerateUniqueMaPhieu(); // Call on initial render to generate MaPhieu
-  }, [fetchAndGenerateUniqueMaPhieu]);
-
-  const handleAddTool = useCallback(() => {
-    setToolList((prevList) => [...prevList, { MaDungCu: '', DonGia: 0 }]);
+    const newMaPhieu = generateRandomMaPhieu();
+    setMaPhieu(newMaPhieu);
   }, []);
 
-  const handleToolChange = useCallback((index, field, value) => {
-    setToolList((prevList) =>
-      prevList.map((tool, idx) =>
-        idx === index ? { ...tool, [field]: value } : tool
-      )
-    );
-  }, []);
-
+  // Xử lý gửi form
   const handleSubmit = async (values) => {
-    console.log('Employee Code at submit:', employeeCode); 
-    try {
-      // Check if employeeCode is available
-      if (!employeeCode) {
-        message.error('Mã nhân viên không được để trống');
-        return;
-      }
+    if (!tool || !tool.MaDungCu) {
+      message.error('Không có thiết bị để bảo dưỡng!');
+      return;
+    }
 
-      // Step 1: Create PhieuBaoDuong
+    try {
+      // Lấy ngày hiện tại
+      const currentDate = new Date().toISOString();
+
+      // Tạo phiếu bảo dưỡng
       const payload = {
-        maPhieuBD: maPhieu, // Use the generated MaPhieu here
-        maNV: 'NV002', 
-        noiDung: values.LyDoBaoDuong, // Store the content of LyDoBaoDuong as "noiDung"
-        ngayBaoDuong: new Date().toISOString(),
-        tongTien: toolList.reduce((total, tool) => total + (tool.DonGia || 0), 0), // Sum of all tool prices
+        maPhieuBD: maPhieu,
+        tenNV: employeeName, // Sử dụng tên nhân viên
+        noiDung: values.LyDoBaoDuong,
+        ngayBaoDuong: currentDate,
+        ngayBaoHanh: currentDate, // Cập nhật ngày bảo hành
+        ngayCapNhat: currentDate, // Cập nhật ngày cập nhật
+        tongTien: tool.DonGia,
       };
 
-      // Create the maintenance proposal (PhieuBaoDuong)
       await createPhieuBaoDuong(payload);
 
-      // Step 2: Insert details into ChiTietPhieuBaoDuong for each tool
-      const toolDetailsPromises = toolList.map(tool => {
-        const newChiTiet = {
-          maPhieuBD: maPhieu, // Linking the tools to the created MaPhieu
-          maThietBi: tool.MaDungCu, // Tool ID
-          donGia: tool.DonGia, // Price for the tool
-        };
-        return createChiTietPhieuBaoDuong(newChiTiet); // Insert the tool details
-      });
+      // Thêm chi tiết phiếu bảo dưỡng
+      const newChiTiet = {
+        maPhieuBD: maPhieu,
+        maThietBi: tool.MaDungCu,
+        donGia: tool.DonGia,
+      };
+      await createChiTietPhieuBaoDuong(newChiTiet);
 
-      // Wait for all tool details to be inserted
-      await Promise.all(toolDetailsPromises);
-
-      message.success("Phiếu bảo dưỡng đã được lập và dụng cụ đã được thêm thành công!");
-
-      // Reset the form and tool list after successful submission
+      // Thông báo thành công
+      message.success('Phiếu bảo dưỡng đã được lập thành công!');
       form.resetFields();
-      setToolList([]);
-      fetchAndGenerateUniqueMaPhieu(); // Regenerate MaPhieu for next form
+      setMaPhieu(generateRandomMaPhieu()); // Tạo mã phiếu mới sau khi lập thành công
       navigate(`/chi-tiet-phieu-bao-duong/${maPhieu}`);
     } catch (error) {
-      message.error(`Lỗi khi lập phiếu: ${error.message}`);
+      message.error(`Lỗi khi lập phiếu bảo dưỡng: ${error.message}`);
     }
   };
 
+  // Kiểm tra nếu không có thiết bị
+  useEffect(() => {
+    if (!device) {
+      message.error('Không tìm thấy thông tin thiết bị!');
+      navigate('/');
+    }
+  }, [device, navigate]);
+
   return (
-    <>
-         <div className="maintenance-container">
+    <div className="maintenance-container">
       <h1 className="maintenance-title">LẬP PHIẾU BẢO DƯỠNG</h1>
-
-      <Checkbox
-        checked={componentDisabled}
-        onChange={(e) => setComponentDisabled(e.target.checked)}
-      >
-        Vô hiệu hóa biểu mẫu
-      </Checkbox>
-
       <Form
         form={form}
         className="maintenance-form"
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         layout="horizontal"
-        disabled={componentDisabled}
         onFinish={handleSubmit}
       >
-        <Form.Item
-          label="Mã phiếu"
-          name="MaPhieu"
-        >
-          <Input value={maPhieu} disabled /> {/* Displaying the generated MaPhieu */}
+        {/* Mã phiếu */}
+        <Form.Item label="Mã phiếu" name="MaPhieu">
+          <Input value={maPhieu} disabled />
         </Form.Item>
 
-        <Form.Item label="Lý do bảo dưỡng" name="LyDoBaoDuong">
+        {/* Lý do bảo dưỡng */}
+        <Form.Item
+          label="Lý do bảo dưỡng"
+          name="LyDoBaoDuong"
+          rules={[{ required: true, message: 'Vui lòng nhập lý do bảo dưỡng!' }]} >
           <Input.TextArea rows={3} />
         </Form.Item>
 
-        <Form.Item
-          label="Tên nhân viên"
-          name="MaNV"
-        >
-          <Input value={employeeName} disabled /> {/* Disabled input for MaNV */}
+        {/* Tên nhân viên */}
+        <Form.Item label="Tên nhân viên" name="TenNV">
+          <Input value={employeeName} disabled />
         </Form.Item>
 
+        {/* Thông tin thiết bị */}
+        {tool && (
+          <>
+            <h2>Thông tin thiết bị</h2>
+            <Form.Item label="Mã Thiết Bị">
+              <Input value={tool.MaDungCu} disabled />
+            </Form.Item>
+            <Form.Item label="Tên Thiết Bị">
+              <Input value={tool.TenDungCu} disabled />
+            </Form.Item>
+            <Form.Item
+              label="Đơn Giá"
+              validateStatus={tool.DonGia <= 0 ? 'error' : ''}
+              help={tool.DonGia <= 0 && 'Đơn giá phải lớn hơn 0'}>
+              <InputNumber
+                min={0}
+                value={tool.DonGia}
+                onChange={(value) => setTool({ ...tool, DonGia: value })}
+              />
+            </Form.Item>
+          </>
+        )}
 
-        <h2>Danh sách thiết bị bảo dưỡng</h2>
-        <List
-          bordered
-          dataSource={toolList}
-          renderItem={(item, index) => (
-            <List.Item>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Form.Item
-                  label="Mã Thiết Bị"
-                  validateStatus={!item.MaDungCu ? 'error' : ''}
-                  help={!item.MaDungCu && 'Vui lòng nhập mã thiết bị'}
-                >
-                  <Input
-                    value={item.MaDungCu}
-                    onChange={(e) => handleToolChange(index, 'MaDungCu', e.target.value)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="Đơn Giá"
-                  validateStatus={item.DonGia <= 0 ? 'error' : ''}
-                  help={item.DonGia <= 0 && 'Đơn giá phải lớn hơn 0'}
-                >
-                  <InputNumber
-                    min={0}
-                    value={item.DonGia}
-                    onChange={(value) => handleToolChange(index, 'DonGia', value)}
-                  />
-                </Form.Item>
-              </Space>
-            </List.Item>
-          )}
-        />
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
-          <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
-            Thêm Thiết Bị
-          </Button>
-        </Form.Item>
+        {/* Nút gửi form */}
         <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
           <Button type="primary" htmlType="submit">
             Lập phiếu bảo dưỡng
@@ -202,8 +150,6 @@ const Maintenance = () => {
         </Form.Item>
       </Form>
     </div>
-    </>
-   
   );
 };
 
