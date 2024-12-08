@@ -359,4 +359,21 @@ h2{
       font-size: 12px;
     }
   }
+  .custom-button {
+    width: 50px;         // Chiều rộng của nút
+    height: 50px;         // Chiều cao của nút
+    margin: 20px auto;    // Căn lề trên và dưới là 20px, căn giữa theo chiều ngang
+    font-size: 13px;      // Kích thước chữ
+  
+    // Responsive: Điều chỉnh kích thước nút trên các màn hình khác nhau
+    @media (max-width: 768px) {
+      width: 100%;       // Trên màn hình nhỏ, nút chiếm toàn bộ chiều rộng cột
+      margin: 10px 0;    // Giảm margin
+    }
+  
+    @media (min-width: 992px) {
+      width: 250px;      // Trên màn hình lớn, tăng chiều rộng nút
+    }
+  }
+  
 }

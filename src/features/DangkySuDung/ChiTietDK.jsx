@@ -24,6 +24,7 @@ const ChiTietPhieuDangKi = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
+        // Fetch the registration details
         const { registeredDetails, deviceDetails, toolDetails } = await getPhieuDetails(maPhieuDK);
         setRegisteredDetails(registeredDetails || {});
 
@@ -41,36 +42,37 @@ const ChiTietPhieuDangKi = () => {
           soDT: employee.soDT,
         });
 
-        // Device details
-        const deviceDetailsWithNames = await Promise.all(
-          deviceDetails.map(async (device) => {
-            try {
-              const deviceInfo = await getDeviceById(device.maThietBi);
-              return { ...device, tenThietBi: deviceInfo.tenThietBi };
-            } catch (error) {
-              console.error(`Error fetching device: ${device.maThietBi}`, error);
-              return { ...device, tenThietBi: 'Device not found' };
-            }
-          })
-        );
-
-        // Tool details
-        const toolDetailsWithNames = await Promise.all(
-          toolDetails.map(async (tool) => {
-            try {
-              const toolInfo = await getToolById(tool.maDungCu);
-              return { ...tool, tenDungCu: toolInfo.tenDungCu };
-            } catch (error) {
-              console.error(`Error fetching tool: ${tool.maDungCu}`, error);
-              return { ...tool, tenDungCu: 'Tool not found' };
-            }
-          })
-        );
-
-        setDeviceDetails(deviceDetailsWithNames);
-        setToolDetails(toolDetailsWithNames);
+        // Handle devices and tools with valid checks
+        if (deviceDetails?.length) {
+          const deviceDetailsWithNames = await Promise.all(
+            deviceDetails.map(async (device) => {
+              try {
+                const deviceInfo = await getDeviceById(device.maThietBi);
+                return { ...device, tenThietBi: deviceInfo.tenThietBi };
+              } catch {
+                return { ...device, tenThietBi: 'Device not found' };
+              }
+            })
+          );
+          setDeviceDetails(deviceDetailsWithNames);
+        }
+    
+        // Handle tools
+        if (toolDetails?.length) {
+          const toolDetailsWithNames = await Promise.all(
+            toolDetails.map(async (tool) => {
+              try {
+                const toolInfo = await getToolById(tool.maDungCu);
+                return { ...tool, tenDungCu: toolInfo.tenDungCu };
+              } catch {
+                return { ...tool, tenDungCu: 'Tool not found' };
+              }
+            })
+          );
+          setToolDetails(toolDetailsWithNames);
+        }
       } catch (error) {
-        message.error('Failed to load registration details.');
+        
       } finally {
         setLoading(false);
       }
@@ -166,7 +168,7 @@ const ChiTietPhieuDangKi = () => {
         </div>
         
         {/* Device List */}
-        {deviceDetail.length > 0 ? (
+        {deviceDetail && deviceDetail.length > 0 ? (
           <>
             <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
             <Table
@@ -187,7 +189,7 @@ const ChiTietPhieuDangKi = () => {
         )}
 
         {/* Tool List */}
-        {toolDetails.length > 0 ? (
+        {toolDetails && toolDetails.length > 0 ? (
           <>
             <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
             <Table
@@ -210,7 +212,7 @@ const ChiTietPhieuDangKi = () => {
 
         <Row gutter={[16, 16]}>
           <Col span={24} sm={12} md={8} lg={6}>
-            <Button type="primary" onClick={handleBack} block>
+            <Button type="primary" onClick={handleBack} block className="custom-button">
               Trở về
             </Button>
           </Col>

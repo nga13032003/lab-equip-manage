@@ -120,12 +120,13 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="14" icon={<FileAddOutlined />}>
           <Link to='/lap-phieu-de-xuat'> Lịch sử đề xuất thiết bị, dụng cụ mới</Link>
           </Menu.Item>
-          <Menu.Item key="15" icon={<FileAddOutlined />}>
-          <Link to='/lap-phieu-de-xuat'> Lịch sử đăng ký sử dụng</Link>
+          <Menu.Item key="15" icon={<ClockCircleOutlined />}>
+          <Link to='/thoi-gian-su-dung'> Lịch sử đăng ký sử dụng</Link>
           </Menu.Item>
-          <Menu.Item key="time1" icon={<ClockCircleOutlined />}>
-          <Link to='/thoi-gian-su-dung'>Thời gian sử dụng thiết bị</Link>
-          </Menu.Item>
+          <SubMenu key="sub2" icon={<FileAddOutlined />} title="Danh sách Phòng Thí Nghiệm">
+            <Menu.Item key="device-pos"><Link to='/danh-sach-vi-tri-thiet-bi'>Thiết Bị</Link></Menu.Item>
+            <Menu.Item key="tool-pos"><Link to='/danh-sach-vi-tri-dung-cu'>Dụng cụ</Link></Menu.Item>
+          </SubMenu>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
             <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
             <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>

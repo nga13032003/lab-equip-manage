@@ -1,168 +1,222 @@
 import React, { useState, useEffect } from 'react';
-import { Button, InputNumber, Table, message, Space, Input } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { getThoiGianSuDung, createThoiGianSuDung } from '../../api/thoiGianSuDung'; // API call functions
+import { Table, message, Tag, Select } from 'antd';
+import { fetchPhieuDangKi, getPhieuDetails } from '../../api/phieuDangKi';
+import { useNavigate } from 'react-router-dom';
+import './Timer.scss';
 
 const ThoiGianSuDung = () => {
-  const [timeRecords, setTimeRecords] = useState([]);
+  const [phieuDangKiList, setPhieuDangKiList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [newRecord, setNewRecord] = useState({
-    maPhieuDK: '',
-    maThietBi: '',
-    maNV: '',
-    soGio: 0
-  });
-
-  // Fetch existing time usage records when component loads
+  const navigate = useNavigate();
+  // Load danh sách phiếu đăng ký khi component mount
   useEffect(() => {
-    fetchTimeRecords();
+    loadPhieuDangKiList();
   }, []);
 
-  const fetchTimeRecords = async () => {
+  const loadPhieuDangKiList = async () => {
     setIsLoading(true);
     try {
-      const data = await getThoiGianSuDung(); // Fetch data from API
-      setTimeRecords(data);
+      const data = await fetchPhieuDangKi();
+      setPhieuDangKiList(data);
     } catch (error) {
-      message.error('Error fetching time records');
+      message.error('Lỗi khi tải danh sách phiếu đăng ký');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateTimeRecord = async () => {
-    setIsCreating(true);
-    try {
-      await createThoiGianSuDung(newRecord); // Call the API to create a new time record
-      message.success('Thời gian sử dụng đã được xác nhận thành công!');
-      fetchTimeRecords(); // Refresh the list of time records
-      setNewRecord({ maPhieuDK: '', maThietBi: '', maNV: '', soGio: 0 }); // Reset the form
-    } catch (error) {
-      message.error('Có lỗi xảy ra khi tạo phiếu thời gian sử dụng');
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  // Define columns for the table
-  const columns = [
-    {
-      title: 'Mã Phiếu Đăng Ký',
-      dataIndex: 'maPhieuDK',
-      key: 'maPhieuDK',
-    },
-    {
-      title: 'Mã Thiết Bị',
-      dataIndex: 'maThietBi',
-      key: 'maThietBi',
-    },
-    {
-      title: 'Mã Nhân Viên',
-      dataIndex: 'maNV',
-      key: 'maNV',
-    },
-    {
-        title: 'Số Giờ',
-        dataIndex: 'soGio',
-        key: 'soGio',
-        render: (text, record) => (
-          <InputNumber
-            defaultValue={text}
-            min={0} // Set minimum value to 0
-            max={24} // Set maximum value to 24 (or your desired max value)
-            step={1} // Allow 0.5-hour increments
-            onChange={(value) => {
-              record.soGio = value; // Update the value in the record
-            }}
-          />
-        ),
-      },
-    {
-      title: 'Xác Nhận',
-      key: 'confirm',
-      render: (_, record) => (
-        <Button
-          type="primary"
-          onClick={() => handleCreateTimeRecord(record)}
-          loading={isCreating}
-        >
-          Xác Nhận
-        </Button>
-      ),
-    },
-  ];
-
-  // Form to add a new time usage record
-  const handleInputChange = (e, field) => {
-    const value = e.target ? e.target.value : e; // Handle input changes for text fields and number fields
-    setNewRecord((prevState) => ({
-      ...prevState,
-      [field]: value,
+  // Tạo bộ lọc từ dữ liệu hiện tại
+  const getFilters = (dataIndex) => {
+    return Array.from(
+      new Set(phieuDangKiList.map((item) => item[dataIndex]))
+    ).map((value) => ({
+      text: value || 'N/A',
+      value: value || 'N/A',
     }));
   };
 
-  const handleEditSoGio = (id, value) => {
-    setTimeRecords((prev) =>
-      prev.map((record) =>
-        record.id === id ? { ...record, soGio: value } : record
-      )
-    );
-  };
-  
+  const columns = [
+    {
+      title: 'Mã phiếu đăng ký',
+      dataIndex: 'maPhieuDK',
+      key: 'maPhieuDK',
+      filters: getFilters('maPhieuDK'),
+      onFilter: (value, record) => record.maPhieuDK === value,
+      render: (text, record) => (
+        <span className={`filter-record-${record.maPhieuDK}`}>
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: 'Mã nhân viên',
+      dataIndex: 'maNV',
+      key: 'maNV',
+      filters: getFilters('maNV'),
+      onFilter: (value, record) => record.maNV === value,
+      render: (text, record) => (
+        <span className={`filter-record-${record.maNV}`}>
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: 'Mã phòng',
+      dataIndex: 'maPhong',
+      key: 'maPhong',
+      filters: getFilters('maPhong'),
+      onFilter: (value, record) => record.maPhong === value,
+      render: (text, record) => (
+        <span className={`filter-record-${record.maPhong}`}>
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: 'Ngày lập',
+      dataIndex: 'ngayLap',
+      key: 'ngayLap',
+      render: (date) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
+      filters: getFilters('ngayLap'),
+      onFilter: (value, record) =>
+        new Date(record.ngayLap).toLocaleDateString() === value,
+    },
+    {
+      title: 'Ngày hoàn tất',
+      dataIndex: 'ngayHoanTat',
+      key: 'ngayHoanTat',
+      render: (date) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
+      filters: getFilters('ngayHoanTat'),
+      onFilter: (value, record) =>
+        new Date(record.ngayHoanTat).toLocaleDateString() === value,
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'trangThai',
+      key: 'trangThai',
+      render: (status) => {
+        let color = '';
+        switch (status) {
+          case 'Đã phê duyệt':
+            color = 'green';
+            break;
+          case 'Không được phê duyệt':
+            color = '#990000';
+            break;
+          default:
+            color = 'volcano';
+        }
+        return (
+          <Tag color={color}>
+            {status}
+          </Tag>
+        );
+      },
+      filters: [
+        { text: 'Tất cả', value: 'all' },
+        ...getFilters('trangThai'),
+      ],
+      onFilter: (value, record) => {
+        if (value === 'all') return true; // Hiển thị tất cả nếu chọn "Tất cả"
+        return record.trangThai === value;
+      },
+    },    
+    {
+      title: 'Lý do đăng ký',
+      dataIndex: 'lyDoDK',
+      key: 'lyDoDK',
+      filters: getFilters('lyDoDK'),
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'ghiChu',
+      key: 'ghiChu',
+      filters: getFilters('ghiChu'),
+    },
+    {
+      title: 'Hành động',
+      dataIndex: 'hanhDong',
+      key: 'hanhDong',
+      render: (_, record) => {
+        const handleButtonClick = (e) => {
+          e.stopPropagation(); 
+          if (record.trangThai === 'Đã phê duyệt') {
+            navigate(`/chi-tiet-thoi-gian-su-dung/${record.maPhieuDK}`);
+          }
+        };
+    
+        if (record.trangThai === 'Chưa phê duyệt') {
+          return (
+            <button
+              className="btn-disabled"
+              disabled
+              style={{
+                backgroundColor: 'gray',
+                color: '#fff',
+                padding: '5px 10px',
+                borderRadius: '5px',
+                cursor: 'not-allowed',
+              }}
+            >
+              Bắt đầu sử dụng
+            </button>
+          );
+        } else if (record.trangThai === 'Không được phê duyệt') {
+          return (
+            <button
+              className="btn-disabled"
+              disabled
+              style={{
+                backgroundColor: 'gray',
+                color: '#fff',
+                padding: '5px 10px',
+                borderRadius: '5px',
+                cursor: 'not-allowed',
+              }}
+            >
+              Không được phép
+            </button>
+          );
+        } else if (record.trangThai === 'Đã phê duyệt') {
+          return (
+            <button
+              className="btn-active"
+              style={{
+                padding: '5px 10px',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+              onClick={handleButtonClick}
+            >
+              Bắt đầu sử dụng
+            </button>
+          );
+        }
+        return null;
+      },
+    }
+  ];
 
   return (
-    <div className="time-usage-container">
-      <h2>Quản lý Thời Gian Sử Dụng</h2>
-
-      {/* Form to create a new time record */}
-      <Space direction="vertical" style={{ width: '100%', marginBottom: 20 }}>
-        
-        <Input
-          value={newRecord.maPhieuDK}
-          onChange={(e) => handleInputChange(e, 'maPhieuDK')}
-          placeholder="Mã Phiếu Đăng Ký"
-        />
-        <Input
-          value={newRecord.maThietBi}
-          onChange={(e) => handleInputChange(e, 'maThietBi')}
-          placeholder="Mã Thiết Bị"
-        />
-        <Input
-          value={newRecord.maNV}
-          onChange={(e) => handleInputChange(e, 'maNV')}
-          placeholder="Mã Nhân Viên"
-        />
-         <InputNumber
-          value={newRecord.soGio}
-          onChange={(value) => handleInputChange(value, 'soGio')}
-          min={0}
-          max={24}
-          step={1}
-          placeholder="Số Giờ"
-        />
-      </Space>
-
-      {/* Create new time record button */}
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={handleCreateTimeRecord}
-        loading={isCreating}
-      >
-        Thêm Thời Gian Sử Dụng
-      </Button>
-
-      {/* Table of existing time usage records */}
+    <div>
       <Table
+      className='table-container'
         loading={isLoading}
-        dataSource={timeRecords}
+        dataSource={phieuDangKiList}
         columns={columns}
-        rowKey="id"
+        rowKey="maPhieuDK"
         pagination={{ pageSize: 5 }}
         scroll={{ x: true }}
-        style={{ marginTop: 20 }}
+        rowClassName={(record) =>
+          new Date(record.ngayHoanTat) < new Date(record.ngayLap)
+            ? 'status-pending'
+            : ''
+        }
+        onRow={(record) => ({
+          onClick: () => navigate(`/chi-tiet-phieu-dang-ky/${record.maPhieuDK}`), // Chuyển đến trang chi tiết
+        })}
       />
+      
     </div>
   );
 };

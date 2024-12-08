@@ -1,0 +1,136 @@
+// Đặt chung cho container của bảng
+.ant-table-container {
+    margin-top: 50px;
+    margin: auto;
+  }
+  
+  .table-container {
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Bộ lọc
+  .ant-select {
+    margin-bottom: 20px;
+    width: 200px;
+  }
+  
+  .ant-select-selector {
+    display: flex;
+    border-radius: 6px;
+    height: 40px;
+  }
+  
+  .ant-select-selection-item {
+    font-size: 10px;
+    color: #555555;
+  }
+  
+  .ant-select-dropdown {
+    border-radius: 6px;
+  }
+  .ant-dropdown-menu-title-content{
+    display: flex; // Sử dụng flex để sắp xếp nội dung ngang hàng
+    align-items: center; // Căn giữa theo trục dọc
+    justify-content: space-between; 
+    white-space: nowrap; // Ngăn nội dung xuống dòng
+    overflow: hidden; // Ẩn nội dung bị tràn
+    text-overflow: ellipsis; // Hiển thị dấu "..." nếu nội dung quá dài
+    padding: 8px 16px; // Căn chỉnh khoảng cách nội dung bên trong
+    line-height: 1.5; // Chiều cao dòng đồng đều
+    gap: 8px;
+  }
+  .ant-table-filter-dropdown .ant-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px; /* Khoảng cách giữa các checkbox */
+  }
+  
+  .ant-table-filter-dropdown .ant-checkbox + span {
+    margin-left: 8px; /* Khoảng cách giữa checkbox và text */
+  }
+  
+  /* Các record hiển thị trong một hàng ngang */
+  .ant-table-filter-dropdown .ant-checkbox-group {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép các checkbox ngồi trong các dòng */
+    gap: 8px; /* Khoảng cách giữa các checkbox */
+  }
+  
+  /* Style cho các record */
+  .filter-record {
+    display: inline-block;
+    margin-right: 8px; /* Khoảng cách giữa các record */
+  }
+ 
+  // Bảng
+  .ant-table {
+    border-radius: 8px;
+    overflow: hidden;
+  
+    .ant-table-thead > tr > th {
+      background-color: #e6f7ff;
+      color: #1890ff;
+      font-weight: bold;
+      text-align: center;
+      font-size: 13px;
+    }
+  
+    .ant-table-tbody > tr > td {
+      text-align: center;
+      font-size: 13px;
+    }
+  }
+  
+  // Màu nền theo trạng thái
+  .ant-table-row {
+    &.row-highlight {
+      background-color: #ffccc7 !important;
+    }
+  
+    &:hover {
+      background-color: #e6f7ff !important;
+    }
+  
+    &.status-approved {
+      background-color: #eaffea;
+    }
+  
+    &.status-pending {
+      background-color: #ffffff;
+    }
+  
+    &.status-rejected {
+      background-color: #ffe6e6;
+    }
+  }
+  
+  // Bộ lọc và bảng phối hợp
+  .filter-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px;
+  
+    .filter-label {
+      font-size: 16px;
+      margin-right: 10px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+.btn-active{
+  font-weight: bold;
+  border: solid rgb(242, 246, 248);
+  width: 130px;
+  background-color: #feffff;
+  color: #1f8cf3;
+
+  &:hover{
+    background-color: #e6f7ff !important;
+  }
+}
+  
