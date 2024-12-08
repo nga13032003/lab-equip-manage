@@ -41,7 +41,7 @@ const Device = () => {
     if (!isLoggedIn) {
       navigate('/login');
     } else {
-      navigate(`/PhieuBaoTri/${device.maThietBi}`, { state: { device } });
+      navigate(`/PhieuBaoTri/${device}`, { state: { device } });
     }
   };
 
@@ -69,48 +69,53 @@ const Device = () => {
         {devices.filter((device) => !device.isDeleted).length === 0 ? (
           <p>Không có thiết bị nào trong danh mục này.</p>
         ) : (
-          devices
-            .filter((device) => !device.isDeleted) 
-            .map((device) => {
-              const maintenanceStatus = isMaintenanceDue(device.ngayCapNhat);
-  
-              return (
-                <div
-                  key={device.maThietBi}
-                  className={`device-card rounded-lg p-4 border transition-transform transform cursor-pointer relative
-                    ${maintenanceStatus === 'due' ? 'bg-red-200 border-red-500' : ''}
-                    ${maintenanceStatus === 'soon' ? 'bg-yellow-200 border-yellow-500' : ''}`}
-                  onClick={() => handleDeviceClick(device.maThietBi)}
-                >
-                  <img
-                    src={device.hinhAnhUrl || 'default-image.jpg'}
-                    alt={device.tenThietBi}
-                    className="device-image w-full aspect-square object-cover rounded-lg mb-3"
-                  />
-                  <h3 className="text-lg font-medium text-gray-800">{device.tenThietBi}</h3>
-                  <p className="text-sm text-gray-600">Xuất xứ: {device.xuatXu}</p>
-                  <p className="text-sm text-gray-600">Tình trạng: {device.tinhTrang}</p>
-                  <p className="text-sm text-gray-600">
-                    Ngày bảo hành: {new Date(device.ngayBaoHanh).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Ngày cập nhật: {new Date(device.ngayCapNhat).toLocaleDateString()}
-                  </p>
-                  {maintenanceStatus && (
-                    <button
-                      onClick={(event) => handleMaintenanceClick(device.maThietBi, event)}
-                      className={`mt-2 px-4 py-2 rounded text-white ${
-                        maintenanceStatus === 'due' ? 'bg-red-500' : 'bg-yellow-500'
-                      } hover:opacity-90`}
-                    >
-                      {maintenanceStatus === 'due'
-                        ? 'Cần bảo trì ngay!'
-                        : 'Sắp đến hạn bảo trì'}
-                    </button>
-                  )}
-                </div>
-              );
-            })
+          devices.map((device) => {
+            const maintenanceStatus = isMaintenanceDue(device.ngayCapNhat);
+
+            return (
+              <div
+                key={device.maThietBi}
+                className={`device-card rounded-lg p-4 border transition-transform transform cursor-pointer relative
+                  ${maintenanceStatus === 'due' ? 'bg-red-200 border-red-500' : ''}
+                  ${maintenanceStatus === 'soon' ? 'bg-yellow-200 border-yellow-500' : ''}`}
+                onClick={() => handleDeviceClick(device.maThietBi)}
+              >
+                <img
+                  src={device.hinhAnhUrl || 'default-image.jpg'}
+                  alt={device.tenThietBi}
+                  className="device-image w-full aspect-square object-cover rounded-lg mb-3"
+                />
+                <h3 className="text-lg font-medium text-gray-800">{device.tenThietBi}</h3>
+                {/* <p className="text-sm text-gray-600">
+                  Loại: {device.loaiThietBi?.tenLoaiThietBi || 'Không rõ'}
+                </p> */}
+                <p className="text-sm text-gray-600">Xuất xứ: {device.xuatXu}</p>
+                <p className="text-sm text-gray-600">
+                  Tình trạng: {device.tinhTrang}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Ngày bảo hành:{' '}
+                  {new Date(device.ngayBaoHanh).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Ngày cập nhật:{' '}
+                  {new Date(device.ngayCapNhat).toLocaleDateString()}
+                </p>
+                {maintenanceStatus && (
+                  <button
+                    onClick={(event) => handleMaintenanceClick(device.maThietBi, event)}
+                    className={`mt-2 px-4 py-2 rounded text-white ${
+                      maintenanceStatus === 'due' ? 'bg-red-500' : 'bg-yellow-500'
+                    } hover:opacity-90`}
+                  >
+                    {maintenanceStatus === 'due'
+                      ? 'Cần bảo trì ngay!'
+                      : 'Sắp đến hạn bảo trì'}
+                  </button>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

@@ -99,7 +99,7 @@ const App = () => {
             <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
-           <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
+           <Route path="/PhieuBaoTri/:maThietBi" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
            <Route path="/bao-dao-tao" element={<DefaultLayout><DaoTao/></DefaultLayout>} />
            <Route path="/lich-su-de-xuat" element={<DefaultLayout><LichSuPhieuDeXuat/></DefaultLayout>} />
            <Route path="/nhap-hang/:maPhieu" element={<DefaultLayout><PhieuNhapDeXuat/></DefaultLayout>} />
