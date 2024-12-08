@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select } from 'antd';
 import { createPhieuDangKi, getExistingPhieuDangKi } from '../../api/phieuDangKi';
@@ -11,6 +11,7 @@ import { fetchDeviceTypes } from '../../api/deviceTypeApi';
 import { fetchDevicesByType } from '../../api/deviceApi';
 import { fetchToolTypes } from '../../api/toolTypeApi';
 import { fetchToolsByType } from '../../api/toolApi';
+import { getAllPhongThiNghiem, getDungCuInLab, getDevicesInLab } from '../../api/labApi';
 
 const PhieuDangKySuDung = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -24,6 +25,8 @@ const PhieuDangKySuDung = () => {
   const [toolTypes, setToolTypes] = useState([]); // Danh sách loại thiết bị
   const [selectedToolType, setSelectedToolType] = useState(''); // Mã loại thiết bị được chọn
   const [filteredTools, setFilteredTools] = useState([]); // Danh sách thiết bị theo loại
+  const [phongThiNghiemList, setPhongThiNghiemList] = useState([]);
+  const [selectedPhong, setSelectedPhong] = useState(null);  
   const [maphieudk, setMaphieudk] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -62,26 +65,47 @@ const PhieuDangKySuDung = () => {
     fetchToolTypesData();
   }, []);
 
-  const handleDeviceTypeChange = async (maLoaiThietBi) => {
-    setSelectedDeviceType(maLoaiThietBi);
+  useEffect(() => {
+    const fetchPhongThiNghiemList = async () => {
+      try {
+        const data = await getAllPhongThiNghiem();
+        setPhongThiNghiemList(data || []); // Lưu danh sách phòng thí nghiệm vào state
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách phòng thí nghiệm');
+      }
+    };
+    fetchPhongThiNghiemList();
+  }, []);
+
+  const handleDeviceTypeChange = async (index, maLoaiThietBi) => {
     try {
       const devices = await fetchDevicesByType(maLoaiThietBi);
-      setFilteredDevices(devices);
+      setDeviceList((prevList) =>
+        prevList.map((device, idx) =>
+          idx === index
+            ? { ...device, MaLoaiThietBi: maLoaiThietBi, filteredDevices: devices }
+            : device
+        )
+      );
     } catch (error) {
       message.error('Lỗi khi tải danh sách thiết bị');
     }
   };
-
-  const handleToolTypeChange = async (maLoaiDC) => {
-    setSelectedToolType(maLoaiDC);
+  
+  const handleToolTypeChange = async (index, maLoaiDC) => {
     try {
       const tools = await fetchToolsByType(maLoaiDC);
-      setFilteredTools(tools);
+      setToolList((prevList) =>
+        prevList.map((tool, idx) =>
+          idx === index
+            ? { ...tool, MaLoaiDC: maLoaiDC, filteredTools: tools }
+            : tool
+        )
+      );
     } catch (error) {
       message.error('Lỗi khi tải danh sách dụng cụ');
     }
   };
-  
 
   const generateRandomMaPhieuDK = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -119,7 +143,8 @@ useEffect(() => {
   }, [maphieudk, form]);
 
   const handleAddDevice = useCallback(() => {
-    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: moment().toISOString(), NgayKetThuc: null  }]);
+    setDeviceList((prevList) => [...prevList, { MaThietBi: '', NgayDangKi: dayjs().format('YYYY-MM-DDTHH:mm:ss')
+      , NgayKetThuc: null  }]);
   }, []);
 
   const handleDeviceChange = useCallback((index, field, value) => {
@@ -127,8 +152,8 @@ useEffect(() => {
       prevList.map((device, idx) => {
         if (idx === index) {
           if (field === 'MaThietBi') {
-            const selectedDevice = filteredDevices.find(
-              (device) => device.maThietBi === value
+            const selectedDevice = device.filteredDevices.find(
+              (item) => item.maThietBi === value
             );
             return {
               ...device,
@@ -141,15 +166,15 @@ useEffect(() => {
         return device;
       })
     );
-  }, [filteredDevices]);
-  
+  }, []);
 
   
 
   const handleAddTool = useCallback(() => {
     setToolList((prevList) => [
       ...prevList,
-      { MaDungCu: '', SoLuong: 1, NgayDangKi: moment().toISOString(), NgayKetThuc: null  }
+      { MaDungCu: '', SoLuong: 1, NgayDangKi: dayjs().format('YYYY-MM-DDTHH:mm:ss')
+        , NgayKetThuc: null  }
     ]);
   }, []);
 
@@ -158,8 +183,8 @@ useEffect(() => {
       prevList.map((tool, idx) => {
         if (idx === index) {
           if (field === 'MaDungCu') {
-            const selectedTool = filteredTools.find(
-              (tool) => tool.maDungCu === value
+            const selectedTool = tool.filteredTools.find(
+              (item) => item.maDungCu === value
             );
             return {
               ...tool,
@@ -172,7 +197,7 @@ useEffect(() => {
         return tool;
       })
     );
-  }, [filteredTools]);
+  }, []);
 
 
   const handleSubmit = async (values) => {
@@ -183,9 +208,10 @@ useEffect(() => {
       const payload = {
         maphieudk: maphieudk,
         maNV: employeeCode,
+        maPhong: selectedPhong, 
         lyDoDK: values.LyDoDK,
         ghiChu: values.GhiChu,
-        ngayLap: new Date().toISOString(),
+        ngayLap: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
         trangThai: 'Chưa phê duyệt',
         ngayHoanTat: null, 
       };
@@ -199,9 +225,14 @@ useEffect(() => {
             maphieudk: maphieudk,
             MaThietBi: device.MaThietBi,
             tenThietBi: device.tenThietBi,
-            NgayDangKi: new Date().toISOString(),
-            ngayKetThuc: device.ngayKetThuc ? moment(device.ngayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
-            
+            NgayDangKi: dayjs(device.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            ngayKetThuc: device.ngayKetThuc 
+            ? dayjs(device.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
+            : null,
+            trangThaiSuDung: 'Chưa sử dụng',
+            tinhTrangSuDung: '',
+            ngayBatDauThucTe: null,
+            ngayKetThucThucTe: null,
         };
         return createChiTietDangKiThietBi(newChitietThietBi);
         });
@@ -212,8 +243,14 @@ useEffect(() => {
             MaDungCu: tool.MaDungCu,
             tenDungCu: tool.tenDungCu,
             SoLuong: tool.SoLuong,
-            NgayDangKi: new Date().toISOString(),
-            NgayKetThuc: tool.NgayKetThuc ? moment(tool.NgayKetThuc, 'YYYY-MM-DD HH:mm:ss').toISOString() : null,
+            NgayDangKi: dayjs(tool.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            NgayKetThuc: tool.NgayKetThuc
+            ? dayjs(tool.NgayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
+            : null,
+            trangThaiSuDung: 'Chưa sử dụng',
+            tinhTrangSuDung: '',
+            ngayBatDauThucTe: null,
+            ngayKetThucThucTe: null,
         };
 
         console.log('Device Details:', newChiTiet);
@@ -227,6 +264,7 @@ useEffect(() => {
       form.resetFields();
       setDeviceList([]);
       setToolList([]);
+      setSelectedPhong(null);
       fetchAndGenerateUniqueMaPhieu();
       navigate(`/chi-tiet-phieu-dang-ky/${maphieudk}`);
     } catch (error) {
@@ -268,6 +306,23 @@ useEffect(() => {
         >
           <Input value={employeeName} disabled /> {/* Disabled input for MaNV */}
         </Form.Item>
+        <Form.Item
+          label="Phòng thí nghiệm"
+          name="MaPhong"
+          rules={[{ required: true, message: 'Vui lòng chọn phòng thí nghiệm' }]}
+        >
+          <Select
+            placeholder="Chọn phòng thí nghiệm"
+            onChange={(value) => setSelectedPhong(value)} // Cập nhật mã phòng được chọn
+          >
+            {phongThiNghiemList.map((phong) => (
+              <Select.Option key={phong.maPhong} value={phong.maPhong}>
+                {phong.loaiPhong}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
 
         <Form.Item label="Ghi chú" name="GhiChu">
           <Input.TextArea rows={3} />
@@ -280,11 +335,11 @@ useEffect(() => {
           renderItem={(item, index) => (
             <List.Item key={index}>
               <Space direction="vertical" style={{ width: '100%' }}>
-              <Form.Item label="Loại thiết bị">
+                <Form.Item label="Loại thiết bị">
                   <Select
                     placeholder="Chọn loại thiết bị"
-                    onChange={handleDeviceTypeChange}
-                    value={selectedDeviceType}
+                    onChange={(value) => handleDeviceTypeChange(index, value)}
+                    value={item.MaLoaiThietBi}
                   >
                     {deviceTypes.map((type) => (
                       <Select.Option key={type.maLoaiThietBi} value={type.maLoaiThietBi}>
@@ -296,50 +351,47 @@ useEffect(() => {
                 <Form.Item label="Tên thiết bị">
                   <Select
                     placeholder="Chọn tên thiết bị"
-                    onChange={(value) =>
-                      handleDeviceChange(index, 'MaThietBi', value)
-                    } // Thay đổi mã thiết bị được chọn
+                    onChange={(value) => handleDeviceChange(index, 'MaThietBi', value)}
                     value={item.MaThietBi}
                   >
-                    {filteredDevices.map((device) => (
+                    {item.filteredDevices?.map((device) => (
                       <Select.Option key={device.maThietBi} value={device.maThietBi}>
                         {device.tenThietBi}
                       </Select.Option>
                     ))}
                   </Select>
-
+                </Form.Item>
                 <Form.Item label="Ngày đăng ký">
                   <Input
-                    value={moment().format('DD-MM-YYYY HH:mm:ss')}
+                    value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
                     disabled
+                    className="input-ngaydk"
                   />
                 </Form.Item>
                 <Form.Item
-                   label="Ngày kết thúc"
-                   name={`ngayKetThuc-${index}`}
-                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
-                 >
-                   <DatePicker
-                    format="YYYY-MM-DD HH:mm:ss"
+                  label="Ngày kết thúc"
+                  name={`ngayKetThuc-${index}`}
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
+                >
+                  <DatePicker
+                    className="date-picker-ngaykt"
                     showTime
-                    disabledDate={(current) => current && current < moment().startOf('day')}
-                    onChange={(date) => {
-                      if (date) {
-                        handleDeviceChange(index, 'ngayKetThuc', date.toISOString());
-                      }
-                    }}
+                    format="YYYY-MM-DDTHH:mm:ss"
+                    onChange={(value) =>
+                      handleDeviceChange(index, 'ngayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                    }
                   />
-                </Form.Item>
                 </Form.Item>
               </Space>
             </List.Item>
           )}
         />
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+        <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
           <Button type="dashed" onClick={handleAddDevice} icon={<PlusOutlined />}>
             Thêm thiết bị
           </Button>
         </Form.Item>
+
         <h2>Danh sách dụng cụ</h2>
         <List
           bordered
@@ -347,11 +399,11 @@ useEffect(() => {
           renderItem={(item, index) => (
             <List.Item key={index}>
               <Space direction="vertical" style={{ width: '100%' }}>
-              <Form.Item label="Loại dụng cụ">
+                <Form.Item label="Loại dụng cụ">
                   <Select
                     placeholder="Chọn loại dụng cụ"
-                    onChange={handleToolTypeChange}
-                    value={selectedToolType}
+                    onChange={(value) => handleToolTypeChange(index, value)}
+                    value={item.MaLoaiDC}
                   >
                     {toolTypes.map((type) => (
                       <Select.Option key={type.maLoaiDC} value={type.maLoaiDC}>
@@ -363,18 +415,15 @@ useEffect(() => {
                 <Form.Item label="Tên dụng cụ">
                   <Select
                     placeholder="Chọn tên dụng cụ"
-                    onChange={(value) =>
-                      handleToolChange(index, 'MaDungCu', value)
-                    } 
+                    onChange={(value) => handleToolChange(index, 'MaDungCu', value)}
                     value={item.MaDungCu}
                   >
-                    {filteredTools.map((tool) => (
+                    {item.filteredTools?.map((tool) => (
                       <Select.Option key={tool.maDungCu} value={tool.maDungCu}>
                         {tool.tenDungCu}
                       </Select.Option>
                     ))}
                   </Select>
-
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
@@ -387,46 +436,44 @@ useEffect(() => {
                     onChange={(value) => handleToolChange(index, 'SoLuong', value)}
                   />
                 </Form.Item>
-                <Form.Item
-                label="Ngày đăng ký"
-                
-                >
-                    <Input
-                  value={moment().format('DD-MM-YYYY HH:mm:ss')}
-                  disabled
-                />
-                
+                <Form.Item label="Ngày đăng ký">
+                  <Input
+                    value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
+                    disabled
+                    className="input-ngaydk"
+                  />
+                </Form.Item>
                 <Form.Item
                   label="Ngày kết thúc"
                   name={`NgayKetThuc-${index}`}
                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                 >
                   <DatePicker
-                    format="YYYY-MM-DD HH:mm:ss"
+                    className="date-picker-ngaykt"
                     showTime
-                    disabledDate={(current) => current && current < moment().startOf('day')}
-                    onChange={(date) => {
-                      if (date) {
-                        handleToolChange(index, 'NgayKetThuc', date.toISOString());
-                      }
-                    }}
+                    format="YYYY-MM-DDTHH:mm:ss"
+                    onChange={(value) =>
+                      handleToolChange(index, 'NgayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                    }
                   />
-                </Form.Item>
-
                 </Form.Item>
               </Space>
             </List.Item>
           )}
         />
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+        <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
           <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
             Thêm dụng cụ
           </Button>
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
-          <Button type="primary" htmlType="submit">
+
+        <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
+        <div className="flex flex-wrap justify-between gap-4 sm:flex-col md:flex-row">
+        <Button type="primary" htmlType="submit" className="w-full sm:w-auto">
             Lập phiếu đăng ký
           </Button>
+          </div>
+          
         </Form.Item>
       </Form>
     </div>

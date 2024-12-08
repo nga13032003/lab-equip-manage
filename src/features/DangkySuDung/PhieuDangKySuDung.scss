@@ -1,131 +1,136 @@
+// Colors
+$primary-color: #4e73df; // A shade of blue
+$secondary-color: #1cc88a; // A shade of green
+$danger-color: #e74a3b; // Red color for errors or warnings
+$background-color: #f8f9fc; // Light background
+$border-color: #e3e6f0; // Border color for inputs and buttons
+$text-color: #5a5c69; // Text color for labels and general content
+
+// Fonts
+$font-family: 'Roboto', sans-serif; // Example font
+$heading-font-family: 'Montserrat', sans-serif; // Header font
+
+// Box Shadows for inputs and buttons
+$box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
+
+// Button styling
+$button-padding: 10px 20px;
+$button-border-radius: 5px;
+
 // Container
 .phieu-dang-ky-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  // Title
-  .phieu-dang-ky-title {
-    text-align: center;
-    font-size: 24px;
+  background-color: $background-color;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 30px auto;
+}
+
+.phieu-dang-ky-title {
+  font-family: $heading-font-family;
+  color: $primary-color;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.phieu-dang-ky-form {
+  .ant-form-item-label {
+    color: $text-color;
+    font-family: $font-family;
     font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
   }
-  
-  // Form
-  .phieu-dang-ky-form {
-    .ant-form-item {
-      margin-bottom: 16px;
-  
-      label {
-        font-weight: 500;
-        color: #555;
-      }
+
+  .ant-form-item-control-input {
+    border: none;
+    font-family: $font-family;
+    padding: 10px;
+  }
+  .ant-form-item-control-input:focus {
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
+  }
+
+  .ant-input, .ant-select-selector {
+    font-family: $font-family;
+    padding: 10px;
+  }
+
+  .ant-input:focus, .ant-select-focused .ant-select-selector {
+    border-color: $primary-color;
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
+  }
+
+  .ant-btn {
+    font-family: $font-family;
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: $button-padding;
+    border-radius: $button-border-radius;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    &:hover {
+      background-color: darken($primary-color, 10%);
     }
-  
-    textarea {
-      resize: none;
-    }
-  }
-  
-  // List and Tools
-  .phieu-dang-ky-form h2 {
-    font-size: 20px;
-    font-weight: 500;
-    margin-top: 30px;
-    color: #444;
-  }
-  
-  .ant-list {
-    margin-top: 10px;
-  }
-  
-  .ant-list-item {
-    background-color: #fff;
-    padding: 16px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 10px;
-  
-    .ant-form-item {
-      margin-bottom: 10px;
-  
-      input,
-      .ant-input-number {
-        width: 100%;
-      }
+
+    &:disabled {
+      background-color: #d3d3d3;
+      cursor: not-allowed;
     }
   }
-  
-  // Buttons
-  button {
-    border-radius: 6px;
-  
-    &.ant-btn-dashed {
-      border-style: dashed;
-      background-color: #fafafa;
-      color: #555;
-  
-      &:hover {
-        background-color: #e6f7ff;
-        color: #1890ff;
-      }
-    }
-  
-    &.ant-btn-primary {
-      background-color: #1890ff;
-      border: none;
-  
-      &:hover {
-        background-color: #40a9ff;
-      }
-    }
-  }
-  
-  // Checkbox
+
   .ant-checkbox-wrapper {
-    margin-bottom: 20px;
-  
-    .ant-checkbox {
-      margin-right: 8px;
-    }
-  
-    .ant-checkbox-inner {
-      border-radius: 4px;
-    }
+    font-family: $font-family;
+    color: $text-color;
   }
-  
-  // Media Queries for Responsive Design
-  @media (max-width: 768px) {
-    .phieu-dang-ky-container {
-      padding: 15px;
-    }
-  
-    .phieu-dang-ky-title {
-      font-size: 20px;
-    }
-  
-    .phieu-dang-ky-form {
-      .ant-form-item {
-        label {
-          font-size: 14px;
-        }
-      }
-    }
-  
-    .ant-list-item {
-      padding: 12px;
-    }
-  
-    button {
-      font-size: 14px;
-      padding: 8px 12px;
-    }
+
+  .input-ngaydk{
+    margin: 3px;
+    padding: 7px;
+    width: 459px;
   }
-  
+  .date-picker-ngaykt{
+    width: 459px;
+    padding: 7px;
+  }
+}
+
+.phieu-dang-ky-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: $primary-color;
+  margin-bottom: 24px;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: $secondary-color;
+  border-color: $secondary-color;
+}
+
+.ant-checkbox-inner {
+  border-radius: 3px;
+  border: 2px solid $primary-color;
+}
+
+.ant-select-selector {
+  border-color: $border-color;
+  background-color: #fff;
+}
+
+.ant-select-dropdown {
+  border-radius: 5px;
+  border: 1px solid $border-color;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ant-select-item-option-selected {
+  background-color: $secondary-color;
+  color: #fff;
+}
+
+.ant-input-number-handler-wrap {
+  display: none;
+}

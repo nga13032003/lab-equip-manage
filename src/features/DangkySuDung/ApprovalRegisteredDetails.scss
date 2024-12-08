@@ -1,188 +1,379 @@
+h2{
+  font-family: 'Times New Roman', serif;
+}
 .chitiet-proposal-container {
-    padding: 16px;
-    max-width: 1200px;
-    margin: 0 auto;
-  
-    .ant-card {
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Times New Roman', serif; /* Apply globally to the container */
+
+  .ant-card {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border: 1px solid #ddd;
+    font-family: 'Times New Roman', serif; /* Ensure font for card content */
+  }
+
+  .ant-card-title {
+    font-size: 24px;
+    color: #4a4a4a;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif; /* Font for card title */
+  }
+
+  .ant-typography {
+    margin-bottom: 8px;
+
+    &.ant-typography-title {
+      color: #333;
+      font-family: 'Times New Roman', serif; /* Font for typography titles */
     }
-  
-    .ant-card-title {
-      font-size: 24px;
-      color: #4a4a4a;
+
+    &.ant-typography-text {
+      font-size: 16px;
+      color: #555;
+      font-family: 'Times New Roman', serif; /* Font for typography text */
+
+      &.strong {
+        font-weight: bold;
+        color: #000;
+      }
+    }
+  }
+
+  .ant-list-item {
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    padding: 12px;
+    font-family: 'Times New Roman', serif; /* Font for list items */
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+
+    button {
+      width: 120px;
+      font-family: 'Times New Roman', serif; /* Font for buttons */
+    }
+  }
+
+  .ant-alert {
+    margin-top: 20px;
+    border-radius: 4px;
+    font-family: 'Times New Roman', serif; /* Font for alerts */
+  }
+
+  .info-container {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    font-family: 'Times New Roman', serif; /* Font for info container */
+  }
+
+  .section-title {
+    margin-top: 20px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    font-family: 'Times New Roman', serif; /* Font for section titles */
+  }
+
+  .info-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-family: 'Times New Roman', serif; /* Font for tables */
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
       font-weight: bold;
     }
-  
-    .ant-typography {
-      margin-bottom: 8px;
-  
-      &.ant-typography-title {
-        color: #333;
-      }
-  
-      &.ant-typography-text {
-        font-size: 16px;
-        color: #555;
-  
-        &.strong {
-          font-weight: bold;
-          color: #000;
-        }
-      }
+
+    td {
+      font-size: 16px;
+      color: #333;
     }
-  
-    .ant-list-item {
-      background-color: #ffffff;
-      border-radius: 4px;
-      margin-bottom: 8px;
+
+    .table-title {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #555;
+      font-family: 'Times New Roman', serif; /* Font for table titles */
+    }
+  }
+
+  .alert-box {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+    font-family: 'Times New Roman', serif; /* Font for alert box */
+  }
+
+  .btn-reject {
+    background-color: rgb(122, 41, 41);
+    color: #f0f0f0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .chitiet-proposal-container {
       padding: 12px;
     }
-  
+
+    .ant-card {
+      padding: 16px;
+    }
+
+    .ant-card-title {
+      font-size: 20px;
+    }
+
+    .ant-typography {
+      font-size: 14px;
+    }
+
+    .action-buttons button {
+      width: 100px;
+    }
+
+    .section-title {
+      font-size: 20px;
+    }
+
+    .info-table th, .info-table td {
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .chitiet-proposal-container {
+      padding: 8px;
+    }
+
+    .ant-card {
+      padding: 12px;
+    }
+
+    .ant-card-title {
+      font-size: 18px;
+    }
+
+    .ant-typography {
+      font-size: 12px;
+    }
+
     .action-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 20px;
-  
-      button {
-        width: 120px;
-      }
+      flex-direction: column;
+      align-items: center;
     }
-  
-    .ant-alert {
-      margin-top: 20px;
-      border-radius: 4px;
-    }
-    .info-table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-      
-        th, td {
-          border: 1px solid #ddd;
-          padding: 12px;
-          text-align: center; // Căn giữa nội dung cột
-        }
-      
-        th {
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-      
-        td {
-          font-size: 16px;
-          color: #333;
-        }
-      
-        .table-title {
-          text-align: center;
-          margin-bottom: 16px;
-          font-size: 24px;
-          font-weight: bold;
-          color: #555;
-        }
-      }
 
-      .section-title {
-        margin-top: 20px;
-        font-size: 24px;
-        text-align: center;
-        font-weight: bold;
-        color: #333;
-      }
-      
-      .custom-table {
-        margin-top: 20px;
-        .ant-table {
-          font-size: 16px;
-          text-align: center;
-        }
-        .ant-table-thead > tr > th {
-          background-color: #fafafa;
-          font-weight: bold;
-          text-align: center;
-        }
-        .ant-table-tbody > tr > td {
-          text-align: center;
-        }
-      }
-      
-      .alert-box {
-        margin-top: 20px;
-        font-size: 16px;
-        text-align: center;
-      }
-    .btn-reject{
-        background-color: rgb(122, 41, 41);
-        color: #f0f0f0;
+    .action-buttons button {
+      width: 100%;
+      margin-bottom: 8px;
     }
-      
-  }
-  .chitiet-register-container{
-    .info-table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-      
-        th, td {
-          border: 1px solid #ddd;
-          padding: 12px;
-          text-align: center; // Căn giữa nội dung cột
-        }
-      
-        th {
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-      
-        td {
-          font-size: 16px;
-          color: #333;
-        }
-      
-        .table-title {
-          text-align: center;
-          margin-bottom: 16px;
-          font-size: 24px;
-          font-weight: bold;
-          color: #555;
-        }
-      }
 
-      .section-title {
-        margin-top: 20px;
-        font-size: 24px;
-        text-align: center;
-        font-weight: bold;
-        color: #333;
-      }
-      
-      .custom-table {
-        margin-top: 20px;
-        .ant-table {
-          font-size: 16px;
-          text-align: center;
-        }
-        .ant-table-thead > tr > th {
-          background-color: #fafafa;
-          font-weight: bold;
-          text-align: center;
-        }
-        .ant-table-tbody > tr > td {
-          text-align: center;
-        }
-      }
-      
-      .alert-box {
-        margin-top: 20px;
-        font-size: 16px;
-        text-align: center;
-      }
-    .btn-reject{
-        background-color: rgb(122, 41, 41);
-        color: #f0f0f0;
+    .section-title {
+      font-size: 18px;
+    }
+
+    .info-table th, .info-table td {
+      padding: 8px;
     }
   }
+
+  @media (max-width: 480px) {
+    .chitiet-proposal-container {
+      padding: 4px;
+    }
+
+    .ant-card {
+      padding: 8px;
+    }
+
+    .ant-card-title {
+      font-size: 16px;
+    }
+
+    .ant-typography {
+      font-size: 10px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .action-buttons button {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 16px;
+    }
+
+    .info-table th, .info-table td {
+      padding: 6px;
+    }
+  }
+}
+
+.chitiet-register-container {
+  .info-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-family: 'Times New Roman', serif; /* Font for register table */
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    td {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .table-title {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #555;
+      font-family: 'Times New Roman', serif; /* Font for table titles */
+    }
+  }
+
+  .section-title {
+    margin-top: 20px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    font-family: 'Times New Roman', serif; /* Font for section titles */
+  }
+
+  .custom-table {
+    margin-top: 20px;
+
+    .ant-table {
+      font-size: 16px;
+      text-align: center;
+      font-family: 'Times New Roman', serif; /* Font for custom table */
+    }
+
+    .ant-table-thead > tr > th {
+      background-color: #fafafa;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .ant-table-tbody > tr > td {
+      text-align: center;
+    }
+  }
+
+  .alert-box {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+    font-family: 'Times New Roman', serif; /* Font for alert box */
+  }
+
+  .btn-reject {
+    background-color: rgb(122, 41, 41);
+    color: #f0f0f0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .chitiet-register-container {
+      padding: 12px;
+    }
+
+    .section-title {
+      font-size: 20px;
+    }
+
+    .custom-table .ant-table th, .custom-table .ant-table td {
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .chitiet-register-container {
+      padding: 8px;
+    }
+
+    .section-title {
+      font-size: 18px;
+    }
+
+    .custom-table .ant-table th, .custom-table .ant-table td {
+      padding: 8px;
+    }
+
+    .alert-box {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .chitiet-register-container {
+      padding: 4px;
+    }
+
+    .section-title {
+      font-size: 16px;
+    }
+
+    .custom-table .ant-table th, .custom-table .ant-table td {
+      padding: 6px;
+    }
+
+    .alert-box {
+      font-size: 12px;
+    }
+  }
+  .custom-button {
+    width: 50px;         // Chiều rộng của nút
+    height: 50px;         // Chiều cao của nút
+    margin: 20px auto;    // Căn lề trên và dưới là 20px, căn giữa theo chiều ngang
+    font-size: 13px;      // Kích thước chữ
   
+    // Responsive: Điều chỉnh kích thước nút trên các màn hình khác nhau
+    @media (max-width: 768px) {
+      width: 100%;       // Trên màn hình nhỏ, nút chiếm toàn bộ chiều rộng cột
+      margin: 10px 0;    // Giảm margin
+    }
+  
+    @media (min-width: 992px) {
+      width: 250px;      // Trên màn hình lớn, tăng chiều rộng nút
+    }
+  }
+  
+}

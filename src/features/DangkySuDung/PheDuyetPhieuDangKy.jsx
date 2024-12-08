@@ -36,6 +36,7 @@ const DuyetPhieuDKTable = () => {
         <Column title="Ngày Lập" dataIndex="ngayLap" key="NgayLap" />
         <Column title="Lý Do Đăng Kí" dataIndex="lyDoDK" key="LyDoDK" />
         <Column title="Mã Nhân Viên" dataIndex="maNV" key="MaNV" />
+        <Column title="Mã phòng thí nghiệm" dataIndex="maPhong" key="MaPhong"/>
         <Column title="Ghi Chú" dataIndex="ghiChu" key="GhiChu" />
         <Column
           title="Ngày Hoàn Tất"

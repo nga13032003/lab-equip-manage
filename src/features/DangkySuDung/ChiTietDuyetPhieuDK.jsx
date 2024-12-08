@@ -6,6 +6,8 @@ import { approveRegistered } from '../../api/duyetPhieuDangKi';
 import { useLocation } from 'react-router-dom';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
+import { getPhongThiNghiemById } from '../../api/labApi';
+import { getNhanVienById } from '../../api/staff';
 import './ApprovalRegisteredDetails.scss';
 
 
@@ -19,6 +21,8 @@ const ApprovalRegisteredDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [nhanVienDetails, setNhanVienDetails] = useState(null);
+  const [phongThiNghiemDetails, setPhongThiNghiemDetails] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,37 +32,48 @@ const ApprovalRegisteredDetails = () => {
         const { registeredDetails, deviceDetails, toolDetails } = await getPhieuDetails(maPhieuDK);
   
         setProposalDetails(registeredDetails || {});
-        const deviceDetailsWithNames = await Promise.all(
-          (deviceDetails || []).map(async (device) => {
-            try {
-              const deviceInfo = await getDeviceById(device.maThietBi);
-              return { ...device, tenThietBi: deviceInfo.tenThietBi || 'Không tìm thấy tên thiết bị' };
-            } catch (error) {
-              console.error(`Lỗi khi lấy thông tin thiết bị: ${device.maThietBi}`, error);
-              return { ...device, tenThietBi: 'Không tìm thấy tên thiết bị' };
-            }
-          })
-        );
 
-        // Fetch tool names based on IDs
-        const toolDetailsWithNames = await Promise.all(
-          (toolDetails || []).map(async (tool) => {
-            try {
-              const toolInfo = await getToolById(tool.maDungCu);
-              return { ...tool, tenDungCu: toolInfo.tenDungCu || 'Không tìm thấy tên dụng cụ' };
-            } catch (error) {
-              console.error(`Lỗi khi lấy thông tin dụng cụ: ${tool.maDungCu}`, error);
-              return { ...tool, tenDungCu: 'Không tìm thấy tên dụng cụ' };
-            }
-          })
-        );
-        setDeviceDetails(deviceDetailsWithNames);
-        setToolDetails(toolDetailsWithNames);
-  
-        if (!deviceDetails?.length && !toolDetails?.length) {
-        } else if (deviceDetails?.length && !toolDetails?.length) {
-        } else if (!deviceDetails?.length && toolDetails?.length) {
-        } else {
+        const phongThiNghiem = await getPhongThiNghiemById(registeredDetails.maPhong);
+        setPhongThiNghiemDetails({
+          maPhong: phongThiNghiem.maPhong,
+          loaiPhong: phongThiNghiem.loaiPhong,
+        });
+
+        // Fetch staff member details based on employee ID
+        const employee = await getNhanVienById(registeredDetails.maNV);
+        setNhanVienDetails({
+          tenNV: employee.tenNV,
+          soDT: employee.soDT,
+        });
+
+        // Handle devices and tools with valid checks
+        if (deviceDetails?.length) {
+          const deviceDetailsWithNames = await Promise.all(
+            deviceDetails.map(async (device) => {
+              try {
+                const deviceInfo = await getDeviceById(device.maThietBi);
+                return { ...device, tenThietBi: deviceInfo.tenThietBi };
+              } catch {
+                return { ...device, tenThietBi: 'Device not found' };
+              }
+            })
+          );
+          setDeviceDetails(deviceDetailsWithNames);
+        }
+    
+        // Handle tools
+        if (toolDetails?.length) {
+          const toolDetailsWithNames = await Promise.all(
+            toolDetails.map(async (tool) => {
+              try {
+                const toolInfo = await getToolById(tool.maDungCu);
+                return { ...tool, tenDungCu: toolInfo.tenDungCu };
+              } catch {
+                return { ...tool, tenDungCu: 'Tool not found' };
+              }
+            })
+          );
+          setToolDetails(toolDetailsWithNames);
         }
       } catch (error) {
         message.error('Không thể tải dữ liệu phiếu đăng kí.');
@@ -150,18 +165,16 @@ const ApprovalRegisteredDetails = () => {
 
   return (
     <div className="chitiet-proposal-container">
-      <Card title="Chi Tiết Phiếu Đăng Ký" bordered={false}>
-        <Title level={2}>Thông Tin Phiếu Đăng Ký</Title>
-        <div className="info-table-container">
+      <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
+        <Title level={2}>THÔNG TIN PHIẾU ĐĂNG KÝ</Title>
+
+        <div className="info-section">
+          <Title level={3}>Thông Tin Đăng Ký</Title>
           <table className="info-table">
             <tbody>
-              <tr>
+            <tr>
                 <th>Mã phiếu</th>
                 <td>{proposalDetails.maPhieuDK}</td>
-              </tr>
-              <tr>
-                <th>Mã nhân viên đề xuất</th>
-                <td>{proposalDetails.maNV}</td>
               </tr>
               <tr>
                 <th>Lý do đăng ký</th>
@@ -183,117 +196,86 @@ const ApprovalRegisteredDetails = () => {
           </table>
         </div>
 
-          {deviceDetails.length > 0 ? (
-            <>
-              <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
-              <Table
-                className="custom-table"
-                dataSource={deviceDetails}
-                rowKey="maThietBi"
-                bordered
-                columns={[
-                  {
-                    title: "Mã Thiết Bị",
-                    dataIndex: "maThietBi",
-                    key: "maThietBi",
-                    align: "center",
-                  },
-                  {
-                    title: "Tên Thiết Bị",
-                    dataIndex: "tenThietBi",
-                    key: "tenThietBi",
-                    align: "center",
-                  },
-                  {
-                    title: "Ngày Đăng Ký",
-                    dataIndex: "ngayDangKi",
-                    key: "ngayDangKi",
-                    align: "center",
-                    render: (date) =>
-                      date
-                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
-                        : "Chưa có",
-                  },
-                  {
-                    title: "Ngày Kết Thúc",
-                    dataIndex: "ngayKetThuc",
-                    key: "ngayKetThuc",
-                    align: "center",
-                    render: (date) =>
-                      date
-                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
-                        : "Chưa có",
-                  },
-                ]}
-              />
-            </>
-          ) : (
-            <Alert
-              message="Không có thiết bị đăng ký"
-              type="info"
-              showIcon
-              className="alert-box"
-            />
-          )}
+        {/* Information of the Registrant */}
+        <div className="info-section">
+          <Title level={3}>Thông Tin Người Đăng Ký</Title>
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <th>Mã nhân viên đăng ký</th>
+                <td>{proposalDetails.maNV}</td>
+              </tr>
+              <tr>
+                <th>Tên nhân viên</th>
+                <td>{nhanVienDetails?.tenNV}</td>
+              </tr>
+              <tr>
+                <th>Số điện thoại</th>
+                <td>{nhanVienDetails?.soDT}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          {toolDetails.length > 0 ? (
-            <>
-              <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
-              <Table
-                className="custom-table"
-                dataSource={toolDetails}
-                rowKey="maDungCu"
-                bordered
-                columns={[
-                  {
-                    title: "Mã Dụng Cụ",
-                    dataIndex: "maDungCu",
-                    key: "maDungCu",
-                    align: "center",
-                  },
-                  {
-                    title: "Tên Dụng Cụ",
-                    dataIndex: "tenDungCu",
-                    key: "tenDungCu",
-                    align: "center",
-                  },
-                  {
-                    title: "Số Lượng",
-                    dataIndex: "soLuong",
-                    key: "soLuong",
-                    align: "center",
-                  },
-                  {
-                    title: "Ngày Đăng Ký",
-                    dataIndex: "ngayDangKi",
-                    key: "ngayDangKi",
-                    align: "center",
-                    render: (date) =>
-                      date
-                        ? `${new Date(date).toLocaleDateString()}`
-                        : "Chưa có",
-                  },
-                  {
-                    title: "Ngày Kết Thúc",
-                    dataIndex: "ngayKetThuc",
-                    key: "ngayKetThuc",
-                    align: "center",
-                    render: (date) =>
-                      date
-                        ? `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`
-                        : "Chưa có",
-                  },
-                ]}
-              />
-            </>
-          ) : (
-            <Alert
-              message="Không có dụng cụ đăng ký"
-              type="info"
-              showIcon
-              className="alert-box"
+        {/* Laboratory Registration Information */}
+        <div className="info-section">
+          <Title level={3}>Thông Tin Phòng Thí Nghiệm</Title>
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <th>Mã phòng thí nghiệm</th>
+                <td>{proposalDetails.maPhong}</td>
+              </tr>
+              <tr>
+                <th>Loại phòng</th>
+                <td>{phongThiNghiemDetails?.loaiPhong}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {deviceDetails && deviceDetails.length > 0 ? (
+          <>
+            <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+            <Table
+              className="custom-table"
+              dataSource={deviceDetails}
+              rowKey="maThietBi"
+              bordered
+              columns={[
+                { title: "Mã Thiết Bị", dataIndex: "maThietBi", key: "maThietBi", align: "center" },
+                { title: "Tên Thiết Bị", dataIndex: "tenThietBi", key: "tenThietBi", align: "center" },
+                { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
+              ]}
             />
-          )}
+          </>
+        ) : (
+          <Alert message="Không có thiết bị đăng ký" type="info" showIcon className="alert-box" />
+        )}
+
+        {/* Tool List */}
+        {toolDetails && toolDetails.length > 0 ? (
+          <>
+            <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+            <Table
+              className="custom-table"
+              dataSource={toolDetails}
+              rowKey="maDungCu"
+              bordered
+              columns={[
+                { title: "Mã Dụng Cụ", dataIndex: "maDungCu", key: "maDungCu", align: "center" },
+                { title: "Tên Dụng Cụ", dataIndex: "tenDungCu", key: "tenDungCu", align: "center" },
+                { title: "Số Lượng", dataIndex: "soLuong", key: "soLuong", align: "center" },
+                { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
+              ]}
+            />
+          </>
+        ) : (
+          <Alert message="Không có dụng cụ đăng ký" type="info" showIcon className="alert-box" />
+        )}
+
 
 
         <div className="action-buttons">

@@ -11,26 +11,13 @@ export const approveRegistered = async (data) => {
       });
   
       // Check if response is successful (status 201 Created)
+      const responseData = await response.json();
       if (!response.ok) {
-        // Handle different status codes or throw an error based on the status
-        const errorData = await response.json();
-        let errorMessage = 'Lỗi khi phê duyệt phiếu đăng kí!';
-        
-        if (response.status === 400) {
-          errorMessage = errorData.message || errorMessage; // Bad request
-        } else if (response.status === 409) {
-          errorMessage = errorData.message || 'Phiếu đăng kí đã được duyệt!'; // Conflict error
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(responseData.message || 'Đã xảy ra lỗi khi phê duyệt');
       }
-  
-      // Return the created object if the request was successful
-      const result = await response.json();
-      return result; // Return the response data
-  
+      return responseData;
     } catch (error) {
-      console.error('Error creating PhieuDangKi:', error.message);
+      console.error('Error approving PhieuDangKi:', error);
       throw error;
     }
   };

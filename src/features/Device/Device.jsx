@@ -3,74 +3,62 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchDevicesByType } from '../../api/deviceApi';
 
 const Device = () => {
-  const { maLoaiThietBi } = useParams(); // Lấy mã loại thiết bị từ URL
-  const [devices, setDevices] = useState([]); // Lưu trữ danh sách thiết bị
-  const [loading, setLoading] = useState(true); // Trạng thái loading
-  const navigate = useNavigate(); // Sử dụng hook navigate để chuyển hướng
+  const { maLoaiThietBi } = useParams();
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getDevices = async () => {
       try {
-        const response = await fetchDevicesByType(maLoaiThietBi); // Gọi API để lấy thiết bị
-        setDevices(response); // Lưu thiết bị vào state
+        const response = await fetchDevicesByType(maLoaiThietBi);
+        setDevices(response);
       } catch (error) {
-        console.error('Lỗi khi lấy thiết bị:', error); // Xử lý lỗi
+        console.error('Lỗi khi lấy thiết bị:', error);
       } finally {
-        setLoading(false); // Kết thúc trạng thái loading
+        setLoading(false);
       }
     };
     getDevices();
-  }, [maLoaiThietBi]); // Chạy lại khi mã loại thay đổi
+  }, [maLoaiThietBi]);
 
   if (loading) {
-    return <div>Đang tải...</div>; // Hiển thị khi đang tải
+    return <div>Đang tải...</div>;
   }
 
-  // Kiểm tra trạng thái đăng nhập
-  const isLoggedIn = localStorage.getItem('employeeName'); // Kiểm tra nếu đã có thông tin đăng nhập
+  const isLoggedIn = localStorage.getItem('employeeName');
 
   const handleDeviceClick = (deviceId) => {
-    const isLoggedIn = localStorage.getItem('employeeName'); // Lấy thông tin đăng nhập
-  
-    if (!isLoggedIn || isLoggedIn === '') {
-      // Nếu chưa đăng nhập, điều hướng đến trang đăng nhập
+    if (!isLoggedIn) {
       navigate('/login');
     } else {
-      // Nếu đã đăng nhập, điều hướng đến phiếu bảo trì
-      navigate(`/PhieuBaoTri/${deviceId}`);
-      // Kiểm tra lại nếu không vào trang này
-
+      navigate(`/DeviceDetails/${deviceId}`); // Điều hướng đến trang chi tiết thiết bị
     }
   };
-  
+
+  const handleMaintenanceClick = (device, event) => {
+    event.stopPropagation(); // Ngừng sự kiện click trên phần tử cha
+    if (!isLoggedIn) {
+      navigate('/login');
+    } else {
+      navigate(`/PhieuBaoTri/${device.maThietBi}`, { state: { device } });
+    }
+  };
 
   const isMaintenanceDue = (updatedDate) => {
     const now = new Date();
     const lastUpdated = new Date(updatedDate);
     const timeDifference = now - lastUpdated;
 
-    // Kiểm tra nếu gần 3 tháng (90 ngày)
     const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000;
     const remainingTime = threeMonthsInMs - timeDifference;
 
     if (remainingTime <= 0) {
-      return 'due'; // Đã đến hạn bảo trì
+      return 'due';
     } else if (remainingTime <= 7 * 24 * 60 * 60 * 1000) {
-      return 'soon'; // Gần đến hạn bảo trì trong 7 ngày
+      return 'soon';
     } else {
-      return ''; // Chưa đến hạn
-    }
-  };
-
-  const handleMaintenanceClick = (deviceId, event) => {
-    event.stopPropagation(); // Ngừng sự kiện click để không đi đến trang chi tiết thiết bị
-
-    if (!isLoggedIn) {
-      // Nếu chưa đăng nhập, điều hướng đến trang đăng nhập
-      navigate('/login');
-    } else {
-      // Nếu đã đăng nhập, điều hướng đến phiếu bảo trì
-      navigate(`/PhieuBaoTri/${deviceId}`);
+      return '';
     }
   };
 
