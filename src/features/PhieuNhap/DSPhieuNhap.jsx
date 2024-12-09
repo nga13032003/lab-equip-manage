@@ -49,13 +49,13 @@ const DSPhieuNhapTable = () => {
           key="maPhieuNhap"
           sorter={(a, b) => a.maPhieuNhap.localeCompare(b.maPhieuNhap)}
         />
-        <Column
+        {/* <Column
           title="Mã Công Ty"
           dataIndex="maCty"
           key="maCty"
           filters={uniqueValues('maCty')}
           onFilter={(value, record) => record.maCty === value}
-        />
+        /> */}
         <Column
           title="Mã Nhân Viên"
           dataIndex="maNV"
@@ -65,7 +65,7 @@ const DSPhieuNhapTable = () => {
         />
         <Column
           title="Ngày Lập Phiếu"
-          dataIndex="ngayLapPhieu"
+          dataIndex="ngayNhap"
           key="ngayLapPhieu"
           sorter={(a, b) => new Date(a.ngayLapPhieu) - new Date(b.ngayLapPhieu)}
           defaultSortOrder="descend"
@@ -76,20 +76,16 @@ const DSPhieuNhapTable = () => {
           dataIndex="trangThai"
           key="trangThai"
           filters={[
-            { text: 'Đã duyệt', value: 'Đã duyệt' },
+            { text: 'Đã nhập', value: 'Đã nhập' },
             { text: 'Từ chối', value: 'Từ chối' },
           ]}
           onFilter={(value, record) => record.trangThai === value}
           render={(status) => {
-            const color = status === 'Đã duyệt' ? 'green' : 'volcano';
-            return <Tag color={color}>{status || 'Chưa có trạng thái'}</Tag>;
+            const color = status === 'Đã duyệt' ? 'green' : 'green';
+            return <Tag color={color}>{status || 'Đã nhập'}</Tag>;
           }}
         />
-        <Column
-          title="Lý Do Chung"
-          dataIndex="lyDoChung"
-          key="lyDoChung"
-        />
+
         <Column
           title="Tổng Tiền"
           dataIndex="tongTien"
@@ -97,23 +93,7 @@ const DSPhieuNhapTable = () => {
           sorter={(a, b) => a.tongTien - b.tongTien}
           render={(amount) => amount != null ? amount.toLocaleString('vi-VN') : '--'}
         />
-        <Column
-          title="Ngày Hoàn Tất"
-          dataIndex="ngayHoanTat"
-          key="ngayHoanTat"
-          sorter={(a, b) => new Date(a.ngayHoanTat) - new Date(b.ngayHoanTat)}
-          render={(date) => date ? new Date(date).toLocaleDateString('vi-VN') : '--'}
-        />
-        <Column
-          title="Trạng Thái Thanh Lý"
-          dataIndex="trangThaiThanhLy"
-          key="trangThaiThanhLy"
-          filters={[
-            { text: 'Chưa hoàn thành', value: 'Chưa hoàn thành' },
-            { text: 'Hoàn thành', value: 'Hoàn thành' },
-          ]}
-          onFilter={(value, record) => record.trangThaiThanhLy === value}
-        />
+     
         <Column
           title="Hành Động"
           key="action"

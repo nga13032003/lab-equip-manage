@@ -74,12 +74,15 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="13" icon={<ToolOutlined />}>
           <Link to='/danh-sach-phieu-nhap'> Danh sach phiếu nhập</Link>
           </Menu.Item>
+          <Menu.Item key="14" icon={<ToolOutlined />}>
+          <Link to='/thong-ke'> Thống kê</Link>
+          </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
           <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
           <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
-          <Menu.Item key="11" icon={<ToolOutlined />}>
+          {/* <Menu.Item key="11" icon={<ToolOutlined />}>
           <Link to='/bao-tri-dinh-ky'>Bảo trì định kỳ</Link>
-          </Menu.Item>
+          </Menu.Item> */}
           </SubMenu>
         </>
       );

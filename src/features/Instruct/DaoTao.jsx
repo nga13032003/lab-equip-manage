@@ -3,15 +3,18 @@ import "./Instruct.scss";
 import { thietbi, thinghiem } from "../../assets";
 
 const DaoTao = () => {
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="dao-tao-container">
       <header className="article-header">
         <h1>Tăng Cường Quản Lý Thiết Bị Phòng Thí Nghiệm Bằng Giải Pháp Đào Tạo Chuyên Sâu</h1>
-        
       </header>
       <p className="sub-title">
-          Một bước tiến mới trong công tác quản lý thiết bị tại Đại học Công thương TP.HCM.
-        </p>
+        Một bước tiến mới trong công tác quản lý thiết bị tại Đại học Công thương TP.HCM.
+      </p>
       <div className="article-content">
         <section className="section">
           <h2>Thực trạng quản lý thiết bị thí nghiệm hiện nay</h2>
@@ -62,6 +65,11 @@ const DaoTao = () => {
           Đây là một bước tiến quan trọng trong việc hiện đại hóa quản lý thiết bị tại Đại học Công thương TP.HCM, tạo tiền đề cho một môi trường giáo dục an toàn và hiệu quả.
         </p>
       </footer>
+      <div className="print-button-container">
+        <button onClick={handlePrint} className="print-button">
+          In Nội Dung
+        </button>
+      </div>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { deleteChiTietThietBi } from '../../api/phieuThanhLy';
 import { createLichSuPhieuThanhLy } from '../../api/lichSuPhieuTL';
 import './ChiTietPhieuThanhLy.scss';
 import TimelineComponent from './TimelineComponent';
+import { useNavigate } from 'react-router-dom';
 
 const ChiTietPhieuThanhLy = () => {
   const { maPhieu } = useParams();
@@ -17,14 +18,15 @@ const ChiTietPhieuThanhLy = () => {
   const [loading, setLoading] = useState(true);
   const [toolList, setToolList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState(null); // Track the item being edited
+  const [editingItem, setEditingItem] = useState(null); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPhieuThanhLyDetails = async () => {
       try {
         setLoading(true);
         const data = await getPhieuThanhLyByMaPhieu(maPhieu);
-        console.log('Fetched phieuDetails:', data.phieuDetails);  // Debugging line
+        console.log('Fetched phieuDetails:', data.phieuDetails); 
         setPhieuDetails(data.phieuDetails);
         setChiTietList(data.deviceDetails);
       } catch (error) {
@@ -183,8 +185,62 @@ const ChiTietPhieuThanhLy = () => {
   if (loading) {
     return <Spin size="large" tip="Đang tải dữ liệu..." />;
   }
-
-
+  const handlePrint = () => {
+    const printWindow = window.open('', '', 'height=650, width=900');
+    // Header with two columns: left (University name and department) and right (Republic info)
+    printWindow.document.write('<div style="display: flex; justify-content: space-between;">');
+    printWindow.document.write('<div style="width: 50%;">');
+    printWindow.document.write('<p>TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP. HCM</p>');
+    printWindow.document.write('<p>KHOA…………………………</p>');
+    printWindow.document.write('</div>');
+    
+    printWindow.document.write('<div style="text-align: right; width: 50%;">');
+    printWindow.document.write('<p>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>');
+    printWindow.document.write('<p>Độc lập – Tự do – Hạnh phúc</p>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('</div>');
+    
+    // Title
+    printWindow.document.write('<h2 style="text-align: center;">PHIẾU THANH LÝ</h2>');
+    
+    // Personal Information Form
+    printWindow.document.write('<p><strong>Tôi tên:</strong> ……………………………………………………………………………………..</p>');
+    printWindow.document.write('<p><strong>Mã nhân viên:</strong> ' + phieuDetails.maNV + '</p>');
+    printWindow.document.write('<p><strong>Số điện thoại:</strong> ………………………………</p>');
+    printWindow.document.write('<p><strong>Mã phiếu thanh lý:</strong> ' + phieuDetails.maPhieuTL + '</p>');
+    printWindow.document.write('<p><strong>Mã công ty:</strong> ' + phieuDetails.maCty + '</p>');
+    printWindow.document.write('<p><strong>Ngày lập phiếu:</strong> ' + new Date(phieuDetails.ngayLapPhieu).toLocaleDateString() + '</p>');
+    printWindow.document.write('<p><strong>Trạng thái:</strong> ' + phieuDetails.trangThai + '</p>');
+    printWindow.document.write('<p><strong>Lý do chung:</strong> ' + phieuDetails.lyDoChung + '</p>');
+    printWindow.document.write('<p><strong>Tổng tiền:</strong> ' + phieuDetails.tongTien.toLocaleString() + ' VND</p>');
+    printWindow.document.write('<p><strong>Ngày hoàn tất:</strong> ' + new Date(phieuDetails.ngayHoanTat).toLocaleDateString() + '</p>');
+    printWindow.document.write('<p><strong>Trạng thái thanh lý:</strong> ' + phieuDetails.trangThaiThanhLy + '</p>');
+    
+    // Table of device details
+    printWindow.document.write('<h3>Chi tiết thiết bị thanh lý</h3>');
+    printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+    printWindow.document.write('<thead><tr><th style="padding: 8px;">STT</th><th style="padding: 8px;">Mã thiết bị</th><th style="padding: 8px;">Giá thanh lý</th><th style="padding: 8px;">Lý do</th></tr></thead>');
+    printWindow.document.write('<tbody>');
+    chiTietList.forEach((device, index) => {
+      printWindow.document.write('<tr>');
+      printWindow.document.write('<td style="text-align: center; padding: 8px;">' + (index + 1) + '</td>');
+      printWindow.document.write('<td style="padding: 8px;">' + device.maThietBi + '</td>');
+      printWindow.document.write('<td style="padding: 8px; text-align: right;">' + device.giaTL.toLocaleString() + ' VND</td>');
+      printWindow.document.write('<td style="padding: 8px;">' + device.lyDo + '</td>');
+      printWindow.document.write('</tr>');
+    });
+    printWindow.document.write('</tbody>');
+    printWindow.document.write('</table>');
+    printWindow.document.write('<div style="position: absolute; bottom: 20px; width: 90%;">');
+    printWindow.document.write('<p>Nay tôi viết bản tường trình này để trình bày sự việc trên. Kính mong quý Ban/Phòng/Khoa/TT xem xét giải quyết, nếu có hư hỏng do lỗi vận hành chủ quan tôi xin chịu hoàn toàn trách nhiệm.</p>');
+    printWindow.document.write('<p style="text-align: right;">TP HCM, ngày ..... tháng ..... năm 202..</p>');
+    printWindow.document.write('<p style="text-align: right;">Người viết bản tường trình</p>');
+    printWindow.document.write('<p style="text-align: right;">(ký và ghi rõ họ tên)</p>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
   return (
     <>
       <div className="chi-tiet-phieu-thanh-ly">
@@ -257,7 +313,11 @@ const ChiTietPhieuThanhLy = () => {
             <Button type="default" disabled>
               Không thể sửa phiếu
             </Button>
+            
           )}
+          <Button type="primary" onClick={handlePrint}>
+            In Phiếu
+          </Button>
         </div>
       </div>
 

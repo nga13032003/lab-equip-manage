@@ -33,6 +33,8 @@ import PhieuNhapDeXuat from './features/PhieuNhap/NhapHangDeXuat';
 import DSPhieuNhapTable from './features/PhieuNhap/DSPhieuNhap';
 import ChiTietThoiGianDangKi from './features/DangkySuDung/ChiTietThoiGianSuDung';
 import LabDeviceList from './features/LuanChuyen/DanhSachViTriThietBi';
+import ThietBiThongKePage from './components/Reports/ThongKe';
+
 
 const App = () => {
   return (
@@ -106,7 +108,11 @@ const App = () => {
            <Route path="/danh-sach-phieu-nhap" element={<DefaultLayout><DSPhieuNhapTable/></DefaultLayout>} />
            <Route path="/danh-sach-vi-tri-thiet-bi" element={
             <DefaultLayout> <LabDeviceList /> </DefaultLayout>}/> 
-      </Routes>
+             <Route path="/thong-ke" element={<DefaultLayout> <ThietBiThongKePage /> </DefaultLayout>}/> 
+              {/* <Route path="/in-phieu-thanh-ly/:maPhieu" element={<DefaultLayout><PrintPhieuThanhLy/></DefaultLayout>} /> */}
+            </Routes>
+          
+
     </Router>
   );
 };

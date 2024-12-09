@@ -133,5 +133,3 @@ export const deleteChiTietThietBi = async (maPhieuTL, maThietBi) => {
   }
 };
 
-
-
