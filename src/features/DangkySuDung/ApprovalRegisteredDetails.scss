@@ -374,6 +374,18 @@ h2{
     @media (min-width: 992px) {
       width: 250px;      // Trên màn hình lớn, tăng chiều rộng nút
     }
+    
   }
   
+  .btn-active{
+    font-weight: bold;
+    border: solid rgb(242, 246, 248);
+    width: 140px;
+    background-color: #feffff;
+    color: #1f8cf3;
+  
+    &:hover{
+      background-color: #e6f7ff !important;
+    }
+  }
 }

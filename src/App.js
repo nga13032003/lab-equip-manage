@@ -28,6 +28,8 @@ import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
 import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung'
 import ChiTietThoiGianDangKi from './features/DangkySuDung/ChiTietThoiGianSuDung';
 import LabDeviceList from './features/LuanChuyen/DanhSachViTriThietBi';
+import LabToolList from './features/LuanChuyen/DanhSachViTriDungCu';
+import QuanLyThoiGianSuDung from './features/DangkySuDung/QuanLyThoiGianSuDung';
 
 const App = () => {
   return (
@@ -98,6 +100,10 @@ const App = () => {
 
            <Route path="/danh-sach-vi-tri-thiet-bi" element={
             <DefaultLayout> <LabDeviceList /> </DefaultLayout>}/> 
+             <Route path="/danh-sach-vi-tri-dung-cu" element={
+            <DefaultLayout> <LabToolList /> </DefaultLayout>}/> 
+            <Route path="/quan-ly-thoi-gian-su-dung" element={
+            <DefaultLayout> <QuanLyThoiGianSuDung /> </DefaultLayout>}/> 
       </Routes>
     </Router>
   );
