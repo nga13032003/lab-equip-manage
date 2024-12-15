@@ -2,7 +2,7 @@ import React from 'react';
 import { Timeline, Typography, Divider } from 'antd';
 import { CheckCircleOutlined, WarningOutlined, SyncOutlined } from '@ant-design/icons';
 import './TimelinePage.scss'; // Import SCSS styles
-import { Warning } from 'postcss';
+// import { Warning } from 'postcss';
 
 const { Text } = Typography;
 
