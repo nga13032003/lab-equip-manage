@@ -4,6 +4,7 @@ import { createChiTietPhieuBaoDuong } from '../../api/ChiTietPhieuBaoDuong';
 import { createPhieuBaoDuong } from '../../api/PhieuBaoDuongAPI';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './PhieuBaoTri.scss';
+import { updateThietBi } from '../../api/deviceApi';
 
 const Maintenance = () => {
   const { maThietBi } = useParams(); // Lấy mã thiết bị từ URL
@@ -70,7 +71,11 @@ const Maintenance = () => {
         donGia: deviceInfo.donGia,
       };
       await createChiTietPhieuBaoDuong(chiTietPayload);
-
+         const updateTB = {
+            ngayCapNhat: new Date().toISOString(),
+            tinhTrang: "Đã bảo dưỡng"
+          };
+      await updateThietBi(deviceInfo.maThietBi, updateTB);
       message.success('Phiếu bảo dưỡng đã được lập thành công!');
       form.resetFields();
       setMaPhieu(generateRandomMaPhieu());

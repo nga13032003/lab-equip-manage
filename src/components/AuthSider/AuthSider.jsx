@@ -116,7 +116,17 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           </SubMenu>
         </>
       );
-    } else if (role === 'Người dùng') { // Giáo viên
+    } else if (role === 'Quản lý tài khoản') { // quản lý tài khoản 
+      return (
+        <>
+          <Menu.Item key="4" icon={<ContainerOutlined />} >
+            <Link to="/quan-ly-tai-khoan">Quản lý tài khoản</Link>
+          </Menu.Item>
+          
+        </>
+      );
+    }
+     else if (role === 'Người dùng') { // Giáo viên
       return (
         <>
           <Menu.Item key="1" icon={<FileAddOutlined />} >
@@ -141,6 +151,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           </SubMenu>
         </>
       );
+      
     }
     return null;
   };

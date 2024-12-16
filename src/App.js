@@ -42,6 +42,8 @@ import PhieuLuanChuyenDetails from './features/LuanChuyen/ChiTietPhieuLuanChuyen
 import PhieuLuanChuyenTable from './features/LuanChuyen/DanhSachPhieuLuanChuyen';
 import PheDuyetLCTable from './features/LuanChuyen/DSPheDuyetLC';
 import PheDuyetPhieuLuanChuyen from './features/LuanChuyen/ChiTietPheDuyet';
+import QuanLyTaiKhoan from './features/Account/QuanLyTaiKhoan';
+import DSPhieuBaoDuong from './features/BaoTri/DSPhieuBaoDuong';
 
 const App = () => {
   return (
@@ -59,7 +61,7 @@ const App = () => {
         <Route path='/loai-dung-cu/:maLoaiDC' element={<DefaultLayout><Tool /></DefaultLayout>} />
         <Route path="/chi-tiet-phieu-de-xuat/:maPhieu" element={<DefaultLayout><ChiTietPhieuDeXuat /></DefaultLayout>} />
         <Route path="/phe-duyet-phieu-de-xuat/:maPhieu" element={<DefaultLayout><ApprovalDetails /></DefaultLayout>} />
-        <Route path='/bao-tri-dinh-ky' element={<DefaultLayout><Maintenance /></DefaultLayout>} />
+        <Route path='/bao-tri-dinh-ky' element={<DefaultLayout><Maintenance/></DefaultLayout>} />
         <Route path='/de-xuat-su-dung' element={<DefaultLayout><PhieuDangKySuDung /></DefaultLayout>} />
         <Route path='/phe-duyet-phieu-dang-ki' element={<DefaultLayout><DuyetPhieuDKTable /></DefaultLayout>} />
         <Route path="/chi-tiet-phieu-dang-ky/:maPhieuDK" element={<DefaultLayout><ChiTietPhieuDangKi /></DefaultLayout>} />
@@ -76,6 +78,7 @@ const App = () => {
         <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL /></DefaultLayout>} />
         <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap /></DefaultLayout>} />
         <Route path="/PhieuBaoTri/:maThietBi" element={<DefaultLayout><Maintenance /></DefaultLayout>} />
+        <Route path="/lich-su-bao-tri" element={<DefaultLayout><DSPhieuBaoDuong /></DefaultLayout>} />
         <Route path="/bao-dao-tao" element={<DefaultLayout><DaoTao /></DefaultLayout>} />
         <Route path="/lich-su-de-xuat" element={<DefaultLayout><LichSuPhieuDeXuat /></DefaultLayout>} />
         <Route path="/nhap-hang/:maPhieu" element={<DefaultLayout><PhieuNhapDeXuat /></DefaultLayout>} />
@@ -89,6 +92,7 @@ const App = () => {
         <Route path="/phe-duyet-luan-chuyen" element={<DefaultLayout><PheDuyetLCTable /></DefaultLayout>} />
         <Route path="/lich-su-de-xuat-luan-chuyen" element={<DefaultLayout><PhieuLuanChuyenTable/></DefaultLayout>} />
         <Route path="/chi-tiet-phe-duyet-luan-chuyen/:maPhieu" element={<DefaultLayout><PheDuyetPhieuLuanChuyen /></DefaultLayout>} />
+        <Route path="/quan-ly-tai-khoan" element={<DefaultLayout><QuanLyTaiKhoan/></DefaultLayout>} />
       </Routes>
     </Router>
   );
