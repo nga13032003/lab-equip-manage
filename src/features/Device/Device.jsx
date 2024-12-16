@@ -41,7 +41,7 @@ const Device = () => {
     if (!isLoggedIn) {
       navigate('/login');
     } else {
-      navigate(`/PhieuBaoTri/${device.maThietBi}`, { state: { device } });
+      navigate(`/PhieuBaoTri/${device}`, { state: { device } });
     }
   };
 
@@ -66,7 +66,7 @@ const Device = () => {
     <div className="category-container max-w-1200 mx-auto p-5">
       <h1 className="text-2xl mb-6">Danh Sách Thiết Bị</h1>
       <div className="grid grid-cols-3 gap-5">
-        {devices.length === 0 ? (
+        {devices.filter((device) => !device.isDeleted).length === 0 ? (
           <p>Không có thiết bị nào trong danh mục này.</p>
         ) : (
           devices.map((device) => {
@@ -90,21 +90,27 @@ const Device = () => {
                   Loại: {device.loaiThietBi?.tenLoaiThietBi || 'Không rõ'}
                 </p> */}
                 <p className="text-sm text-gray-600">Xuất xứ: {device.xuatXu}</p>
-                <p className="text-sm text-gray-600">Tình trạng: {device.tinhTrang}</p>
                 <p className="text-sm text-gray-600">
-                  Ngày bảo hành: {new Date(device.ngayBaoHanh).toLocaleDateString()}
+                  Tình trạng: {device.tinhTrang}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Ngày cập nhật: {new Date(device.ngayCapNhat).toLocaleDateString()}
+                  Ngày bảo hành:{' '}
+                  {new Date(device.ngayBaoHanh).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Ngày cập nhật:{' '}
+                  {new Date(device.ngayCapNhat).toLocaleDateString()}
                 </p>
                 {maintenanceStatus && (
                   <button
-                    onClick={(event) => handleMaintenanceClick(device, event)}
+                    onClick={(event) => handleMaintenanceClick(device.maThietBi, event)}
                     className={`mt-2 px-4 py-2 rounded text-white ${
                       maintenanceStatus === 'due' ? 'bg-red-500' : 'bg-yellow-500'
                     } hover:opacity-90`}
                   >
-                    {maintenanceStatus === 'due' ? 'Cần bảo trì ngay!' : 'Sắp đến hạn bảo trì'}
+                    {maintenanceStatus === 'due'
+                      ? 'Cần bảo trì ngay!'
+                      : 'Sắp đến hạn bảo trì'}
                   </button>
                 )}
               </div>
@@ -114,6 +120,6 @@ const Device = () => {
       </div>
     </div>
   );
-};
+}  
 
 export default Device;

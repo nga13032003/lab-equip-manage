@@ -26,10 +26,15 @@ import ChiTietPhieuThanhLy from './features/ThanhLy/ChiTietPhieuThanhLy';
 import DuyetPhieuThanhLyTable from './features/ThanhLy/PheDuyetPhieuThanhLy';
 import ChiTietDuyetPhieuTL from './features/ThanhLy/ChiTietPhieuTL';
 import ThoiGianSuDung from './features/DangkySuDung/NhapThoiGianSuDung'
+import DaoTao from './features/Instruct/DaoTao';
+import DSPhieuThanhLyTable from './features/ThanhLy/DSPhieuThanhLy';
+import LichSuPhieuDeXuat from './features/PROP/LichSuDeXuat';
+import PhieuNhapDeXuat from './features/PhieuNhap/NhapHangDeXuat';
+import DSPhieuNhapTable from './features/PhieuNhap/DSPhieuNhap';
 import ChiTietThoiGianDangKi from './features/DangkySuDung/ChiTietThoiGianSuDung';
 import LabDeviceList from './features/LuanChuyen/DanhSachViTriThietBi';
-import LabToolList from './features/LuanChuyen/DanhSachViTriDungCu';
-import QuanLyThoiGianSuDung from './features/DangkySuDung/QuanLyThoiGianSuDung';
+import ThietBiThongKePage from './components/Reports/ThongKe';
+
 
 const App = () => {
   return (
@@ -84,7 +89,7 @@ const App = () => {
             <DefaultLayout> <PhieuThanhLy/> </DefaultLayout>}/>
           <Route path="/phe-duyet-phieu-dang-ki/:maPhieuDK" element={
             <DefaultLayout> <ApprovalRegisteredDetails /> </DefaultLayout>}/> 
-
+          <Route path="/ds-phieu-thanh-ly" element={<DefaultLayout><DSPhieuThanhLyTable/></DefaultLayout>} />
           <Route path="/thoi-gian-su-dung" element={<DefaultLayout> <ThoiGianSuDung /> </DefaultLayout>}/> 
           <Route path="/chi-tiet-thoi-gian-su-dung/:maPhieuDK" element={
             <DefaultLayout> <ChiTietThoiGianDangKi /> </DefaultLayout>}/>
@@ -96,15 +101,18 @@ const App = () => {
             <DefaultLayout> <DuyetPhieuThanhLyTable /> </DefaultLayout>}/> 
             <Route path="/duyet-phieu-thanh-ly/:maPhieuTL" element={<DefaultLayout><ChiTietDuyetPhieuTL/></DefaultLayout>} />
            <Route path="/chi-tiet-phieu-nhap/:maPhieuNhap" element={<DefaultLayout><ChiTietPhieuNhap/></DefaultLayout>} />
-           <Route path="/PhieuBaoTri/:deviceId" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
-
+           <Route path="/PhieuBaoTri/:maThietBi" element={<DefaultLayout><Maintenance/></DefaultLayout>} />
+           <Route path="/bao-dao-tao" element={<DefaultLayout><DaoTao/></DefaultLayout>} />
+           <Route path="/lich-su-de-xuat" element={<DefaultLayout><LichSuPhieuDeXuat/></DefaultLayout>} />
+           <Route path="/nhap-hang/:maPhieu" element={<DefaultLayout><PhieuNhapDeXuat/></DefaultLayout>} />
+           <Route path="/danh-sach-phieu-nhap" element={<DefaultLayout><DSPhieuNhapTable/></DefaultLayout>} />
            <Route path="/danh-sach-vi-tri-thiet-bi" element={
             <DefaultLayout> <LabDeviceList /> </DefaultLayout>}/> 
-             <Route path="/danh-sach-vi-tri-dung-cu" element={
-            <DefaultLayout> <LabToolList /> </DefaultLayout>}/> 
-            <Route path="/quan-ly-thoi-gian-su-dung" element={
-            <DefaultLayout> <QuanLyThoiGianSuDung /> </DefaultLayout>}/> 
-      </Routes>
+             <Route path="/thong-ke" element={<DefaultLayout> <ThietBiThongKePage /> </DefaultLayout>}/> 
+              {/* <Route path="/in-phieu-thanh-ly/:maPhieu" element={<DefaultLayout><PrintPhieuThanhLy/></DefaultLayout>} /> */}
+            </Routes>
+          
+
     </Router>
   );
 };

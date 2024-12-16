@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, List, Typography, Button, message, Alert, Spin, Table, Row, Col } from 'antd';
-import { getPhieuDetails } from '../../api/phieuDangKi';
+import { getPhieuDetails, updatePhieuDangKi } from '../../api/phieuDangKi';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
 import { getPhongThiNghiemById } from '../../api/labApi';
 import { getNhanVienById } from '../../api/staff';
+import { createLichSuPhieuDangKi } from '../../api/lichSuPhieuDK';
+import TimelineComponentDK from './TimeLineComponent';
 import './ApprovalRegisteredDetails.scss';
 
 const { Title } = Typography;
@@ -83,8 +85,64 @@ const ChiTietPhieuDangKi = () => {
     }
   }, [maPhieuDK]);
 
+  
   const handleBack = () => {
     navigate(-1);
+  };
+  const handlePrint = () => {
+    const printWindow = window.open('', '', 'height=650, width=900');
+    // Header with two columns: left (University name and department) and right (Republic info)
+    printWindow.document.write('<div style="display: flex; justify-content: space-between;">');
+    printWindow.document.write('<div style="width: 50%;">');
+    printWindow.document.write('<p>TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP. HCM</p>');
+    printWindow.document.write('<p>KHOA…………………………</p>');
+    printWindow.document.write('</div>');
+    
+    printWindow.document.write('<div style="text-align: right; width: 50%;">');
+    printWindow.document.write('<p>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>');
+    printWindow.document.write('<p>Độc lập – Tự do – Hạnh phúc</p>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('</div>');
+    
+    // Title
+    printWindow.document.write('<h2 style="text-align: center;">PHIẾU ĐĂNG KÝ</h2>');
+    
+    // Registration Details
+    printWindow.document.write('<p><strong>Mã phiếu:</strong> ' + registerdDetails.maPhieuDK + '</p>');
+    printWindow.document.write('<p><strong>Lý do đăng ký:</strong> ' + registerdDetails.lyDoDK + '</p>');
+    printWindow.document.write('<p><strong>Ngày lập:</strong> ' + new Date(registerdDetails.ngayLap).toLocaleDateString() + '</p>');
+    printWindow.document.write('<p><strong>Trạng thái:</strong> ' + registerdDetails.trangThai + '</p>');
+    
+    // Staff Details
+    printWindow.document.write('<p><strong>Tên nhân viên:</strong> ' + nhanVienDetails?.tenNV + '</p>');
+    printWindow.document.write('<p><strong>Số điện thoại:</strong> ' + nhanVienDetails?.soDT + '</p>');
+
+    // Laboratory Information
+    printWindow.document.write('<p><strong>Mã phòng thí nghiệm:</strong> ' + registerdDetails.maPhong + '</p>');
+    printWindow.document.write('<p><strong>Loại phòng:</strong> ' + phongThiNghiemDetails?.loaiPhong + '</p>');
+
+    // Table of device details
+    printWindow.document.write('<h3>Chi tiết thiết bị</h3>');
+    printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Tên Thiết Bị</th><th>Ngày Đăng Ký</th></tr></thead>');
+    printWindow.document.write('<tbody>');
+    deviceDetail.forEach((device, index) => {
+      printWindow.document.write(`<tr><td>${index + 1}</td><td>${device.maThietBi}</td><td>${device.tenThietBi}</td><td>${new Date(device.ngayDangKi).toLocaleDateString()}</td></tr>`);
+    });
+    printWindow.document.write('</tbody></table>');
+
+    // Table of tool details
+    printWindow.document.write('<h3>Chi tiết dụng cụ</h3>');
+    printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Tên Dụng Cụ</th><th>Số Lượng</th></tr></thead>');
+    printWindow.document.write('<tbody>');
+    toolDetails.forEach((tool, index) => {
+      printWindow.document.write(`<tr><td>${index + 1}</td><td>${tool.maDungCu}</td><td>${tool.tenDungCu}</td><td>${tool.soLuong}</td></tr>`);
+    });
+    printWindow.document.write('</tbody></table>');
+
+    printWindow.document.close(); // Finish the document
+    printWindow.print(); // Trigger print dialog
   };
 
   if (loading) {
@@ -180,6 +238,7 @@ const ChiTietPhieuDangKi = () => {
                 { title: "Mã Thiết Bị", dataIndex: "maThietBi", key: "maThietBi", align: "center" },
                 { title: "Tên Thiết Bị", dataIndex: "tenThietBi", key: "tenThietBi", align: "center" },
                 { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
                 { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
               ]}
             />
@@ -202,6 +261,7 @@ const ChiTietPhieuDangKi = () => {
                 { title: "Tên Dụng Cụ", dataIndex: "tenDungCu", key: "tenDungCu", align: "center" },
                 { title: "Số Lượng", dataIndex: "soLuong", key: "soLuong", align: "center" },
                 { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
                 { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
               ]}
             />
@@ -217,7 +277,16 @@ const ChiTietPhieuDangKi = () => {
             </Button>
           </Col>
         </Row>
+         {/* Show print button only if the registration status is "Đã Duyệt" */}
+         {registerdDetails.trangThai === "Đã phê duyệt" && (
+          <Button type="primary" onClick={handlePrint} style={{ marginTop: '20px' }}>
+            Print
+          </Button>
+        )}
+        
       </Card>
+
+      {maPhieuDK && <TimelineComponentDK maPhieuDK={maPhieuDK} />}
     </div>
   );
 };

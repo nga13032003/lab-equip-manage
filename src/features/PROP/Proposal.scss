@@ -1,115 +1,106 @@
-$primary-color: #3b85df; // Xanh lá cây tươi sáng
-$secondary-color: #ff5722; // Cam nổi bật
-$light-bg-color: #f0f8ff; // Xanh nhạt cho nền
-$border-color: #ddd; // Màu viền nhạt
-$text-color: #333; // Màu chữ chính
+// Proposal.scss
 
 .proposal-container {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 20px;
-  margin: auto;
-  background-color: #ffffff; // Light background for the container
-  min-height: 100vh; // Full viewport height
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .proposal-title {
   text-align: center;
+  font-size: 24px;
+  color: #58a2e3;
   margin-bottom: 20px;
-  font-size: 28px;
-  color: $primary-color;
   font-weight: bold;
 }
 
 .proposal-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  max-width: 800px;
+  background-color: white;
   padding: 20px;
-  border: 1px solid #d9d9d9;
   border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  .ant-form-item {
-    margin-bottom: 20px;
-    width: 100%;
-
-    button {
-      width: 100%; // Make both buttons equal in width
-      max-width: 200px; // Set a maximum width to avoid overly large buttons
-      margin: 10px auto; // Center align the buttons
-    }
-    &-label {
-      text-align: left;
-    }
+  .ant-form-item-label {
+    text-align: left;
+    margin-bottom: 8px; // Add some space between label and input field
+    font-weight: 500;
   }
-  .ant-btn-dashed{
-    display: block;
-    margin: 10px auto; 
+
+  .ant-form-item-control-wrapper {
+    width: 100%; // Ensure the input takes full width of the container
+  }
+
+  .ant-input, .ant-input-number {
+    width: 100%; // Ensure the input takes full width
+    padding: 8px 12px;
     border-radius: 4px;
+    font-size: 14px;
   }
-  .ant-btn-primary {
-    display: block;
-    margin: 10px auto; // Add some spacing between buttons
-    border-radius: 4px;
-    background-color: $primary-color;
-    border-color: $primary-color;
-
-    &:hover {
-      background-color: darken($primary-color, 10%);
-      border-color: darken($primary-color, 10%);
-    }
-  }
-
-  @media (max-width: 600px) {
-    width: 90%; // Adjust width for smaller screens
-  }
-}
-
-h2 {
-  font-size: 20px;
-  color: #555;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.ant-checkbox-wrapper {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.list-container {
-  .ant-list {
-    margin: 20px 0;
-
-    .ant-list-item {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-
-      .ant-form-item {
-        margin-bottom: 10px;
-
-        input {
-          width: 100%;
-        }
-      }
-    }
-  }
-}
-
-.space-button-group {
-  display: flex;
-  justify-content: center;
 
   .ant-btn {
-    margin: 5px;
-    margin-top: auto;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .ant-btn-dashed {
+    font-size: 14px;
+    background-color: #f0f0f0;
+    color: #1890ff;
+    border: 1px dashed #1890ff;
+    border-radius: 4px;
+    margin-top: 16px;
+  }
+
+  .ant-space-item {
+    width: 100%;
   }
 }
 
-.ant-input-number {
-  width: 100%;
+// Layout enhancements for better spacing and alignment
+.ant-space {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .proposal-container {
+    padding: 15px;
+  }
+
+  .proposal-form {
+    padding: 15px;
+  }
+
+  .ant-space-item {
+    width: 100%;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .ant-form-item-label {
+    font-size: 14px;
+  }
+
+  .ant-input, .ant-input-number {
+    font-size: 14px;
+  }
+
+  .ant-btn {
+    font-size: 14px;
+  }
 }

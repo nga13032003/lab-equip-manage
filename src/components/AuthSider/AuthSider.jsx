@@ -74,12 +74,18 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="5" icon={<ToolOutlined />}>
           <Link to='/phieu-nhap'> Nhập thiết bị, dung cụ mới</Link>
           </Menu.Item>
+          <Menu.Item key="13" icon={<ToolOutlined />}>
+          <Link to='/danh-sach-phieu-nhap'> Danh sach phiếu nhập</Link>
+          </Menu.Item>
+          <Menu.Item key="14" icon={<ToolOutlined />}>
+          <Link to='/thong-ke'> Thống kê</Link>
+          </Menu.Item>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
           <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
           <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
-          <Menu.Item key="11" icon={<ToolOutlined />}>
-          <Link to='/luan-chuyen'>Bảo trì định kỳ</Link>
-          </Menu.Item>
+          {/* <Menu.Item key="11" icon={<ToolOutlined />}>
+          <Link to='/bao-tri-dinh-ky'>Bảo trì định kỳ</Link>
+          </Menu.Item> */}
           </SubMenu>
         </>
       );
@@ -100,7 +106,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           </Menu.Item>
           
           <Menu.Item key="11" icon={<ClockCircleOutlined />}>
-          <Link to='/de-xuat-thanh-ly'> Lịch sử đề xuất thanh lý</Link>
+          <Link to='/ds-phieu-thanh-ly'> Lịch sử đề xuất thanh lý</Link>
           </Menu.Item>
           <Menu.Item key="12" icon={<ClockCircleOutlined />}>
           <Link to='/quan-ly-thoi-gian-su-dung'> Lịch sử đăng kí sử dụng</Link>
@@ -122,7 +128,7 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Link to='/de-xuat-su-dung'>Đăng ký sử dụng thiết bị</Link>
           </Menu.Item>
           <Menu.Item key="14" icon={<FileAddOutlined />}>
-          <Link to='/lap-phieu-de-xuat'> Lịch sử đề xuất thiết bị, dụng cụ mới</Link>
+          <Link to='/lich-su-de-xuat'> Lịch sử đề xuất thiết bị, dụng cụ mới</Link>
           </Menu.Item>
           <Menu.Item key="15" icon={<ClockCircleOutlined />}>
           <Link to='/thoi-gian-su-dung'> Lịch sử đăng ký sử dụng</Link>

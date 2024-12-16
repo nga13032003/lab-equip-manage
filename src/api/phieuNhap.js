@@ -1,3 +1,4 @@
+import axios from 'axios';
 const apiBaseUrl = 'https://localhost:7019/api';
 
 // Method to create a new PhieuNhap
@@ -171,5 +172,65 @@ export const getChiTietNhapDC = async (maPhieu) => {
   } catch (error) {
     console.error('Error fetching devices by type:', error);
     throw error;
+  }
+};
+
+export const getPhieuNhapDetails = async (maPhieuNhap) => {
+  const apiUrlPhieuNhap = `https://localhost:7019/api/PhieuNhap/${maPhieuNhap}`;
+  const apiUrlChiTietNhapTB = `https://localhost:7019/api/ChiTietNhapTB/${maPhieuNhap}`;
+  const apiUrlChiTietNhapDC = `https://localhost:7019/api/ChiTietNhapDC/${maPhieuNhap}`;
+
+  try {
+    // Make parallel requests
+    const [phieuNhapResponse, thietBiResponse, dungCuResponse] = await Promise.all([
+      fetch(apiUrlPhieuNhap, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+      fetch(apiUrlChiTietNhapTB, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+      fetch(apiUrlChiTietNhapDC, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    ]);
+
+    // Handle phieuNhap response
+    if (!phieuNhapResponse.ok) {
+      if (phieuNhapResponse.status === 404) {
+        throw new Error('Phiếu Nhập không tồn tại');
+      } else {
+        throw new Error('Lỗi khi lấy thông tin Phiếu Nhập');
+      }
+    }
+    const phieuNhapDetails = await phieuNhapResponse.json();
+
+    // Handle tools and devices responses
+    const dungCuDetails = dungCuResponse.ok ? await dungCuResponse.json() : [];
+    const thietBiDetails = thietBiResponse.ok ? await thietBiResponse.json() : [];
+
+    // Return all details
+    return { phieuNhapDetails, dungCuDetails, thietBiDetails };
+  } catch (error) {
+    console.error('Error fetching details:', error.message);
+    throw error;
+  }
+};
+
+export const getAllPhieuNhap = async () => {
+  try {
+    const response = await axios.get('https://localhost:7019/api/PhieuNhap');
+    return response.data; // Dữ liệu trả về từ API
+  } catch (error) {
+    console.error('Error fetching PhieuNhap data', error);
+    throw error; // Đẩy lỗi lên cho các component sử dụng hàm này
   }
 };

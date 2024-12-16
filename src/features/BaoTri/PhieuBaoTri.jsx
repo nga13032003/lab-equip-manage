@@ -1,155 +1,157 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, InputNumber, message } from 'antd';
 import { createChiTietPhieuBaoDuong } from '../../api/ChiTietPhieuBaoDuong';
-import { createPhieuBaoDuong, getPhieuBaoDuong } from '../../api/PhieuBaoDuongAPI';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { createPhieuBaoDuong } from '../../api/PhieuBaoDuongAPI';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import './PhieuBaoTri.scss';
 
 const Maintenance = () => {
-  const location = useLocation();
+  const { maThietBi } = useParams(); // Lấy mã thiết bị từ URL
+  const location = useLocation(); // Lấy thông tin thiết bị từ state
   const navigate = useNavigate();
-  const { device } = location.state || {}; // Nhận thông tin thiết bị từ state
 
-  const [tool, setTool] = useState({
-    MaDungCu: device?.maThietBi || '',
-    TenDungCu: device?.tenThietBi || '',
-    DonGia: device?.donGia || 0,
+  const { device } = location.state || {}; // Thông tin thiết bị
+  const [deviceInfo, setDeviceInfo] = useState({
+    maThietBi: device?.maThietBi || maThietBi || '', // Ưu tiên từ state, fallback từ params
+    tenThietBi: device?.tenThietBi || '',
+    donGia: device?.donGia || 0,
   });
-  const [employeeName, setEmployeeName] = useState(''); // Lưu tên nhân viên
-  const [maPhieu, setMaPhieu] = useState(''); // Mã phiếu tự động
+
+  const [employeeCode, setEmployeeCode] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
+  const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
 
   // Lấy thông tin nhân viên từ localStorage
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
     if (storedEmployeeName) setEmployeeName(storedEmployeeName);
+    if (storedEmployeeCode) setEmployeeCode(storedEmployeeCode);
   }, []);
 
   // Tạo mã phiếu ngẫu nhiên
   const generateRandomMaPhieu = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 8; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
+    return Array.from({ length: 8 })
+      .map(() => characters.charAt(Math.floor(Math.random() * characters.length)))
+      .join('');
   };
 
-  // Lấy mã phiếu tự động
   useEffect(() => {
-    const newMaPhieu = generateRandomMaPhieu();
-    setMaPhieu(newMaPhieu);
+    setMaPhieu(generateRandomMaPhieu());
   }, []);
 
-  // Xử lý gửi form
+  // Gửi yêu cầu tạo phiếu bảo dưỡng
   const handleSubmit = async (values) => {
-    if (!tool || !tool.MaDungCu) {
+    if (!deviceInfo.maThietBi) {
       message.error('Không có thiết bị để bảo dưỡng!');
       return;
     }
 
     try {
-      // Lấy ngày hiện tại
       const currentDate = new Date().toISOString();
 
       // Tạo phiếu bảo dưỡng
-      const payload = {
+      const phieuPayload = {
         maPhieuBD: maPhieu,
-        tenNV: employeeName, // Sử dụng tên nhân viên
+        maNV: employeeCode,
         noiDung: values.LyDoBaoDuong,
         ngayBaoDuong: currentDate,
-        ngayBaoHanh: currentDate, // Cập nhật ngày bảo hành
-        ngayCapNhat: currentDate, // Cập nhật ngày cập nhật
-        tongTien: tool.DonGia,
+        maNCC: values.MaNCC,
+        tongTien: deviceInfo.donGia,
       };
+      await createPhieuBaoDuong(phieuPayload);
 
-      await createPhieuBaoDuong(payload);
-
-      // Thêm chi tiết phiếu bảo dưỡng
-      const newChiTiet = {
+      // Tạo chi tiết phiếu bảo dưỡng
+      const chiTietPayload = {
         maPhieuBD: maPhieu,
-        maThietBi: tool.MaDungCu,
-        donGia: tool.DonGia,
+        maThietBi: deviceInfo.maThietBi,
+        donGia: deviceInfo.donGia,
       };
-      await createChiTietPhieuBaoDuong(newChiTiet);
+      await createChiTietPhieuBaoDuong(chiTietPayload);
 
-      // Thông báo thành công
       message.success('Phiếu bảo dưỡng đã được lập thành công!');
       form.resetFields();
-      setMaPhieu(generateRandomMaPhieu()); // Tạo mã phiếu mới sau khi lập thành công
+      setMaPhieu(generateRandomMaPhieu());
       navigate(`/chi-tiet-phieu-bao-duong/${maPhieu}`);
     } catch (error) {
       message.error(`Lỗi khi lập phiếu bảo dưỡng: ${error.message}`);
     }
   };
 
-  // Kiểm tra nếu không có thiết bị
+  // Điều hướng nếu không có thiết bị
   useEffect(() => {
-    if (!device) {
+    if (!deviceInfo.maThietBi) {
       message.error('Không tìm thấy thông tin thiết bị!');
       navigate('/');
     }
-  }, [device, navigate]);
+  }, [deviceInfo, navigate]);
 
   return (
-    <div className="maintenance-container">
-      <h1 className="maintenance-title">LẬP PHIẾU BẢO DƯỠNG</h1>
-      <Form
-        form={form}
-        className="maintenance-form"
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
-        layout="horizontal"
-        onFinish={handleSubmit}
-      >
-        {/* Mã phiếu */}
-        <Form.Item label="Mã phiếu" name="MaPhieu">
-          <Input value={maPhieu} disabled />
-        </Form.Item>
+    <>
+   
+        <div className="maintenance-container">
+        <h1>LẬP PHIẾU BẢO TRÌ</h1>
+     <Form
+     
+       form={form}
+       className="maintenance-form"
+       labelCol={{ span: 6 }}
+       wrapperCol={{ span: 18 }}
+       layout="horizontal"
+       onFinish={handleSubmit}
+     >
+       {/* Mã phiếu */}
+       <Form.Item label="Mã phiếu">
+         <Input value={maPhieu} disabled />
+       </Form.Item>
 
-        {/* Lý do bảo dưỡng */}
-        <Form.Item
-          label="Lý do bảo dưỡng"
-          name="LyDoBaoDuong"
-          rules={[{ required: true, message: 'Vui lòng nhập lý do bảo dưỡng!' }]} >
-          <Input.TextArea rows={3} />
-        </Form.Item>
+       {/* Lý do bảo dưỡng */}
+       <Form.Item
+         label="Lý do bảo dưỡng"
+         name="LyDoBaoDuong"
+         rules={[{ required: false, message: 'Vui lòng nhập lý do bảo dưỡng!' }]}
+       >
+         <Input.TextArea rows={3} />
+       </Form.Item>
 
-        {/* Tên nhân viên */}
-        <Form.Item label="Tên nhân viên" name="TenNV">
-          <Input value={employeeName} disabled />
-        </Form.Item>
+       {/* Tên nhân viên */}
+       <Form.Item label="Tên nhân viên">
+         <Input value={employeeName} disabled />
+       </Form.Item>
 
-        {/* Thông tin thiết bị */}
-        {tool && (
-          <>
-            <h2>Thông tin thiết bị</h2>
-            <Form.Item label="Mã Thiết Bị">
-              <Input value={tool.MaDungCu} disabled />
-            </Form.Item>
-            <Form.Item label="Tên Thiết Bị">
-              <Input value={tool.TenDungCu} disabled />
-            </Form.Item>
-            <Form.Item
-              label="Đơn Giá"
-              validateStatus={tool.DonGia <= 0 ? 'error' : ''}
-              help={tool.DonGia <= 0 && 'Đơn giá phải lớn hơn 0'}>
-              <InputNumber
-                min={0}
-                value={tool.DonGia}
-                onChange={(value) => setTool({ ...tool, DonGia: value })}
-              />
-            </Form.Item>
-          </>
-        )}
+       {/* Mã Nhà Cung Cấp */}
+       <Form.Item
+         label="Mã Nhà Cung Cấp"
+         name="MaNCC"
+         rules={[{ required: false, message: 'Vui lòng nhập mã nhà cung cấp!' }]}
+       >
+         <Input />
+       </Form.Item>
 
-        {/* Nút gửi form */}
-        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
-          <Button type="primary" htmlType="submit">
-            Lập phiếu bảo dưỡng
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+       <Form.Item label="Mã Thiết Bị">
+         <Input value={deviceInfo.maThietBi} disabled />
+       </Form.Item>
+       <Form.Item label="Đơn giá">
+         <InputNumber
+           min={0}
+           value={deviceInfo.donGia}
+           onChange={(value) =>
+             setDeviceInfo({ ...deviceInfo, donGia: value })
+           }
+         />
+       </Form.Item>
+
+       {/* Nút Submit */}
+       <Button type="primary" htmlType="submit">
+           Lập phiếu bảo dưỡng
+         </Button>
+     </Form>
+   </div>
+    </>
+    
+    
   );
 };
 

@@ -1,3 +1,6 @@
+import axios from 'axios';
+
+const API_BASE_URL = 'https://localhost:7019/api'; 
 
 export const fetchDevicesByType = async (maLoaiThietBi) => {
     const apiUrl = `https://localhost:7019/api/thietbi/LoaiThietBi/${maLoaiThietBi}`;
@@ -63,4 +66,22 @@ export const getThietBiData = async () => {
     console.error('Error fetching devices by type:', error);
     throw error;
   }
+};
+// Update Thiet Bi
+export const updateThietBi = async (id, updatedThietBi) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/ThietBi/${id}`, updatedThietBi);
+    return response.data; 
+  } catch (error) {
+    throw error.response?.data || 'Lỗi!';
+  }
+};
+// API for batch updating isDeleted
+export const batchUpdateIsDeleted = async (maThietBiList) => {
+try {
+  const response = await axios.post(`${API_BASE_URL}/ThietBi/BatchUpdateIsDeleted`, maThietBiList);
+  return response.data;
+} catch (error) {
+  throw error.response?.data || 'Lỗi khi cập nhật trạng thái thiết bị.';
+}
 };

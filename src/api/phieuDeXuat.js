@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const createPhieuDeXuat = async (data) => {
     const apiUrl = 'https://localhost:7019/api/PhieuDeXuat';
     try {
@@ -37,11 +39,12 @@ export const getExistingPhieuDeXuat = async () => {
 };
 export const getProposalDetailsAndTools = async (maPhieu) => {
   const apiUrlPhieuDeXuat = `https://localhost:7019/api/PhieuDeXuat/${maPhieu}`;
-  const apiUrlChiTietDeXuatDungCu = `https://localhost:7019/api/ChiTietDeXuatDungCu/${maPhieu}`;
+  const apiUrlChiTietDeXuatDungCu = `https://localhost:7019/api/ChiTietDeXuatDungCu/byphieu/${maPhieu}`;
+  const apiUrlChiTietDeXuatThietBi = `https://localhost:7019/api/ChiTietDeXuatThietBi/byphieu/${maPhieu}`;
 
   try {
     // Make parallel requests
-    const [proposalResponse, toolsResponse] = await Promise.all([
+    const [proposalResponse, toolsResponse, devicesResponse] = await Promise.all([
       fetch(apiUrlPhieuDeXuat, {
         method: 'GET',
         headers: {
@@ -54,9 +57,15 @@ export const getProposalDetailsAndTools = async (maPhieu) => {
           'Content-Type': 'application/json',
         },
       }),
+      fetch(apiUrlChiTietDeXuatThietBi, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
     ]);
 
-    // Check if both responses are OK
+    // Handle proposal response
     if (!proposalResponse.ok) {
       if (proposalResponse.status === 404) {
         throw new Error('Phiếu Đề Xuất không tồn tại');
@@ -64,26 +73,23 @@ export const getProposalDetailsAndTools = async (maPhieu) => {
         throw new Error('Lỗi khi lấy thông tin Phiếu Đề Xuất');
       }
     }
-
-    // Check if ChiTietDeXuatDungCu response is empty or 404
-    if (!toolsResponse.ok || toolsResponse.status === 404) {
-      // Nếu không có chi tiết dụng cụ, trả về một mảng rỗng
-      return { proposalDetails: await proposalResponse.json(), toolDetails: [] };
-    }
-
-    // Parse the responses
     const proposalDetails = await proposalResponse.json();
-    const toolDetails = await toolsResponse.json();
 
-    return { proposalDetails, toolDetails }; // Return both results together
+    // Handle tools and devices responses
+    const toolDetails = toolsResponse.ok ? await toolsResponse.json() : [];
+    const deviceDetails = devicesResponse.ok ? await devicesResponse.json() : [];
+
+    // Return all details
+    return { proposalDetails, toolDetails, deviceDetails };
   } catch (error) {
     console.error('Error fetching details:', error.message);
     throw error;
   }
 };
 
+
 export const fetchPhieuDeXuat = async () => {
-  const apiUrl = 'https://localhost:7019/api/phieudexuat'; // Replace with your correct API URL
+  const apiUrl = 'https://localhost:7019/api/PhieuDeXuat'; // Replace with your correct API URL
 
   try {
     const response = await fetch(apiUrl, {
@@ -104,3 +110,4 @@ export const fetchPhieuDeXuat = async () => {
     throw error; // Re-throw the error to handle it further up the call stack
   }
 };
+

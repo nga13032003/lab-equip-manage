@@ -2,16 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select } from 'antd';
-import { createPhieuDangKi, getExistingPhieuDangKi } from '../../api/phieuDangKi';
+import { createPhieuDangKi, getExistingPhieuDangKi, fetchDevicesInLab, fetchToolsInLab } from '../../api/phieuDangKi';
 import './PhieuDangKySuDung.scss';
 import { useNavigate } from 'react-router-dom';
-import { createChiTietDeXuatDungCu } from '../../api/dangKiDC';
-import { createChiTietDangKiThietBi } from '../../api/dangKiThietBi';
+import { createChiTietDeXuatDungCu, getChiTietDangKiDungCu, getDangKiDungCuByMaPhieu } from '../../api/dangKiDC';
+import { createChiTietDangKiThietBi, getChiTietDangKiThietBi, getDangKyThietBiByMaPhieu } from '../../api/dangKiThietBi';
 import { fetchDeviceTypes } from '../../api/deviceTypeApi';
 import { fetchDevicesByType } from '../../api/deviceApi';
 import { fetchToolTypes } from '../../api/toolTypeApi';
 import { fetchToolsByType } from '../../api/toolApi';
 import { getAllPhongThiNghiem, getDungCuInLab, getDevicesInLab } from '../../api/labApi';
+import { getLichDungCuByMaPhong, getAllLichDungCu , getNgaySuDungLichDungCu, getNgaySuDungByMaPhong, getNgayKetThucByMaPhong, getNgayKetThucLichDungCu} from '../../api/lichDungCu';
+import { getLichTietBiByMaPhong, getAllLichThietBi, getAllNgaySuDungThietBi, getAllNgayKetThucThietBi, getNgaySuDungThietBiByMaPhong, getNgayKetThucThietBiByMaPhong } from '../../api/lichThietBI';
 
 const PhieuDangKySuDung = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -28,8 +30,14 @@ const PhieuDangKySuDung = () => {
   const [phongThiNghiemList, setPhongThiNghiemList] = useState([]);
   const [selectedPhong, setSelectedPhong] = useState(null);  
   const [maphieudk, setMaphieudk] = useState('');
+  const [lichThietBi, setLichThietBi] = useState([]);
+  const [lichDungCu, setLichDungCu] = useState([]);
+  const [unavailableDates, setUnavailableDates] = useState([]); 
+  const [unavailableEndDates, setUnavailableEndDates] = useState([]); 
   const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  console.log(unavailableDates);
 
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
@@ -76,7 +84,44 @@ const PhieuDangKySuDung = () => {
     };
     fetchPhongThiNghiemList();
   }, []);
+  
+  
+  
+  // Handle room change and fetch devices/tools availability for the selected room
+  const handlePhongChange = async (value) => {
+    setSelectedPhong(value);
+  
+    try {
+      // Fetch the approved device usage history for the selected room
+      const thietBiLich = await getNgaySuDungThietBiByMaPhong(value);
+      const dungCuLich = await getNgaySuDungByMaPhong(value);
 
+      const ngayKetThucDC = await getNgayKetThucByMaPhong(value);
+      const ngayKetThucTB = await getNgayKetThucThietBiByMaPhong(value);
+
+  
+      // Update the state with the fetched data
+      setLichThietBi(thietBiLich || []);
+      setLichDungCu(dungCuLich || []);
+  
+      // Generate lists of unavailable dates for both device and tool usage
+      const usedDeviceDates = thietBiLich.map(item => dayjs(item.ngaySuDung).format('YYYY-MM-DDTH:mm:ss'));
+      const usedToolDates = dungCuLich.map(item => dayjs(item.ngaySuDung).format('YYYY-MM-DDTHH:mm:ss'));
+      const roomEndDates = ngayKetThucDC.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
+      const roomEndDatesTB = ngayKetThucTB.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DD'));
+      
+      setUnavailableDates([...usedDeviceDates, ...usedToolDates]);
+    } catch (error) {
+      message.error('Lỗi khi tải lịch thiết bị hoặc dụng cụ');
+    }
+  };
+  
+  const disabledDate = (current) => {
+    // Disable any dates in the unavailableDates array
+    return unavailableDates.some(date => current && current.isSame(date, 'day'));
+  };
+
+  
   const handleDeviceTypeChange = async (index, maLoaiThietBi) => {
     try {
       const devices = await fetchDevicesByType(maLoaiThietBi);
@@ -151,22 +196,20 @@ useEffect(() => {
     setDeviceList((prevList) =>
       prevList.map((device, idx) => {
         if (idx === index) {
-          if (field === 'MaThietBi') {
-            const selectedDevice = device.filteredDevices.find(
-              (item) => item.maThietBi === value
-            );
-            return {
-              ...device,
-              MaThietBi: value,
-              tenThietBi: selectedDevice ? selectedDevice.tenThietBi : '',
-            };
+          if (field === 'NgaySuDung') {
+            // Kiểm tra ngày đã chọn không trùng với ngày trong lịch đã phê duyệt
+            if (lichThietBi.some((item) => dayjs(item.ngaySuDung).isSame(value, 'day') && item.trangThai === 'Đã phê duyệt')) {
+              message.error('Ngày đã có trong phiếu đăng ký đã phê duyệt.');
+              return device; // Không thay đổi nếu trùng ngày
+            }
           }
           return { ...device, [field]: value };
         }
         return device;
       })
     );
-  }, []);
+  }, [lichThietBi]); // Lưu ý thêm `lichThietBi` vào dependency để theo dõi lịch đã phê duyệt
+  
 
   
 
@@ -182,28 +225,26 @@ useEffect(() => {
     setToolList((prevList) =>
       prevList.map((tool, idx) => {
         if (idx === index) {
-          if (field === 'MaDungCu') {
-            const selectedTool = tool.filteredTools.find(
-              (item) => item.maDungCu === value
-            );
-            return {
-              ...tool,
-              MaDungCu: value,
-              tenDungCu: selectedTool ? selectedTool.tenDungCu : '',
-            };
+          if (field === 'NgaySuDung') {
+            // Kiểm tra ngày đã chọn không trùng với ngày trong lịch đã phê duyệt
+            if (lichDungCu.some((item) => dayjs(item.ngaySuDung).isSame(value, 'day') && item.trangThai === 'Đã phê duyệt')) {
+              message.error('Ngày đã có trong phiếu đăng ký đã phê duyệt.');
+              return tool; // Không thay đổi nếu trùng ngày
+            }
           }
           return { ...tool, [field]: value };
         }
         return tool;
       })
     );
-  }, []);
-
+  }, [lichDungCu]); 
+  
 
   const handleSubmit = async (values) => {
     if (!maphieudk) {
         await fetchAndGenerateUniqueMaPhieu(); // Chỉ tạo mã nếu chưa tồn tại
       }
+    
     try {
       const payload = {
         maphieudk: maphieudk,
@@ -220,12 +261,13 @@ useEffect(() => {
       console.log(payload);
       
 
-        const deviceDetailsPromise = deviceList.map(device => {
+        const deviceDetailsPromise = deviceList.map(async (device) => {
         const newChitietThietBi = {
             maphieudk: maphieudk,
             MaThietBi: device.MaThietBi,
             tenThietBi: device.tenThietBi,
             NgayDangKi: dayjs(device.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            ngaySuDung: device.ngaySuDung ? dayjs(device.ngaySuDung).format('YYYY-MM-DDTHH:mm:ss') : null,
             ngayKetThuc: device.ngayKetThuc 
             ? dayjs(device.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
             : null,
@@ -234,16 +276,20 @@ useEffect(() => {
             ngayBatDauThucTe: null,
             ngayKetThucThucTe: null,
         };
-        return createChiTietDangKiThietBi(newChitietThietBi);
-        });
+          // Tạo chi tiết đăng ký thiết bị
+      await createChiTietDangKiThietBi(newChitietThietBi);
 
-        const toolDetailsPromises = toolList.map(tool => {
-        const newChiTiet = {
+      
+    });
+
+        const toolDetailsPromises = toolList.map(async (tool) => {
+        const newChitietDungCu = {
             maphieudk: maphieudk,
             MaDungCu: tool.MaDungCu,
             tenDungCu: tool.tenDungCu,
             SoLuong: tool.SoLuong,
             NgayDangKi: dayjs(tool.NgayDangKi).format('YYYY-MM-DDTHH:mm:ss'),
+            ngaySuDung: tool.ngaySuDung ? dayjs(tool.ngaySuDung).format('YYYY-MM-DDTHH:mm:ss') : null,
             NgayKetThuc: tool.NgayKetThuc
             ? dayjs(tool.NgayKetThuc).format('YYYY-MM-DDTHH:mm:ss') 
             : null,
@@ -253,9 +299,12 @@ useEffect(() => {
             ngayKetThucThucTe: null,
         };
 
-        console.log('Device Details:', newChiTiet);
-        return createChiTietDeXuatDungCu(newChiTiet);
-        });
+         // Tạo chi tiết đăng ký dụng cụ
+      await createChiTietDeXuatDungCu(newChitietDungCu);
+
+     
+    });
+
         
       // Wait for all tool details to be inserted
       await Promise.all([...deviceDetailsPromise, ...toolDetailsPromises]);
@@ -313,7 +362,7 @@ useEffect(() => {
         >
           <Select
             placeholder="Chọn phòng thí nghiệm"
-            onChange={(value) => setSelectedPhong(value)} // Cập nhật mã phòng được chọn
+            onChange={handlePhongChange} // Cập nhật mã phòng được chọn
           >
             {phongThiNghiemList.map((phong) => (
               <Select.Option key={phong.maPhong} value={phong.maPhong}>
@@ -368,6 +417,13 @@ useEffect(() => {
                     className="input-ngaydk"
                   />
                 </Form.Item>
+                <Form.Item label="Ngày sử dụng" name="NgaySuDung">
+                <DatePicker
+                  disabledDate={disabledDate}
+                  format="YYYY-MM-DDTHH:mm:ss"
+                  onChange={(value) => handleDeviceChange(index, 'NgaySuDung', value)}
+                />
+              </Form.Item>
                 <Form.Item
                   label="Ngày kết thúc"
                   name={`ngayKetThuc-${index}`}
@@ -442,6 +498,13 @@ useEffect(() => {
                     disabled
                     className="input-ngaydk"
                   />
+                </Form.Item>
+                <Form.Item label="Ngày sử dụng" key={`ngaySuDung-${index}`}>
+                <DatePicker
+                  disabledDate={disabledDate}
+                  format="YYYY-MM-DDTHH:mm:ss"
+                  onChange={(value) => handleToolChange(index, 'NgaySuDung', value)}
+                />
                 </Form.Item>
                 <Form.Item
                   label="Ngày kết thúc"

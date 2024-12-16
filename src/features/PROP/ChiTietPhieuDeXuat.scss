@@ -1,0 +1,100 @@
+.chi-tiet-phieu-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+    .chi-tiet-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3983e3;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  
+    .chi-tiet-form {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+      .ant-form-item {
+        margin-bottom: 16px;
+  
+        label {
+          font-weight: bold;
+          float: left;
+          color: #555;
+        }
+  
+        input,
+        textarea {
+          border-radius: 6px;
+          border: 1px solid #ddd;
+          &:disabled {
+            background-color: #fffcfc;
+            color: #656565;
+          }
+        }
+      }
+    }
+  
+    .section-title {
+      font-size: 25px;
+      font-weight: 600;
+      color: #3089ee;
+      margin: 30px 0 20px;
+    }
+  
+    .tools-table,
+    .devices-table {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+      .ant-table {
+        border-radius: 8px;
+  
+        .ant-table-thead > tr > th {
+          background-color: #92e1f7;
+          font-weight: 600;
+          text-align: center;
+          border-bottom: 2px solid #e8e8e8;
+        }
+  
+        .ant-table-tbody > tr > td {
+          text-align: center;
+          vertical-align: middle;
+          padding: 12px 8px;
+          border-bottom: 1px solid #f0f0f0;
+  
+          &:last-child {
+            font-weight: 600;
+          }
+        }
+  
+        .ant-table-tbody > tr:hover > td {
+          background: #f6faff;
+        }
+      }
+    }
+  
+    button {
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #8cbae5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+  
+      &:hover {
+        background: #40a9ff;
+      }
+    }
+  }
+  

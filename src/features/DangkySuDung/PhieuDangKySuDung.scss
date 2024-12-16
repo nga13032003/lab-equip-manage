@@ -47,6 +47,7 @@ $button-border-radius: 5px;
     border: none;
     font-family: $font-family;
     padding: 10px;
+
   }
   .ant-form-item-control-input:focus {
     box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
@@ -122,6 +123,7 @@ $button-border-radius: 5px;
 
 .ant-select-dropdown {
   border-radius: 5px;
+  font-size: 20pt;
   border: 1px solid $border-color;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

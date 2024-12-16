@@ -21,7 +21,7 @@ export const createChiTietDangKiThietBi = async (newChiTiet) => {
       throw error; // Throw the error so it can be handled by the caller
     }
   };
-  export const getDangKyThietBi = async (maPhieu) => {
+  export const getDangKyThietBiByMaPhieu = async (maPhieu) => {
     const API_BASE_URL = `https://localhost:7019/api/DangKyThietBi/${maPhieu}`; // Endpoint lấy thông tin theo mã phiếu
   
     try {
@@ -45,3 +45,22 @@ export const createChiTietDangKiThietBi = async (newChiTiet) => {
       throw error; // Đẩy lỗi ra ngoài để caller có thể xử lý
     }
   };
+
+  export const getChiTietDangKiThietBi = async () => {
+    const API_BASE_URL = 'https://localhost:7019/api/DangKyThietBi';
+    
+    try {
+      const response = await fetch(API_BASE_URL);
+      
+      if (!response.ok) {
+        throw new Error('Lỗi khi lấy danh sách chi tiết đăng ký dụng cụ.');
+      }
+  
+      const data = await response.json();
+      return data; // Return the response data on success
+    } catch (error) {
+      console.error('Error fetching DangKiDungCu details:', error);
+      throw error; // Throw the error so it can be handled by the caller
+    }
+  };
+  

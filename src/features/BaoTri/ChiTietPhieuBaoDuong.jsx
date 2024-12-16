@@ -45,7 +45,6 @@ const ChiTietPhieuBaoDuong = () => {
 
   return (
     <div className="maintenance-detail-container">
-      <h1>Chi Tiết Phiếu Bảo Dưỡng</h1>
       <p>Chi tiết phiếu bảo dưỡng: {phieuDetails.maPhieuBD}</p>
       <Descriptions bordered column={1}>
         <Descriptions.Item label="Mã Phiếu">{phieuDetails.maPhieuBD}</Descriptions.Item>

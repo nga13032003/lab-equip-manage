@@ -4,17 +4,20 @@ import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from
 import { createPhieuDeXuat, getExistingPhieuDeXuat } from '../../api/phieuDeXuat';
 import './Proposal.scss';
 import { createChiTietDeXuatDungCu } from '../../api/chiTietDeXuatDC';
+import { createChiTietDeXuatThietBi } from '../../api/chiTietDeXuatTB';
 import { useNavigate } from 'react-router-dom';
 
 const Proposal = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
   const [toolList, setToolList] = useState([]);
+  const [deviceList, setDeviceList] = useState([]);
 
   const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [employeeName, setEmployeeName] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
+
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
     if (storedEmployeeName) {
@@ -43,7 +46,6 @@ const Proposal = () => {
       let generatedMaPhieu = generateRandomMaPhieu();
 
       // Check if the generated MaPhieu is unique
-      // eslint-disable-next-line
       while (existingPhieuDeXuats.some((item) => item.MaPhieu === generatedMaPhieu)) {
         generatedMaPhieu = generateRandomMaPhieu(); // Regenerate if not unique
       }
@@ -52,14 +54,18 @@ const Proposal = () => {
     } catch (error) {
       message.error('Error fetching existing MaPhieu values');
     }
-  }, []); // Empty array ensures the function is only created once
+  }, []); 
 
   useEffect(() => {
-    fetchAndGenerateUniqueMaPhieu(); // Call on initial render to generate MaPhieu
-  }, [fetchAndGenerateUniqueMaPhieu]); // Add memoized function as a dependency
+    fetchAndGenerateUniqueMaPhieu(); 
+  }, [fetchAndGenerateUniqueMaPhieu]); 
 
   const handleAddTool = useCallback(() => {
-    setToolList((prevList) => [...prevList, { MaDungCu: '', SoLuongDeXuat: 1 }]);
+    setToolList((prevList) => [...prevList, { MaDungCu: '', TenDungCu: '', SoLuongDeXuat: 1, MoTa: '' }]);
+  }, []);
+
+  const handleAddDevice = useCallback(() => {
+    setDeviceList((prevList) => [...prevList, { MaThietBi: '', TenThietBi: '', SoLuongDeXuat: 1, MoTa: '' }]);
   }, []);
 
   const handleToolChange = useCallback((index, field, value) => {
@@ -70,13 +76,19 @@ const Proposal = () => {
     );
   }, []);
 
+  const handleDeviceChange = useCallback((index, field, value) => {
+    setDeviceList((prevList) =>
+      prevList.map((device, idx) =>
+        idx === index ? { ...device, [field]: value } : device
+      )
+    );
+  }, []);
+
   const handleSubmit = async (values) => {
     try {
-      // Step 1: Create PhieuDeXuat
       const payload = {
-        maPhieu: maPhieu, // Use the generated MaPhieu here
-        maThietBi: values.MaThietBi,
-        maNV: 'NV002',
+        maPhieu: maPhieu,
+        maNV: employeeCode,
         lyDoDeXuat: values.LyDoDeXuat,
         ghiChu: values.GhiChu,
         ngayTao: new Date().toISOString(),
@@ -86,25 +98,40 @@ const Proposal = () => {
   
       // Create the proposal (PhieuDeXuat)
       await createPhieuDeXuat(payload);
-  
+
       // Step 2: Insert details into ChiTietDeXuatDungCu for each tool
       const toolDetailsPromises = toolList.map(tool => {
         const newChiTiet = {
-          MaPhieu: maPhieu, // Linking the tools to the created MaPhieu
-          MaDungCu: tool.MaDungCu,
-          SoLuongDeXuat: tool.SoLuongDeXuat,
+          maPhieu: maPhieu, // Linking the tools to the created MaPhieu
+          maLoaiDC: tool.MaLoaiDC,
+          tenDungCu: tool.TenDungCu,
+          soLuongDeXuat: tool.SoLuongDeXuat,
+          moTa: tool.MoTa,
         };
         return createChiTietDeXuatDungCu(newChiTiet); // Insert the tool details
       });
+
+      // Step 3: Insert details into ChiTietDeXuatThietBi for each device
+      const deviceDetailsPromises = deviceList.map(device => {
+        const newChiTiet = {
+          maPhieu: maPhieu, // Linking the devices to the created MaPhieu
+          maLoaiThietBi: device.MaLoaiThietBi,
+          tenThietBi: device.TenThietBi,
+          soLuongDeXuat: device.SoLuongDeXuat,
+          moTa: device.MoTa,
+        };
+        return createChiTietDeXuatThietBi(newChiTiet); // Insert the device details
+      });
   
-      // Wait for all tool details to be inserted
-      await Promise.all(toolDetailsPromises);
+      // Wait for all details to be inserted
+      await Promise.all([...toolDetailsPromises, ...deviceDetailsPromises]);
   
-      message.success("Phiếu đề xuất đã được lập và dụng cụ đã được thêm thành công!");
+      message.success("Phiếu đề xuất đã được lập và dụng cụ, thiết bị đã được thêm thành công!");
   
-      // Reset the form and tool list after successful submission
+      // Reset the form and lists after successful submission
       form.resetFields();
       setToolList([]);
+      setDeviceList([]);
       fetchAndGenerateUniqueMaPhieu(); // Regenerate MaPhieu for next form
       navigate(`/chi-tiet-phieu-de-xuat/${maPhieu}`);
     } catch (error) {
@@ -136,50 +163,71 @@ const Proposal = () => {
           label="Mã phiếu"
           name="MaPhieu"
         >
-          <Input value={maPhieu} disabled /> {/* Displaying the generated MaPhieu */}
+          <Input value={maPhieu} disabled /> {/* Displaying the generated MaPhieu */ }
         </Form.Item>
 
         {/* Other form fields */}
         <Form.Item
-          label="Mã thiết bị"
-          name="MaThietBi"
-          rules={[{ required: true, message: 'Vui lòng nhập mã thiết bị!' }]} >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Lý do đề xuất" name="LyDoDeXuat">
+          label="Lý do đề xuất"
+          name="LyDoDeXuat">
           <Input.TextArea rows={3} />
         </Form.Item>
 
         <Form.Item
-          label="Tên nhân viên"
+          label="Mã nhân viên"
           name="MaNV"
         >
-          <Input value={employeeName} disabled /> {/* Disabled input for MaNV */}
+          <Input value={employeeCode} disabled /><p></p>
         </Form.Item>
         <Form.Item label="Ghi chú" name="GhiChu">
           <Input.TextArea rows={3} />
         </Form.Item>
 
-        <h2>Danh sách dụng cụ</h2>
+        <h2 className="section-title">Danh sách dụng cụ</h2>
         <List
-          bordered
-          dataSource={toolList}
-          renderItem={(item, index) => (
-            <List.Item>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Form.Item
-                  label="Mã DC"
-                  validateStatus={!item.MaDungCu ? 'error' : ''}
-                  help={!item.MaDungCu && 'Vui lòng nhập mã dụng cụ'}>
-                  <Input
-                    value={item.MaDungCu}
-                    onChange={(e) => handleToolChange(index, 'MaDungCu', e.target.value)}
+        bordered
+        dataSource={toolList}
+        renderItem={(item, index) => (
+          <List.Item>
+            <Space direction="vertical" style={{ width: '100%' }} align="baseline">
+              <Form.Item
+                label="Mã loại dụng cụ"
+                validateStatus={!item.MaLoaiDC ? 'error' : ''}
+                help={!item.MaLoaiDC && 'Vui lòng nhập mã loại dụng cụ'}
+              >
+                <Input
+                    value={item.MaLoaiDC}
+                    onChange={(e) => handleToolChange(index, 'MaLoaiDC', e.target.value)}
                   />
                 </Form.Item>
+
+                <Form.Item
+                  label="Tên dụng cụ"
+                  validateStatus={!item.TenDungCu ? 'error' : ''}
+                  help={!item.TenDungCu && 'Vui lòng nhập tên dụng cụ'}
+                >
+                  <Input
+                    value={item.TenDungCu}
+                    onChange={(e) => handleToolChange(index, 'TenDungCu', e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Mô tả"
+                  validateStatus={!item.MoTa ? 'error' : ''}
+                  help={!item.MoTa && 'Vui lòng nhập mô tả'}
+                >
+                  <Input
+                    value={item.MoTa}
+                    onChange={(e) => handleToolChange(index, 'MoTa', e.target.value)}
+                  />
+                </Form.Item>
+
                 <Form.Item
                   label="Số lượng"
                   validateStatus={item.SoLuongDeXuat <= 0 ? 'error' : ''}
-                  help={item.SoLuongDeXuat <= 0 && 'Số lượng phải lớn hơn 0'}>
+                  help={item.SoLuongDeXuat <= 0 && 'Số lượng phải lớn hơn 0'}
+                >
                   <InputNumber
                     min={1}
                     value={item.SoLuongDeXuat}
@@ -190,14 +238,79 @@ const Proposal = () => {
             </List.Item>
           )}
         />
-        <Form.Item wrapperCol={{ offset: 3, span: 18 }}>
-          <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
-            Thêm dụng cụ
-          </Button>
-        </Form.Item>
-        <Form.Item wrapperCol={{ offset: 3, span: 18 }}>
+
+
+        <Button
+          type="dashed"
+          onClick={handleAddTool}
+          icon={<PlusOutlined />}
+        >
+          Thêm dụng cụ
+        </Button>
+
+        <h2 className="section-title">Danh sách thiết bị</h2>
+        <List
+          bordered
+          dataSource={deviceList}
+          renderItem={(item, index) => (
+            <List.Item>
+              <Space direction="vertical" style={{ width: '100%' }} align="baseline">
+                <Form.Item
+                  label="Mã loại thiết bị"
+                  validateStatus={!item.MaLoaiThietBi ? 'error' : ''}
+                  help={!item.MaLoaiThietBi && 'Vui lòng nhập mã loại thiết bị'}
+                >
+                  <Input
+                    value={item.MaLoaiThietBi}
+                    onChange={(e) => handleDeviceChange(index, 'MaLoaiThietBi', e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Tên thiết bị"
+                  validateStatus={!item.TenThietBi ? 'error' : ''}
+                  help={!item.TenThietBi && 'Vui lòng nhập tên thiết bị'}
+                >
+                  <Input
+                    value={item.TenThietBi}
+                    onChange={(e) => handleDeviceChange(index, 'TenThietBi', e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Mô tả"
+                  validateStatus={!item.MoTa ? 'error' : ''}
+                  help={!item.MoTa && 'Vui lòng nhập mô tả'}
+                >
+                  <Input
+                    value={item.MoTa}
+                    onChange={(e) => handleDeviceChange(index, 'MoTa', e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Số lượng"
+                  validateStatus={item.SoLuongDeXuat <= 0 ? 'error' : ''}
+                  help={item.SoLuongDeXuat <= 0 && 'Số lượng phải lớn hơn 0'}
+                >
+                  <InputNumber
+                    min={1}
+                    value={item.SoLuongDeXuat}
+                    onChange={(value) => handleDeviceChange(index, 'SoLuongDeXuat', value)}
+                  />
+                </Form.Item>
+              </Space>
+            </List.Item>
+          )}
+        />
+        <Button
+          type="dashed"
+          onClick={handleAddDevice}
+          icon={<PlusOutlined />}
+        >
+          Thêm thiết bị
+        </Button>
+
+        <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
           <Button type="primary" htmlType="submit">
-             Lập phiếu đề xuất
+            Lập phiếu đề xuất
           </Button>
         </Form.Item>
       </Form>
