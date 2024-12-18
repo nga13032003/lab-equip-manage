@@ -94,3 +94,66 @@ export const getPhieuBaoDuong = async () => {
       throw error;
     }
   };
+  const BASE_URL = 'https://localhost:7019/api';
+
+export const fetchMaintenanceRecords = async (startDate, endDate) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/PhieuBaoDuong`, {
+      params: { startDate, endDate },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching maintenance records:", error);
+    throw error;
+  }
+};
+
+export const fetchMaintenanceDetails = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/ChiTietPhieuBaoDuong`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching maintenance details:", error);
+    throw error;
+  }
+};
+
+
+export const fetchDeviceDetails = async (deviceId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/ThietBi/${deviceId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching device details:', error);
+    throw error;
+  }
+};
+
+export const fetchDeviceMaintenanceHistory = async (deviceId) => {
+  try {
+    const response = await axios.get(`https://localhost:7019/api/ChiTietPhieuBaoDuong/byMaThietBi/${deviceId}`);
+    const maintenanceHistory = response.data;
+
+    const detailedHistory = await Promise.all(
+      maintenanceHistory.map(async (item) => {
+        try {
+          const detailResponse = await axios.get(`https://localhost:7019/api/PhieuBaoDuong/${item.maPhieuBD}`);
+
+          return {
+            ...item, 
+            phieuBaoDuong: detailResponse.data,
+          };
+        } catch (error) {
+          console.error(`Error fetching PhieuBaoDuong for maPhieuBD=${item.maPhieuBD}:`, error);
+          return { ...item, phieuBaoDuong: null };
+        }
+      })
+    );
+
+    return detailedHistory; 
+  } catch (error) {
+    console.error('Error fetching maintenance history:', error);
+    throw error;
+  }
+};
+

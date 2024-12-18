@@ -77,12 +77,19 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="13" icon={<ContainerOutlined />} >
             <Link to='/danh-sach-phieu-nhap'>Danh sách phiếu nhập</Link>
           </Menu.Item>
-          <Menu.Item key="14" icon={<HistoryOutlined />} >
+          {/* <Menu.Item key="14" icon={<HistoryOutlined />} >
             <Link to='/thong-ke'>Thống kê</Link>
           </Menu.Item>
-          <Menu.Item key="16" icon={<HistoryOutlined />} >
-            <Link to='/thong-ke-gio-su-dung'>Thống kê giờ sử dụng</Link>
-          </Menu.Item>
+          <Menu.Item key="15" icon={<HistoryOutlined />} >
+            <Link to='/thong-ke-bao-duong'>Thống kê bảo dưỡng</Link>
+          </Menu.Item> */}
+          <SubMenu key="15" icon={<HistoryOutlined />} title="Danh sách dụng cụ và thiết bị">
+            <Menu.Item key="15-1"><Link to='/thong-ke-bao-duong'>Thống kê bảo dưỡng</Link></Menu.Item>
+            <Menu.Item key="15-2"><Link to='/thong-ke'>Thống kê thanh lý</Link></Menu.Item>
+            <Menu.Item key="15-3"><Link to='/thong-ke-nhap-hang'>Thống kê nhập hàng</Link></Menu.Item>
+            <Menu.Item key="15-4"><Link to='/thong-ke-gio-su-dung'>Thống kê giờ sử dụng</Link></Menu.Item>
+            
+          </SubMenu>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
             <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
             <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>

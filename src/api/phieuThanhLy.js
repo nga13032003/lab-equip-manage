@@ -11,7 +11,15 @@ export const createPhieuThanhLy = async (data) => {
     throw error.response?.data || 'Lỗi khi tạo phiếu thanh lý';
   }
 };
-
+export const getApprovalsByPhieuThanhLyId = async (maPhieuTL) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/PhieuThanhLy/${maPhieuTL}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching approvals by Phieu Thanh Ly ID:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch approvals');
+  }
+};
 // Lấy danh sách mã phiếu đã có
 
 export const getExistingPhieuThanhLy = async () => {

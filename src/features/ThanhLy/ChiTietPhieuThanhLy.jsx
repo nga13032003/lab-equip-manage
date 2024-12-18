@@ -18,7 +18,19 @@ const ChiTietPhieuThanhLy = () => {
   const [loading, setLoading] = useState(true);
   const [toolList, setToolList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState(null); 
+  const [editingItem, setEditingItem] = useState(null);
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeCode, setEmployeeCode] = useState('');
+  useEffect(() => {
+    const storedEmployeeName = localStorage.getItem('employeeName');
+    if (storedEmployeeName) {
+      setEmployeeName(storedEmployeeName);
+    }
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
+    if (storedEmployeeCode) {
+      setEmployeeCode(storedEmployeeCode);
+    }
+  }, []); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -204,9 +216,9 @@ const ChiTietPhieuThanhLy = () => {
     printWindow.document.write('<h2 style="text-align: center;">PHIẾU THANH LÝ</h2>');
     
     // Personal Information Form
-    printWindow.document.write('<p><strong>Tôi tên:</strong> ……………………………………………………………………………………..</p>');
+    printWindow.document.write('<p><strong>Tôi tên:</strong> '+ employeeName+ '.</p>');
     printWindow.document.write('<p><strong>Mã nhân viên:</strong> ' + phieuDetails.maNV + '</p>');
-    printWindow.document.write('<p><strong>Số điện thoại:</strong> ………………………………</p>');
+    // printWindow.document.write('<p><strong>Số điện thoại:</strong> ………………………………</p>');
     printWindow.document.write('<p><strong>Mã phiếu thanh lý:</strong> ' + phieuDetails.maPhieuTL + '</p>');
     printWindow.document.write('<p><strong>Mã công ty:</strong> ' + phieuDetails.maCty + '</p>');
     printWindow.document.write('<p><strong>Ngày lập phiếu:</strong> ' + new Date(phieuDetails.ngayLapPhieu).toLocaleDateString() + '</p>');

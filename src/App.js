@@ -32,7 +32,6 @@ import LichSuPhieuDeXuat from './features/PROP/LichSuDeXuat';
 import PhieuNhapDeXuat from './features/PhieuNhap/NhapHangDeXuat';
 import DSPhieuNhapTable from './features/PhieuNhap/DSPhieuNhap';
 import ChiTietThoiGianDangKi from './features/DangkySuDung/ChiTietThoiGianSuDung';
-import LabDeviceList from './features/LuanChuyen/DanhSachViTriThietBi';
 import ThietBiThongKePage from './components/Reports/ThongKe';
 import LabRooms from './features/LabRoom/LabRoom';
 import LabDetail from './features/LabRoom/LabRoomDetail';
@@ -44,8 +43,10 @@ import PheDuyetLCTable from './features/LuanChuyen/DSPheDuyetLC';
 import PheDuyetPhieuLuanChuyen from './features/LuanChuyen/ChiTietPheDuyet';
 import QuanLyTaiKhoan from './features/Account/QuanLyTaiKhoan';
 import DSPhieuBaoDuong from './features/BaoTri/DSPhieuBaoDuong';
-import ThongKeFioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
 import ThongKeGioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
+import MaintenanceReport from './components/Reports/ThongKeBaoDuong';
+import ThietBiBaoDuong from './features/Device/ThietBiBaoDuong';
+import ThongKeNhapHang from './components/Reports/ThongKeNhapHang';
 
 const App = () => {
   return (
@@ -96,7 +97,11 @@ const App = () => {
         <Route path="/chi-tiet-phe-duyet-luan-chuyen/:maPhieu" element={<DefaultLayout><PheDuyetPhieuLuanChuyen /></DefaultLayout>} />
         <Route path="/quan-ly-tai-khoan" element={<DefaultLayout><QuanLyTaiKhoan/></DefaultLayout>} />
         <Route path="/thong-ke-gio-su-dung" element={<DefaultLayout><ThongKeGioSuDung /></DefaultLayout>} />
+        <Route path="/thong-ke-bao-duong" element={<DefaultLayout><MaintenanceReport/></DefaultLayout>} />
+        <Route path="/chi-tiet-thiet-bi/:maThietBi" element={<DefaultLayout><ThietBiBaoDuong/></DefaultLayout>} />
+        <Route path="/thong-ke-nhap-hang" element={<DefaultLayout><ThongKeNhapHang/></DefaultLayout>} />
       </Routes>
+
     </Router>
   );
 };

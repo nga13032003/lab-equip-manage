@@ -234,3 +234,23 @@ export const getAllPhieuNhap = async () => {
     throw error; // Đẩy lỗi lên cho các component sử dụng hàm này
   }
 };
+
+export const getAllChiTietNhapDC = async () => {
+  try {
+    const response = await axios.get('https://localhost:7019/api/ChiTietNhapDC');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching ChiTietNhapDC data', error);
+    throw error;
+  }
+};
+
+export const getAllChiTietNhapTB = async () => {
+  try {
+    const response = await axios.get('https://localhost:7019/api/ChiTietNhapTB');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching ChiTietNhapTB data', error);
+    throw error;
+  }
+};
