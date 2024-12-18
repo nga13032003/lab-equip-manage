@@ -32,7 +32,6 @@ import LichSuPhieuDeXuat from './features/PROP/LichSuDeXuat';
 import PhieuNhapDeXuat from './features/PhieuNhap/NhapHangDeXuat';
 import DSPhieuNhapTable from './features/PhieuNhap/DSPhieuNhap';
 import ChiTietThoiGianDangKi from './features/DangkySuDung/ChiTietThoiGianSuDung';
-import LabDeviceList from './features/LuanChuyen/DanhSachViTriThietBi';
 import ThietBiThongKePage from './components/Reports/ThongKe';
 import LabRooms from './features/LabRoom/LabRoom';
 import LabDetail from './features/LabRoom/LabRoomDetail';
@@ -44,12 +43,9 @@ import PheDuyetLCTable from './features/LuanChuyen/DSPheDuyetLC';
 import PheDuyetPhieuLuanChuyen from './features/LuanChuyen/ChiTietPheDuyet';
 import QuanLyTaiKhoan from './features/Account/QuanLyTaiKhoan';
 import DSPhieuBaoDuong from './features/BaoTri/DSPhieuBaoDuong';
-import ThongKeFioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
 import ThongKeGioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
-import Dashboard from './components/Reports/ThongKeBaoDuong';
 import MaintenanceReport from './components/Reports/ThongKeBaoDuong';
 import ThietBiBaoDuong from './features/Device/ThietBiBaoDuong';
-import Statistics from './components/Reports/ThongKeNhapHang';
 import ThongKeNhapHang from './components/Reports/ThongKeNhapHang';
 
 const App = () => {
