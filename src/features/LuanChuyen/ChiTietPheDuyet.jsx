@@ -4,6 +4,8 @@ import { getPhieuLuanChuyenByMaPhieu, postLichSuPhieuLuanChuyen, updatePhieuDeXu
 import { createDuyetPhieuLuanChuyen } from '../../api/duyetPhieuLuanChuyen';
 import { useParams } from 'react-router-dom';
 import TimelinePhieuLuanChuyen from './TimelinePhieuLuanChuyen';
+import { updateMaPhongTB } from '../../api/deviceApi';
+import { updateMaPhong } from '../../api/viTriDungCu';
 
 const PheDuyetPhieuLuanChuyen = () => {
   const { maPhieu } = useParams();
@@ -48,11 +50,12 @@ const PheDuyetPhieuLuanChuyen = () => {
 
   const { phieuDetails, chiTietLuanChuyenTB, chiTietLuanChuyenDC } = data;
   const handleDuyet = async () => {
+    const maNV = localStorage.getItem('employeeCode');
     try {
       setLoading(true); // Hiển thị loading trong lúc xử lý
       await  createDuyetPhieuLuanChuyen({
         maPhieuLC: phieuDetails.maPhieuLC,
-        maNV: employeeCode,
+        maNV,
         ngayDuyet: new Date().toISOString(),
         trangThai: 'Đã phê duyệt',
         lyDoTuChoi: null, // Không có lý do từ chối khi duyệt
@@ -75,11 +78,30 @@ const PheDuyetPhieuLuanChuyen = () => {
         .catch((error) => {
             console.error('Error saving history:', error);
         });
+   
+
       // Cập nhật trạng thái sau khi duyệt thành công
       setData((prevData) => ({
         ...prevData,
         phieuDetails: { ...prevData.phieuDetails, trangThai: 'Đã phê duyệt' },
       }));
+            // Cập nhật mã phòng mới sau khi luân chuyển thành công
+    const updateRooms = async () => {
+      try {
+        // Update MaPhongTB (room code for equipment)
+        await updateMaPhongTB(phieuDetails.maPhieuLC, chiTietLuanChuyenTB.maPhongSau);
+        
+        // Update MaPhong (room code for devices/tools)
+        await updateMaPhong(phieuDetails.maPhieuLC, chiTietLuanChuyenDC.maPhongSau);
+
+        console.log("Room codes updated successfully.");
+      } catch (error) {
+        console.error("Error updating room codes:", error);
+      }
+    };
+
+    // Call the function to update the rooms
+    await updateRooms();
       alert('Phiếu đã được phê duyệt thành công!');
     } catch (error) {
       alert('Đã xảy ra lỗi khi phê duyệt phiếu!');

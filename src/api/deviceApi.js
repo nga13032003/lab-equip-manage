@@ -85,42 +85,21 @@ try {
   throw error.response?.data || 'Lỗi khi cập nhật trạng thái thiết bị.';
 }
 };
+// Update MaPhong for a specific device
+export const updateMaPhongTB = async (maThietBi, newMaPhong) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/thietbi/${maThietBi}/UpdateMaPhong`, newMaPhong, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-// Hàm gọi API tạo thiết bị mới
-// export const createDeviceAPI = async (deviceData) => {
-//   try {
-//     const response = await axios.post(`https://localhost:7019/api/ThietBi`, deviceData, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//     return response.data; // Trả về dữ liệu từ API
-//   } catch (error) {
-//     console.error('Error creating device:', error);
-//     throw error; // Ném lỗi để xử lý bên ngoài
-//   }
-// };
-// export const createDeviceAPI = async (deviceData) => {
-//   try {
-//     const response = await fetch(`https://localhost:7019/api/ThietBi`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(deviceData),
-//     });
-
-//     if (response.ok) {
-//       throw new Error(`Lỗi khi tạo mới`);
-//     }
-
-//     const result = await response.json();
-//     return result; // Return created item data
-//   } catch (error) {
-//     console.error(`Error creating new `, error.message);
-//     throw error;
-//   }
-// };
+    return response.data;  // Return success message and updated device data
+  } catch (error) {
+    // If the response has error data, throw that; otherwise, throw a generic error message
+    throw error.response?.data || 'Lỗi khi cập nhật mã phòng.';
+  }
+};
 export const createDeviceAPI = async (thietBi) => {
   const response = await fetch('https://localhost:7019/api/ThietBi', {
     method: 'POST',

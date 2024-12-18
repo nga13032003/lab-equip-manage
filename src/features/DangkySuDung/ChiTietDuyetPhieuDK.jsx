@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Button, message, Spin, Modal, Input, Alert, Table } from 'antd';
-import { getPhieuDetails } from '../../api/phieuDangKi';
+import { Card, List, Typography, Button, message, Spin, Modal, Input, Alert, Table, Divider } from 'antd';
+import { getPhieuDetails, getExistingPhieuDangKi } from '../../api/phieuDangKi';
+import { getDangKiDungCuByMaPhieu } from '../../api/dangKiDC';
+import { getDangKyThietBiByMaPhieu } from '../../api/dangKiThietBi';
 import { approveRegistered } from '../../api/duyetPhieuDangKi';
 import { useLocation } from 'react-router-dom';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
 import { getPhongThiNghiemById } from '../../api/labApi';
 import { getNhanVienById } from '../../api/staff';
+import { createLichThietBi } from '../../api/lichThietBI';
+import { createLichDungCu } from '../../api/lichDungCu';
 import './ApprovalRegisteredDetails.scss';
 
 
@@ -95,8 +99,9 @@ const ApprovalRegisteredDetails = () => {
   const handleAccept = async () => {
     const maNV = localStorage.getItem('employeeCode');
     const ngayDuyet = new Date().toISOString();
-
+  
     try {
+      // Phê duyệt phiếu đăng ký
       const response = await approveRegistered({
         maPhieuDK,
         maNV,
@@ -104,17 +109,69 @@ const ApprovalRegisteredDetails = () => {
         trangThai: 'Phê duyệt',
         lyDoTuChoi: '',
       });
-      if (response && response.maPhieuDK) {
-        message.success('Phiếu đăng ký đã được phê duyệt');
+  
+      if (response?.maPhieuDK) {
+        const maPhieuDK = response.maPhieuDK;
+        const maPhong = proposalDetails.maPhong;
+  
+        // Lấy danh sách thiết bị
+        const thietBiDetails = await getDangKyThietBiByMaPhieu(maPhieuDK);
+  
+        if (thietBiDetails?.length > 0) {
+          const devicePromises = thietBiDetails.map((device) =>
+            createLichThietBi({
+              maPhieuDK,
+              maThietBi: device.maThietBi,
+              maPhong,
+              ngaySuDung: device.ngaySuDung,
+              ngayKetThuc: device.ngayKetThuc,
+            })
+          );
+          await Promise.all(devicePromises);
+        }
+  
+        // Lấy danh sách dụng cụ
+        const dungCuDetails = await getDangKiDungCuByMaPhieu(maPhieuDK);
+  
+        if (dungCuDetails?.length > 0) {
+          const toolPromises = dungCuDetails.map((tool) =>
+            createLichDungCu({
+              maPhieuDK,
+              maDungCu: tool.maDungCu,
+              maPhong,
+              ngaySuDung: tool.ngaySuDung,
+              ngayKetThuc: tool.ngayKetThuc,
+              soLuong: tool.soLuong,
+            })
+          );
+          await Promise.all(toolPromises);
+        }
+  
+        // Xuất thông báo dựa trên danh sách xử lý
+        if (thietBiDetails?.length > 0 && dungCuDetails?.length > 0) {
+          message.success('Phiếu đăng ký đã được phê duyệt và cập nhật lịch sử cho thiết bị và dụng cụ.');
+        } else if (thietBiDetails?.length > 0 && dungCuDetails?.length < 0) {
+          message.success('Phiếu đăng ký đã được phê duyệt và cập nhật lịch sử cho thiết bị.');
+        } else if (dungCuDetails?.length > 0 && thietBiDetails?.length < 0) {
+          message.success('Phiếu đăng ký đã được phê duyệt và cập nhật lịch sử cho dụng cụ.');
+        } else {
+          message.success('Phiếu đăng ký đã được phê duyệt, nhưng không có thiết bị hoặc dụng cụ để xử lý.');
+        }
+        // Cập nhật trạng thái sau khi duyệt thành công
+      setProposalDetails((prevData) => ({
+        ...prevData,
+        phieuDetails: { ...prevData.phieuDetails, trangThai: 'Đã phê duyệt' },
+      }));
         navigate('/phe-duyet-phieu-dang-ki', { state: { refresh: true } });
       } else {
-        message.error('Không thể phê duyệt phiếu đăng ký. Vui lòng kiểm tra lại.');
+        message.error('Không thể phê duyệt phiếu đăng ký.');
       }
     } catch (error) {
       console.error(error); // In thông tin lỗi vào console để kiểm tra
       message.error(error.message || 'Lỗi khi phê duyệt phiếu đăng ký.');
     }
   };
+  
 
   const handleReject = async () => {
     const maNV = localStorage.getItem('employeeCode');
@@ -130,6 +187,11 @@ const ApprovalRegisteredDetails = () => {
       });
       
       console.log('API Response:', response);
+       // Cập nhật trạng thái sau khi duyệt thành công
+       setProposalDetails((prevData) => ({
+        ...prevData,
+        phieuDetails: { ...prevData.phieuDetails, trangThai: 'Không được phê duyệt' },
+      }));
       if (response && response.maPhieuDK) {
         message.success('Phiếu đăng ký đã bị từ chối');
         navigate('/phe-duyet-phieu-dang-ki');
@@ -166,10 +228,8 @@ const ApprovalRegisteredDetails = () => {
   return (
     <div className="chitiet-proposal-container">
       <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
-        <Title level={2}>THÔNG TIN PHIẾU ĐĂNG KÝ</Title>
 
         <div className="info-section">
-          <Title level={3}>Thông Tin Đăng Ký</Title>
           <table className="info-table">
             <tbody>
             <tr>
@@ -198,7 +258,7 @@ const ApprovalRegisteredDetails = () => {
 
         {/* Information of the Registrant */}
         <div className="info-section">
-          <Title level={3}>Thông Tin Người Đăng Ký</Title>
+        <Divider orientation="left">Thông Tin Người Đăng Ký</Divider>
           <table className="info-table">
             <tbody>
               <tr>
@@ -219,7 +279,7 @@ const ApprovalRegisteredDetails = () => {
 
         {/* Laboratory Registration Information */}
         <div className="info-section">
-          <Title level={3}>Thông Tin Phòng Thí Nghiệm</Title>
+        <Divider orientation="left">Thông Tin Phòng Thí Nghiệm</Divider>
           <table className="info-table">
             <tbody>
               <tr>
@@ -236,7 +296,7 @@ const ApprovalRegisteredDetails = () => {
 
         {deviceDetails && deviceDetails.length > 0 ? (
           <>
-            <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+             <Divider orientation="left">Danh Sách Thiết Bị Đăng Ký</Divider>
             <Table
               className="custom-table"
               dataSource={deviceDetails}
@@ -246,6 +306,7 @@ const ApprovalRegisteredDetails = () => {
                 { title: "Mã Thiết Bị", dataIndex: "maThietBi", key: "maThietBi", align: "center" },
                 { title: "Tên Thiết Bị", dataIndex: "tenThietBi", key: "tenThietBi", align: "center" },
                 { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
                 { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
               ]}
             />
@@ -257,7 +318,7 @@ const ApprovalRegisteredDetails = () => {
         {/* Tool List */}
         {toolDetails && toolDetails.length > 0 ? (
           <>
-            <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+            <Divider orientation="left">Danh Sách Dụng Cụ Đăng Ký</Divider>
             <Table
               className="custom-table"
               dataSource={toolDetails}
@@ -268,6 +329,7 @@ const ApprovalRegisteredDetails = () => {
                 { title: "Tên Dụng Cụ", dataIndex: "tenDungCu", key: "tenDungCu", align: "center" },
                 { title: "Số Lượng", dataIndex: "soLuong", key: "soLuong", align: "center" },
                 { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
                 { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
               ]}
             />

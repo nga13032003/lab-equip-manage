@@ -44,6 +44,8 @@ import PheDuyetLCTable from './features/LuanChuyen/DSPheDuyetLC';
 import PheDuyetPhieuLuanChuyen from './features/LuanChuyen/ChiTietPheDuyet';
 import QuanLyTaiKhoan from './features/Account/QuanLyTaiKhoan';
 import DSPhieuBaoDuong from './features/BaoTri/DSPhieuBaoDuong';
+import ThongKeFioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
+import ThongKeGioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
 import Dashboard from './components/Reports/ThongKeBaoDuong';
 import MaintenanceReport from './components/Reports/ThongKeBaoDuong';
 import ThietBiBaoDuong from './features/Device/ThietBiBaoDuong';
@@ -98,10 +100,12 @@ const App = () => {
         <Route path="/lich-su-de-xuat-luan-chuyen" element={<DefaultLayout><PhieuLuanChuyenTable/></DefaultLayout>} />
         <Route path="/chi-tiet-phe-duyet-luan-chuyen/:maPhieu" element={<DefaultLayout><PheDuyetPhieuLuanChuyen /></DefaultLayout>} />
         <Route path="/quan-ly-tai-khoan" element={<DefaultLayout><QuanLyTaiKhoan/></DefaultLayout>} />
+        <Route path="/thong-ke-gio-su-dung" element={<DefaultLayout><ThongKeGioSuDung /></DefaultLayout>} />
         <Route path="/thong-ke-bao-duong" element={<DefaultLayout><MaintenanceReport/></DefaultLayout>} />
         <Route path="/chi-tiet-thiet-bi/:maThietBi" element={<DefaultLayout><ThietBiBaoDuong/></DefaultLayout>} />
         <Route path="/thong-ke-nhap-hang" element={<DefaultLayout><ThongKeNhapHang/></DefaultLayout>} />
       </Routes>
+
     </Router>
   );
 };

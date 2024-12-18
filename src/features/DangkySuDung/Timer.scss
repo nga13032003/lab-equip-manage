@@ -121,6 +121,11 @@
       font-weight: 500;
       color: #333;
     }
+    
+  }
+  .ant-table-content,table{
+    overflow-x: auto;
+    max-width: 100%;
   }
 .btn-active{
   font-weight: bold;
@@ -132,5 +137,7 @@
   &:hover{
     background-color: #e6f7ff !important;
   }
+  
 }
+
   
