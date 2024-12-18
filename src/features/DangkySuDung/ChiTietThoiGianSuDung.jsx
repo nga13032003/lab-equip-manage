@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Card, Table, Button, message, Spin, Modal, Input, Typography, Alert, Tag } from 'antd';
+import { Card, Table, Button, message, Spin, Modal, Input, Typography, Alert, Tag, Divider } from 'antd';
 import { getPhieuDetails } from '../../api/phieuDangKi';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
 import { getPhongThiNghiemById } from '../../api/labApi';
 import { getNhanVienById } from '../../api/staff';
 import { updateDeviceStatus, updateToolStatus } from '../../api/phieuDangKi';
+import { createQuanLyGioTB } from '../../api/quanLyGioTB';
+import { addQuanLyGioDC } from '../../api/quanLyGioDungCu';
 import './ApprovalRegisteredDetails.scss';
 
 const { Title } = Typography;
@@ -40,9 +42,34 @@ const ChiTietThoiGianDangKi = () => {
   
     return `${hours} giờ ${minutes} phút ${seconds} giây`;
   };
-  
+  // Hàm tính số giờ sử dụng giữa hai thời điểm
+const calculateUsageHoursDB = (startDate, endDate, status) => {
+  if (!startDate || status === 'Hoàn thành sử dụng') return '-'; // Không tính nếu trạng thái là "Hoàn thành sử dụng"
 
+  const start = dayjs(startDate);
+  const end = endDate ? dayjs(endDate) : dayjs(); // Nếu không có thời gian kết thúc, dùng thời gian hiện tại
 
+  const duration = end.diff(start); // Tính toán thời gian chênh lệch
+
+  // Chuyển thời gian chênh lệch từ mili giây sang giờ, phút và giây
+  const hours = Math.floor(duration / (1000 * 60 * 60)); // Số giờ đầy đủ
+  const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60)); // Số phút
+  const seconds = Math.floor((duration % (1000 * 60)) / 1000); // Số giây
+
+  // Tính tổng số giờ sử dụng dưới dạng số thập phân (giờ + phút/60 + giây/3600)
+  const totalHours = hours + (minutes / 60) + (seconds / 3600);
+
+  // Làm tròn kết quả thành 2 chữ số sau dấu phẩy và trả về giá trị decimal(5,2)
+  return parseFloat(totalHours).toFixed(2); // Trả về kết quả làm tròn
+};
+
+  const updateStatusForOverdue = (item) => {
+    const now = dayjs();
+    if (item.ngayKetThucThucTe && dayjs(item.ngayKetThucThucTe).isBefore(now)) {
+      return "Quá hạn sử dụng";
+    }
+    return item.trangThaiSuDung;
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -100,6 +127,8 @@ const ChiTietThoiGianDangKi = () => {
       fetchDetails();
     }
   }, [maPhieuDK, deviceDetail, toolDetails]);
+
+  
 
   useEffect(() => {
     const savedUsageStatus = localStorage.getItem('usageStatus');
@@ -219,42 +248,61 @@ const ChiTietThoiGianDangKi = () => {
 
   const handleModalConfirm = async () => {
     try {
-      const { maThietBi, maDungCu } = currentItem;
+      const { maThietBi, maDungCu, ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung } = currentItem;
   
-      // Kiểm tra loại item và gửi API cập nhật trạng thái và tình trạng sử dụng tương ứng
+      // Only update the device if `maThietBi` exists
       if (maThietBi) {
-        // Gửi API cập nhật trạng thái và tình trạng sử dụng cho thiết bị
+        // Calculate usage hours for the device
+        const soGioSuDung = calculateUsageHoursDB(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
+  
+        // Update device status and record usage hours
         await updateDeviceStatus(maPhieuDK, 'Hoàn thành sử dụng', usageStatus);
+        await createQuanLyGioTB({
+          maThietBi,
+          maPhieuDK,
+          maPhong: registerdDetails.maPhong,
+          soGioSuDungThucTe: soGioSuDung,
+        });
   
-        // Cập nhật danh sách thiết bị trong giao diện
-        setDeviceDetails((prevDeviceDetails) =>
-          prevDeviceDetails.map((device) =>
-            device.maThietBi === maThietBi
-              ? { ...device, trangThaiSuDung: 'Hoàn thành sử dụng', tinhTrangSuDung: usageStatus }
-              : device
-          )
+        // Update the device details locally after the API call
+        const updatedDeviceDetails = deviceDetail.map((device) =>
+          device.maThietBi === maThietBi ? { ...device, trangThaiSuDung: 'Hoàn thành sử dụng' } : device
         );
-      } else if (maDungCu) {
-        // Gửi API cập nhật trạng thái và tình trạng sử dụng cho dụng cụ
-        await updateToolStatus(maPhieuDK, 'Hoàn thành sử dụng', usageStatus);
+        setDeviceDetails(updatedDeviceDetails);
   
-        // Cập nhật danh sách dụng cụ trong giao diện
-        setToolDetails((prevToolDetails) =>
-          prevToolDetails.map((tool) =>
-            tool.maDungCu === maDungCu
-              ? { ...tool, trangThaiSuDung: 'Hoàn thành sử dụng', tinhTrangSuDung: usageStatus }
-              : tool
-          )
-        );
+        message.success('Cập nhật trạng thái thiết bị thành công!');
       }
   
-      // Thông báo thành công và đóng modal
-      message.success('Cập nhật trạng thái và tình trạng sử dụng thành công!');
-      setModalVisible(false); // Đóng modal sau khi xác nhận
+      // Only update the tool if `maDungCu` exists
+      if (maDungCu) {
+        // Calculate usage hours for the tool
+        const soGioSuDung = calculateUsageHoursDB(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
+  
+        // Update tool status and record usage hours
+        await updateToolStatus(maPhieuDK, 'Hoàn thành sử dụng', usageStatus);
+        await addQuanLyGioDC({
+          maDungCu,
+          maPhieuDK,
+          maPhong: registerdDetails.maPhong,
+          soGioSuDungThucTe: soGioSuDung,
+        });
+  
+        // Update the tool details locally after the API call
+        const updatedToolDetails = toolDetails.map((tool) =>
+          tool.maDungCu === maDungCu ? { ...tool, trangThaiSuDung: 'Hoàn thành sử dụng' } : tool
+        );
+        setToolDetails(updatedToolDetails);
+  
+        message.success('Cập nhật trạng thái dụng cụ thành công!');
+      }
+  
+      // Close the modal after processing the update
+      setModalVisible(false);
     } catch (error) {
-      message.error('Cập nhật thất bại: ' + (error.message || 'Lỗi không xác định.'));
+      message.error('Cập nhật trạng thái thất bại! ' + (error.message || ''));
     }
   };
+  
 
   const handleUsageStatusChange = (e) => {
     const newStatus = e.target.value;
@@ -295,11 +343,9 @@ const ChiTietThoiGianDangKi = () => {
   return (
     <div className="chitiet-register-container">
       <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
-        <Title level={2}>THÔNG TIN PHIẾU ĐĂNG KÝ</Title>
         
         {/* Info Sections */}
         <div className="info-section">
-          <Title level={3}>Thông Tin Đăng Ký</Title>
           <table className="info-table">
             <tbody>
               <tr>
@@ -329,14 +375,17 @@ const ChiTietThoiGianDangKi = () => {
         {/* Device List */}
         {deviceDetail && deviceDetail.length > 0 ? (
           <>
-            <Title level={3}>Danh Sách Thiết Bị Đăng Ký</Title>
-            <Table
+             <Divider orientation="left">Danh Sách Thiết Bị Đăng Ký</Divider>
+             <Table
               dataSource={deviceDetail}
               rowKey="maThietBi"
               bordered
               columns={[
                 { title: 'Mã Thiết Bị', dataIndex: 'maThietBi' },
                 { title: 'Tên Thiết Bị', dataIndex: 'tenThietBi' },
+                { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
+                { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
                 { title: 'Trạng thái', dataIndex: 'trangThaiSuDung', render: (status) => <Tag color="green">{status}</Tag> },
                 {
                   title: 'Số Giờ Sử Dụng',
@@ -348,8 +397,8 @@ const ChiTietThoiGianDangKi = () => {
                 {
                   title: 'Hành động',
                   render: (_, record) => {
-                    const isStartDisabled = record.trangThaiSuDung === 'Quá hạn sử dụng' || record.trangThaiSuDung === 'Hoàn thành sử dụng';
-                    const isEndDisabled = record.trangThaiSuDung === 'Hoàn thành sử dụng' || record.trangThaiSuDung === 'Quá hạn sử dụng' ;
+                    const isDisabled = record.trangThaiSuDung === "Quá hạn sử dụng";
+                    const isEndDisabled = record.trangThaiSuDung === 'Hoàn thành sử dụng' || record.trangThaiSuDung === 'Quá hạn sử dụng' || record.trangThaiSuDung === "Quá hạn sử dụng";;
 
                     return (
                       <Button
@@ -368,7 +417,7 @@ const ChiTietThoiGianDangKi = () => {
                   render: (usageStatus) => (usageStatus ? usageStatus : '-'),
                 },
               ]}
-            />
+            />  
           </>
         ) : (
           <Alert message="Không có thiết bị đăng ký" type="info" showIcon className="alert-box" />
@@ -376,7 +425,7 @@ const ChiTietThoiGianDangKi = () => {
 
         {toolDetails && toolDetails.length > 0 ? (
           <>
-            <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+            <Divider orientation="left">Danh Sách Dụng Cụ Đăng Ký</Divider>
             <Table
               className="custom-table"
               dataSource={toolDetails}
@@ -387,6 +436,7 @@ const ChiTietThoiGianDangKi = () => {
                 { title: "Tên Dụng Cụ", dataIndex: "tenDungCu", key: "tenDungCu", align: "center" },
                 { title: "Số Lượng", dataIndex: "soLuong", key: "soLuong", align: "center" },
                 { title: "Ngày Đăng Ký", dataIndex: "ngayDangKi", key: "ngayDangKi", align: "center" },
+                { title: "Ngày Sử dụng", dataIndex: "ngaySuDung", key: "ngaySuDung", align: "center" },
                 { title: "Ngày Kết Thúc", dataIndex: "ngayKetThuc", key: "ngayKetThuc", align: "center" },
                 { title: 'Trạng thái', dataIndex: 'trangThaiSuDung', render: (status) => <Tag color="green">{status}</Tag> },
                 {

@@ -62,23 +62,46 @@ export const getPhieuDetails = async (maPhieuDK) => {
   const apiUrlDangKiDungCu = `https://localhost:7019/api/DangKiDungCu/${maPhieuDK}`;
 
   try {
-    const [registeredResponse, deviceResponse, toolsResponse] = await Promise.all([
-      fetch(apiUrlPhieuDangKi),
-      fetch(apiUrlDangKiThietBi),
-      fetch(apiUrlDangKiDungCu),
-    ]);
-
+    // Lấy thông tin phiếu đăng ký
+    const registeredResponse = await fetch(apiUrlPhieuDangKi);
     if (!registeredResponse.ok) throw new Error('Phiếu Đăng Kí không tồn tại');
-
     const registeredDetails = await registeredResponse.json();
-    const deviceDetails = deviceResponse.ok ? await deviceResponse.json() : null;
-    const toolDetails = toolsResponse.ok ? await toolsResponse.json() : null;
 
+    // Lấy thông tin thiết bị nếu có
+    let deviceDetails = null;
+    let toolDetails = null;
+
+    // Xử lý thiết bị
+    try {
+      const deviceResponse = await fetch(apiUrlDangKiThietBi);
+      if (deviceResponse.ok) {
+        deviceDetails = await deviceResponse.json();
+      } else {
+        deviceDetails = null; // Nếu không có thiết bị, đặt giá trị null
+      }
+    } catch (deviceError) {
+      console.warn('Không có thiết bị: ', deviceError.message);
+    }
+
+    // Xử lý dụng cụ
+    try {
+      const toolResponse = await fetch(apiUrlDangKiDungCu);
+      if (toolResponse.ok) {
+        toolDetails = await toolResponse.json();
+      } else {
+        toolDetails = null; // Nếu không có dụng cụ, đặt giá trị null
+      }
+    } catch (toolError) {
+      console.warn('Không có dụng cụ: ', toolError.message);
+    }
+
+    // Trả về kết quả
     return {
       registeredDetails,
-      deviceDetails: deviceDetails?.length ? deviceDetails : null,
-      toolDetails: toolDetails?.length ? toolDetails : null,
+      deviceDetails: deviceDetails && deviceDetails.length > 0 ? deviceDetails : null,
+      toolDetails: toolDetails && toolDetails.length > 0 ? toolDetails : null,
     };
+
   } catch (error) {
     console.error('Error fetching details:', error.message);
     throw error;

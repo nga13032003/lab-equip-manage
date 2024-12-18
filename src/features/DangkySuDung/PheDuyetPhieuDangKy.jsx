@@ -99,7 +99,7 @@ const DuyetPhieuDKTable = () => {
           render={(text, record) => (
             <Space size="middle">
               <Link to={`/phe-duyet-phieu-dang-ki/${record.maPhieuDK}`}>
-                <Button type="primary" disabled={record.trangThai === 'Đã phê duyệt'}>
+                <Button type="primary">
                   Xem chi tiết
                 </Button>
               </Link>

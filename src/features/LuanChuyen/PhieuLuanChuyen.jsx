@@ -3,6 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from 'antd';
 import { createPhieuLuanChuyen, getExistingPhieuLuanChuyen, createChiTietLuanChuyenDungCu, createChiTietLuanChuyenThietBi } from '../../api/phieuLuanChuyen';
 import { useNavigate } from 'react-router-dom';
+import './phieuLuanChuyen.scss'
 
 const PhieuLuanChuyen = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);

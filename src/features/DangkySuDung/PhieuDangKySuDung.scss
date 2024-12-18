@@ -16,7 +16,12 @@ $box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
 // Button styling
 $button-padding: 10px 20px;
 $button-border-radius: 5px;
-
+$button-padding-mobile: 10px 20px;
+$button-padding-small: 8px 16px;
+$button-padding-extra-small: 6px 12px;
+body {
+  @apply bg-gray-100 p-4;
+}
 // Container
 .phieu-dang-ky-container {
   background-color: $background-color;
@@ -25,6 +30,8 @@ $button-border-radius: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 800px;
   margin: 30px auto;
+  @apply bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8;
+  margin: 20px auto;
 }
 
 .phieu-dang-ky-title {
@@ -37,16 +44,21 @@ $button-border-radius: 5px;
 }
 
 .phieu-dang-ky-form {
+  .ant-form-item {
+    @apply mb-4;
+  }
   .ant-form-item-label {
     color: $text-color;
     font-family: $font-family;
     font-weight: 600;
+    @apply text-sm md:text-base font-semibold;
   }
 
   .ant-form-item-control-input {
     border: none;
     font-family: $font-family;
     padding: 10px;
+    font-size: 13pt;
 
   }
   .ant-form-item-control-input:focus {
@@ -56,13 +68,19 @@ $button-border-radius: 5px;
   .ant-input, .ant-select-selector {
     font-family: $font-family;
     padding: 10px;
+    @apply rounded-md border-gray-300 focus:ring-2 focus:ring-blue-400 p-2;
   }
-
+  .ant-select-selection-item{
+    font-size: 10pt;
+    font-family: $font-family;
+  }
   .ant-input:focus, .ant-select-focused .ant-select-selector {
     border-color: $primary-color;
     box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
   }
-
+  .ant-picker{
+    @apply w-full;
+  }
   .ant-btn {
     font-family: $font-family;
     background-color: $primary-color;
@@ -75,10 +93,23 @@ $button-border-radius: 5px;
     &:hover {
       background-color: darken($primary-color, 10%);
     }
-
     &:disabled {
       background-color: #d3d3d3;
       cursor: not-allowed;
+    }
+    @media (max-width: 1200px) {
+      padding: $button-padding-mobile; // Giảm padding cho màn hình nhỏ
+      font-size: 14px; // Thay đổi font-size cho các màn hình nhỏ hơn
+    }
+  
+    @media (max-width: 768px) {
+      padding: $button-padding-small; // Giảm padding cho màn hình nhỏ
+      font-size: 12px; // Thay đổi font-size cho các màn hình di động
+    }
+  
+    @media (max-width: 480px) {
+      padding: $button-padding-extra-small; // Giảm padding cho các màn hình rất nhỏ
+      font-size: 10px; // Thay đổi font-size cho các màn hình cực nhỏ
     }
   }
 
@@ -88,13 +119,10 @@ $button-border-radius: 5px;
   }
 
   .input-ngaydk{
-    margin: 3px;
-    padding: 7px;
-    width: 459px;
+    @apply w-full;
   }
   .date-picker-ngaykt{
-    width: 459px;
-    padding: 7px;
+    @apply w-full;
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Button, message, Alert, Spin, Table, Row, Col } from 'antd';
+import { Card, List, Typography, Button, message, Alert, Spin, Table, Row, Col, Divider } from 'antd';
 import { getPhieuDetails, updatePhieuDangKi } from '../../api/phieuDangKi';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
@@ -124,22 +124,54 @@ const ChiTietPhieuDangKi = () => {
     // Table of device details
     printWindow.document.write('<h3>Chi tiết thiết bị</h3>');
     printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
-    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Tên Thiết Bị</th><th>Ngày Đăng Ký</th></tr></thead>');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Tên Thiết Bị</th><th>Ngày Đăng Kí</th><th>Ngày Sử dụng</th><th>Ngày Kết Thúc</th></tr></thead>');
     printWindow.document.write('<tbody>');
     deviceDetail.forEach((device, index) => {
-      printWindow.document.write(`<tr><td>${index + 1}</td><td>${device.maThietBi}</td><td>${device.tenThietBi}</td><td>${new Date(device.ngayDangKi).toLocaleDateString()}</td></tr>`);
+      printWindow.document.write(`<tr><td>${index + 1}</td><td>${device.maThietBi}</td><td>${device.tenThietBi}</td><td>${new Date(device.ngayDangKi).toLocaleDateString()}</td><td>${device.ngaySuDung}</td><td>${device.ngayKetThuc}</td></tr>`);
     });
     printWindow.document.write('</tbody></table>');
 
     // Table of tool details
     printWindow.document.write('<h3>Chi tiết dụng cụ</h3>');
     printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
-    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Tên Dụng Cụ</th><th>Số Lượng</th></tr></thead>');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Tên Dụng Cụ</th><th>Số Lượng</th><th>Ngày Đăng Kí</th><th>Ngày Sử dụng</th><th>Ngày Kết Thúc</th></tr></thead>');
     printWindow.document.write('<tbody>');
     toolDetails.forEach((tool, index) => {
-      printWindow.document.write(`<tr><td>${index + 1}</td><td>${tool.maDungCu}</td><td>${tool.tenDungCu}</td><td>${tool.soLuong}</td></tr>`);
+      printWindow.document.write(`<tr><td>${index + 1}</td><td>${tool.maDungCu}</td><td>${tool.tenDungCu}</td><td>${tool.soLuong}</td><td>${new Date(tool.ngayDangKi).toLocaleDateString()}</td><td>${tool.ngaySuDung}</td><td>${tool.ngayKetThuc}</td></tr>`);
     });
     printWindow.document.write('</tbody></table>');
+
+    // Add the bottom text
+  printWindow.document.write('<div style="margin-top: 20px; font-style: italic;">');
+  printWindow.document.write('<p>Tôi sẽ chấp hành nghiêm túc các nội quy, quy định của Trường và Trung tâm.</p>');
+  printWindow.document.write('<p>Trân trọng cám ơn.</p>');
+  printWindow.document.write('<p style="text-align: right">Ngày....tháng....năm</p>');
+  // Add the bottom text
+  printWindow.document.write('<div style="margin-top: 20px; text-align: right; display: flex; justify-content: flex-end;">');
+  
+  // Three columns on the same line
+  printWindow.document.write('<div style="margin-right: 20px;">');
+  printWindow.document.write('<p>BGH (duyệt)</p>');
+ 
+  
+  printWindow.document.write('</div>');
+  printWindow.document.write('<div style="margin-right: 20px;">');
+  printWindow.document.write('<p>TT TNTH</p>');
+  printWindow.document.write('</div>');
+  printWindow.document.write('<div style="margin-right: 20px;">');
+  printWindow.document.write('<p>Khoa/Phòng/TT/...</p>');
+  printWindow.document.write('</div>');
+  // Next column (if needed, adjust)
+  printWindow.document.write('<div style="margin-right: 20px;">');
+  printWindow.document.write('<p>GV/Người hướng dẫn</p>');
+  printWindow.document.write('</div>');
+  
+  // Last column
+  printWindow.document.write('<div>');
+  printWindow.document.write('<p>Chủ nhiệm (nếu có)</p>');
+  printWindow.document.write('</div>');
+  
+  printWindow.document.write('</div>');
 
     printWindow.document.close(); // Finish the document
     printWindow.print(); // Trigger print dialog
@@ -157,10 +189,7 @@ const ChiTietPhieuDangKi = () => {
   return (
     <div className="chitiet-register-container">
       <Card title="Chi Tiết Phiếu Đăng Kí" bordered={false}>
-        <Title level={2}>THÔNG TIN PHIẾU ĐĂNG KÝ</Title>
-
         <div className="info-section">
-          <Title level={3}>Thông Tin Đăng Ký</Title>
           <table className="info-table">
             <tbody>
             <tr>
@@ -189,7 +218,7 @@ const ChiTietPhieuDangKi = () => {
 
         {/* Information of the Registrant */}
         <div className="info-section">
-          <Title level={3}>Thông Tin Người Đăng Ký</Title>
+        <Divider orientation="left">Thông Tin Người Đăng Ký</Divider>
           <table className="info-table">
             <tbody>
               <tr>
@@ -210,7 +239,7 @@ const ChiTietPhieuDangKi = () => {
 
         {/* Laboratory Registration Information */}
         <div className="info-section">
-          <Title level={3}>Thông Tin Phòng Thí Nghiệm</Title>
+        <Divider orientation="left">Thông Tin Phòng Thí Nghiệm</Divider>
           <table className="info-table">
             <tbody>
               <tr>
@@ -228,7 +257,7 @@ const ChiTietPhieuDangKi = () => {
         {/* Device List */}
         {deviceDetail && deviceDetail.length > 0 ? (
           <>
-            <Title level={3} className="section-title">Danh Sách Thiết Bị Đăng Ký</Title>
+            <Divider orientation="left">Danh Sách Thiết Bị Đăng Ký</Divider>
             <Table
               className="custom-table"
               dataSource={deviceDetail}
@@ -250,7 +279,7 @@ const ChiTietPhieuDangKi = () => {
         {/* Tool List */}
         {toolDetails && toolDetails.length > 0 ? (
           <>
-            <Title level={3} className="section-title">Danh Sách Dụng Cụ Đăng Ký</Title>
+            <Divider orientation="left">Danh Sách Dụng Cụ Đăng Ký</Divider>
             <Table
               className="custom-table"
               dataSource={toolDetails}
@@ -270,19 +299,21 @@ const ChiTietPhieuDangKi = () => {
           <Alert message="Không có dụng cụ đăng ký" type="info" showIcon className="alert-box" />
         )}
 
-        <Row gutter={[16, 16]}>
-          <Col span={24} sm={12} md={8} lg={6}>
+        <Row gutter={[16, 16]} justify="space-between" align="middle">
+             {/* Show print button only if the registration status is "Đã Duyệt" */}
+         {registerdDetails.trangThai === "Đã phê duyệt" && (
+          <Button type="primary" onClick={handlePrint} style={{ marginTop: '20px' }}>
+            In Phiếu
+          </Button>
+        )}
+        <Col>
             <Button type="primary" onClick={handleBack} block className="custom-button">
               Trở về
             </Button>
           </Col>
+          
+
         </Row>
-         {/* Show print button only if the registration status is "Đã Duyệt" */}
-         {registerdDetails.trangThai === "Đã phê duyệt" && (
-          <Button type="primary" onClick={handlePrint} style={{ marginTop: '20px' }}>
-            Print
-          </Button>
-        )}
         
       </Card>
 

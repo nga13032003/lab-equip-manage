@@ -243,9 +243,13 @@ const PhieuLuanChuyenDetails = () => {
     
     // Table of device details for LuanChuyenTB (Table of Equipment Transfer)
     printWindow.document.write('<h3>Chi tiết thiết bị chuyển</h3>');
+    printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Tên Thiết Bị</th><th>N</th></tr></thead>');
     
     // Table of device details for LuanChuyenDC (Device Details for Dissolution Transfer)
     printWindow.document.write('<h3>Chi tiết thiết bị thanh lý</h3>');
+    printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Tên Dụng Cụ</th><th>Số Lượng</th></tr></thead>');
     
     // Conclusion and signature section
     printWindow.document.write('<div style="position: absolute; bottom: 20px; width: 90%;">');

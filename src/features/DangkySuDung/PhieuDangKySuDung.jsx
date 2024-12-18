@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select } from 'antd';
+import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, DatePicker, Select} from 'antd';
 import { createPhieuDangKi, getExistingPhieuDangKi, fetchDevicesInLab, fetchToolsInLab } from '../../api/phieuDangKi';
 import './PhieuDangKySuDung.scss';
 import { useNavigate } from 'react-router-dom';
@@ -87,40 +87,64 @@ const PhieuDangKySuDung = () => {
   
   
   
-  // Handle room change and fetch devices/tools availability for the selected room
   const handlePhongChange = async (value) => {
     setSelectedPhong(value);
   
     try {
-      // Fetch the approved device usage history for the selected room
+      // Fetch the approved device and tool usage history for the selected room
       const thietBiLich = await getNgaySuDungThietBiByMaPhong(value);
       const dungCuLich = await getNgaySuDungByMaPhong(value);
-
-      const ngayKetThucDC = await getNgayKetThucByMaPhong(value);
-      const ngayKetThucTB = await getNgayKetThucThietBiByMaPhong(value);
-
+  
+      // Fetch end dates for devices and tools in the room
+      const ngayKetThucDC = await getNgayKetThucByMaPhong(value); // Tools end dates
+      const ngayKetThucTB = await getNgayKetThucThietBiByMaPhong(value); // Devices end dates
   
       // Update the state with the fetched data
       setLichThietBi(thietBiLich || []);
       setLichDungCu(dungCuLich || []);
   
-      // Generate lists of unavailable dates for both device and tool usage
+      // Generate lists of unavailable usage dates
       const usedDeviceDates = thietBiLich.map(item => dayjs(item.ngaySuDung).format('YYYY-MM-DDTH:mm:ss'));
       const usedToolDates = dungCuLich.map(item => dayjs(item.ngaySuDung).format('YYYY-MM-DDTHH:mm:ss'));
-      const roomEndDates = ngayKetThucDC.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
-      const roomEndDatesTB = ngayKetThucTB.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DD'));
-      
+  
+      // Combine unavailable start dates
       setUnavailableDates([...usedDeviceDates, ...usedToolDates]);
+  
+      // Generate unavailable end dates (used in "end date" picker)
+      const unavailableEndDatesDC = ngayKetThucDC.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
+      const unavailableEndDatesTB = ngayKetThucTB.map(item => dayjs(item.ngayKetThuc).format('YYYY-MM-DDTHH:mm:ss'));
+  
+      // Combine both unavailable end dates and remove duplicates
+      const allUnavailableEndDates = [...new Set([...unavailableEndDatesDC, ...unavailableEndDatesTB])];
+  
+      setUnavailableEndDates(allUnavailableEndDates);
     } catch (error) {
       message.error('Lỗi khi tải lịch thiết bị hoặc dụng cụ');
     }
   };
   
   const disabledDate = (current) => {
-    // Disable any dates in the unavailableDates array
-    return unavailableDates.some(date => current && current.isSame(date, 'day'));
+    // Điều kiện 1: Ngày trong quá khứ
+    const isPastDate = current && current.isBefore(dayjs().startOf('day'));
+
+    // Điều kiện 2: Ngày trong unavailableDates
+    const isUnavailableDate = unavailableDates.some(date => 
+      current && current.isSame(dayjs(date), 'day')
+    );
+
+    // Trả về true nếu bất kỳ điều kiện nào đúng
+    return isPastDate || isUnavailableDate;
   };
 
+  const disabledEndDate = (current, ngaySuDung) => {
+    const isBeforeStartDate = current && current <= dayjs(ngaySuDung).endOf('day');
+    
+    const isUnavailableEndDate = unavailableEndDates.some(date => 
+      current && current.isSame(dayjs(date), 'day')
+    );
+  
+    return isBeforeStartDate || isUnavailableEndDate;
+  };
   
   const handleDeviceTypeChange = async (index, maLoaiThietBi) => {
     try {
@@ -322,10 +346,12 @@ useEffect(() => {
   };
 
   return (
-    <div className="phieu-dang-ky-container">
-      <h1 className="phieu-dang-ky-title">LẬP PHIẾU ĐĂNG KÝ</h1>
+    <div className="max-w-4xl mx-auto">
+          <div className="phieu-dang-ky-container">
+      <h1 className="phieu-dang-ky-title text-2xl font-semibold mb-4 text-center">LẬP PHIẾU ĐĂNG KÝ</h1>
 
       <Checkbox
+        className='check-disable'
         checked={componentDisabled}
         onChange={(e) => setComponentDisabled(e.target.checked)}
       >
@@ -411,17 +437,17 @@ useEffect(() => {
                   </Select>
                 </Form.Item>
                 <Form.Item label="Ngày đăng ký">
-                  <Input
-                    value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
-                    disabled
-                    className="input-ngaydk"
-                  />
+                <DatePicker
+                  value={dayjs()} 
+                  format="YYYY-MM-DD HH:mm:ss" 
+                  disabled
+                />
                 </Form.Item>
-                <Form.Item label="Ngày sử dụng" name="NgaySuDung">
+                <Form.Item label="Ngày sử dụng" name="ngaySuDung">
                 <DatePicker
                   disabledDate={disabledDate}
                   format="YYYY-MM-DDTHH:mm:ss"
-                  onChange={(value) => handleDeviceChange(index, 'NgaySuDung', value)}
+                  onChange={(value) => handleDeviceChange(index, 'ngaySuDung', value)}
                 />
               </Form.Item>
                 <Form.Item
@@ -430,11 +456,15 @@ useEffect(() => {
                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                 >
                   <DatePicker
-                    className="date-picker-ngaykt"
-                    showTime
+                    // className="date-picker-ngaykt"
                     format="YYYY-MM-DDTHH:mm:ss"
+                    disabledDate={(current) => disabledEndDate(current, form.getFieldValue('ngaySuDung'))}
                     onChange={(value) =>
-                      handleDeviceChange(index, 'ngayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                      handleDeviceChange(
+                        index,
+                        'ngayKetThuc',
+                        value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null
+                      )
                     }
                   />
                 </Form.Item>
@@ -493,17 +523,17 @@ useEffect(() => {
                   />
                 </Form.Item>
                 <Form.Item label="Ngày đăng ký">
-                  <Input
-                    value={dayjs().format('YYYY-MM-DD HH:mm:ss')}
-                    disabled
-                    className="input-ngaydk"
-                  />
+                <DatePicker
+                  value={dayjs()} 
+                  format="YYYY-MM-DD HH:mm:ss" 
+                  disabled
+                />
                 </Form.Item>
                 <Form.Item label="Ngày sử dụng" key={`ngaySuDung-${index}`}>
                 <DatePicker
                   disabledDate={disabledDate}
                   format="YYYY-MM-DDTHH:mm:ss"
-                  onChange={(value) => handleToolChange(index, 'NgaySuDung', value)}
+                  onChange={(value) => handleToolChange(index, 'ngaySuDung', value)}
                 />
                 </Form.Item>
                 <Form.Item
@@ -512,13 +542,17 @@ useEffect(() => {
                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                 >
                   <DatePicker
-                    className="date-picker-ngaykt"
-                    showTime
+                    // className="date-picker-ngaykt"
                     format="YYYY-MM-DDTHH:mm:ss"
+                    disabledDate={(current) => disabledEndDate(current, form.getFieldValue('ngaySuDung'))}
                     onChange={(value) =>
-                      handleToolChange(index, 'NgayKetThuc', value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null)
+                      handleToolChange(
+                        index,
+                        'NgayKetThuc',
+                        value ? dayjs(value).format('YYYY-MM-DDTHH:mm:ss') : null
+                      )
                     }
-                  />
+                    />
                 </Form.Item>
               </Space>
             </List.Item>
@@ -532,7 +566,7 @@ useEffect(() => {
 
         <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
         <div className="flex flex-wrap justify-between gap-4 sm:flex-col md:flex-row">
-        <Button type="primary" htmlType="submit" className="w-full sm:w-auto">
+        <Button type="primary" htmlType="submit">
             Lập phiếu đăng ký
           </Button>
           </div>
@@ -540,6 +574,8 @@ useEffect(() => {
         </Form.Item>
       </Form>
     </div>
+    </div>
+
   );
 };
 

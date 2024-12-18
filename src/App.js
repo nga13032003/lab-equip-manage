@@ -44,6 +44,8 @@ import PheDuyetLCTable from './features/LuanChuyen/DSPheDuyetLC';
 import PheDuyetPhieuLuanChuyen from './features/LuanChuyen/ChiTietPheDuyet';
 import QuanLyTaiKhoan from './features/Account/QuanLyTaiKhoan';
 import DSPhieuBaoDuong from './features/BaoTri/DSPhieuBaoDuong';
+import ThongKeFioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
+import ThongKeGioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
 
 const App = () => {
   return (
@@ -93,6 +95,7 @@ const App = () => {
         <Route path="/lich-su-de-xuat-luan-chuyen" element={<DefaultLayout><PhieuLuanChuyenTable/></DefaultLayout>} />
         <Route path="/chi-tiet-phe-duyet-luan-chuyen/:maPhieu" element={<DefaultLayout><PheDuyetPhieuLuanChuyen /></DefaultLayout>} />
         <Route path="/quan-ly-tai-khoan" element={<DefaultLayout><QuanLyTaiKhoan/></DefaultLayout>} />
+        <Route path="/thong-ke-gio-su-dung" element={<DefaultLayout><ThongKeGioSuDung /></DefaultLayout>} />
       </Routes>
     </Router>
   );

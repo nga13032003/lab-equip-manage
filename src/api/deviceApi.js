@@ -85,3 +85,19 @@ try {
   throw error.response?.data || 'Lỗi khi cập nhật trạng thái thiết bị.';
 }
 };
+
+// Update MaPhong for a specific device
+export const updateMaPhongTB = async (maThietBi, newMaPhong) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/thietbi/${maThietBi}/UpdateMaPhong`, newMaPhong, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;  // Return success message and updated device data
+  } catch (error) {
+    // If the response has error data, throw that; otherwise, throw a generic error message
+    throw error.response?.data || 'Lỗi khi cập nhật mã phòng.';
+  }
+};
