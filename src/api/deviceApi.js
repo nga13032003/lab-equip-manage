@@ -85,3 +85,56 @@ try {
   throw error.response?.data || 'Lỗi khi cập nhật trạng thái thiết bị.';
 }
 };
+
+// Hàm gọi API tạo thiết bị mới
+// export const createDeviceAPI = async (deviceData) => {
+//   try {
+//     const response = await axios.post(`https://localhost:7019/api/ThietBi`, deviceData, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//     return response.data; // Trả về dữ liệu từ API
+//   } catch (error) {
+//     console.error('Error creating device:', error);
+//     throw error; // Ném lỗi để xử lý bên ngoài
+//   }
+// };
+// export const createDeviceAPI = async (deviceData) => {
+//   try {
+//     const response = await fetch(`https://localhost:7019/api/ThietBi`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(deviceData),
+//     });
+
+//     if (response.ok) {
+//       throw new Error(`Lỗi khi tạo mới`);
+//     }
+
+//     const result = await response.json();
+//     return result; // Return created item data
+//   } catch (error) {
+//     console.error(`Error creating new `, error.message);
+//     throw error;
+//   }
+// };
+export const createDeviceAPI = async (thietBi) => {
+  const response = await fetch('https://localhost:7019/api/ThietBi', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(thietBi),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Thêm thiết bị thành công:', data);
+  } else {
+    const error = await response.text();
+    console.error('Lỗi:', error);
+  }
+};

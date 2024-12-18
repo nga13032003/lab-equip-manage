@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Checkbox, List, Space, message } from 'antd';
+import { Button, Form, Input, InputNumber, Checkbox, List, Space, message, Select } from 'antd';
 import { createPhieuDeXuat, getExistingPhieuDeXuat } from '../../api/phieuDeXuat';
 import './Proposal.scss';
 import { createChiTietDeXuatDungCu } from '../../api/chiTietDeXuatDC';
 import { createChiTietDeXuatThietBi } from '../../api/chiTietDeXuatTB';
 import { useNavigate } from 'react-router-dom';
+import { getAllTools } from '../../api/toolApi';
+import { fetchToolTypes } from '../../api/toolTypeApi';
+import { Option } from 'antd/es/mentions';
+import { fetchDeviceTypes } from '../../api/deviceTypeApi';
 
 const Proposal = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
   const [toolList, setToolList] = useState([]);
   const [deviceList, setDeviceList] = useState([]);
-
+  const [toolTypes, setToolTypes] = useState([]);
   const [maPhieu, setMaPhieu] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
+   const [deviceTypes, setDeviceTypes] = useState([]); 
   const [employeeName, setEmployeeName] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
-
   useEffect(() => {
     const storedEmployeeName = localStorage.getItem('employeeName');
     if (storedEmployeeName) {
@@ -28,6 +32,18 @@ const Proposal = () => {
       setEmployeeCode(storedEmployeeCode);
     }
   }, []);
+  useEffect(() => {
+    const fetchDeviceTypesData = async () => {
+      try {
+        const types = await fetchDeviceTypes();
+        setDeviceTypes(types); // Set device types in state
+      } catch (error) {
+        console.error('Error fetching device types:', error);
+      }
+    };
+    fetchDeviceTypesData();
+  }, []);
+
 
   // Function to generate a random MaPhieu
   const generateRandomMaPhieu = () => {
@@ -83,6 +99,17 @@ const Proposal = () => {
       )
     );
   }, []);
+    useEffect(() => {
+      const fetchToolTypesData = async () => {
+        try {
+          const types = await fetchToolTypes(); 
+          setToolTypes(types); 
+        } catch (error) {
+          message.error('Không thể tải danh sách loại dụng cụ');
+        }
+      };
+      fetchToolTypesData();
+    }, []);
 
   const handleSubmit = async (values) => {
     try {
@@ -190,16 +217,31 @@ const Proposal = () => {
         renderItem={(item, index) => (
           <List.Item>
             <Space direction="vertical" style={{ width: '100%' }} align="baseline">
-              <Form.Item
-                label="Mã loại dụng cụ"
-                validateStatus={!item.MaLoaiDC ? 'error' : ''}
-                help={!item.MaLoaiDC && 'Vui lòng nhập mã loại dụng cụ'}
-              >
-                <Input
-                    value={item.MaLoaiDC}
-                    onChange={(e) => handleToolChange(index, 'MaLoaiDC', e.target.value)}
-                  />
-                </Form.Item>
+            <Space direction="vertical" style={{ width: '100%' }} align="baseline">
+          <Form.Item
+            name="maLoaiDC"
+            label="Mã Loại Dụng Cụ"
+            rules={[{ required: true, message: "Vui lòng chọn mã loại dụng cụ!" }]}
+            validateStatus={!item.MaLoaiDC ? 'error' : ''}
+            help={!item.MaLoaiDC && 'Vui lòng chọn mã loại dụng cụ'}
+          >
+            <Select
+              value={item.MaLoaiDC}  // Giá trị hiện tại của MaLoaiDC
+              onChange={(value) => handleToolChange(index, 'MaLoaiDC', value)}  // Cập nhật giá trị khi thay đổi
+            >
+              {toolTypes.length > 0 ? (
+                toolTypes.map((type) => (
+                  <Option key={type.maLoaiDC} value={type.maLoaiDC}>
+                    {type.maLoaiDC} - {type.tenLoaiDC}
+                  </Option>
+                ))
+              ) : (
+                <Option disabled>Đang tải loại dụng cụ...</Option>
+              )}
+            </Select>
+          </Form.Item>
+        </Space>
+
 
                 <Form.Item
                   label="Tên dụng cụ"
@@ -255,16 +297,37 @@ const Proposal = () => {
           renderItem={(item, index) => (
             <List.Item>
               <Space direction="vertical" style={{ width: '100%' }} align="baseline">
-                <Form.Item
-                  label="Mã loại thiết bị"
-                  validateStatus={!item.MaLoaiThietBi ? 'error' : ''}
-                  help={!item.MaLoaiThietBi && 'Vui lòng nhập mã loại thiết bị'}
-                >
-                  <Input
-                    value={item.MaLoaiThietBi}
-                    onChange={(e) => handleDeviceChange(index, 'MaLoaiThietBi', e.target.value)}
-                  />
-                </Form.Item>
+              <List.Item>
+                <Space direction="vertical" style={{ width: '100%' }} align="baseline">
+                  <Form.Item
+                    name="maLoaiThietBi"
+                    label="Mã Loại Thiết Bị"
+                    rules={[{ required: true, message: "Vui lòng chọn mã loại thiết bị!" }]}
+                    validateStatus={!item.MaLoaiThietBi ? 'error' : ''}
+                    help={!item.MaLoaiThietBi && 'Vui lòng chọn mã loại thiết bị'}
+                  >
+                    <Select
+                      value={item.MaLoaiThietBi}  // Giá trị hiện tại của MaLoaiThietBi
+                      placeholder="Chọn loại thiết bị"
+                      showSearch
+                      optionFilterProp="children"
+                      onChange={(value) => handleDeviceChange(index, 'MaLoaiThietBi', value)}  // Cập nhật giá trị khi thay đổi
+                      style={{ width: '100%' }}
+                    >
+                      {deviceTypes.length > 0 ? (
+                        deviceTypes.map((type) => (
+                          <Select.Option key={type.maLoaiThietBi} value={type.maLoaiThietBi}>
+                            {type.maLoaiThietBi} - {type.tenLoaiThietBi}
+                          </Select.Option>
+                        ))
+                      ) : (
+                        <Select.Option disabled>Đang tải loại thiết bị...</Select.Option>
+                      )}
+                    </Select>
+                  </Form.Item>
+                </Space>
+              </List.Item>
+
                 <Form.Item
                   label="Tên thiết bị"
                   validateStatus={!item.TenThietBi ? 'error' : ''}

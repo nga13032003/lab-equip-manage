@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, DatePicker, Upload, Button, message, Select, Modal, Space } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import uploadImage from '../../api/uploadImage'; 
-import { getThietBiData } from '../../api/deviceApi';
+import { createDeviceAPI, getThietBiData } from '../../api/deviceApi';
 import { getAllNhaCungCap,createNhaCungCap } from '../../api/nhaCungCap';
 import moment from 'moment';
 import { fetchDeviceTypes } from '../../api/deviceTypeApi';
@@ -114,6 +114,7 @@ const NewDeviceForm = ({ form }) => {
       message.error('Thêm nhà cung cấp thất bại!');
     }
   };
+
   useEffect(() => {
     const fetchDeviceTypesData = async () => {
       try {
@@ -125,14 +126,16 @@ const NewDeviceForm = ({ form }) => {
     };
     fetchDeviceTypesData();
   }, []);
+
+  
   return (
     <Form form={form} layout="vertical">
-      <Form.Item
+      {/* <Form.Item
         name="maThietBi"
         label="Mã Thiết Bị"
         rules={[{ required: true, message: "Vui lòng nhập mã thiết bị!" }]}>
-        <Input readOnly />
-      </Form.Item>
+        <Input />
+      </Form.Item> */}
 
       <Form.Item
         name="tenThietBi"
@@ -159,6 +162,13 @@ const NewDeviceForm = ({ form }) => {
         </Select>
       </Form.Item>
 
+      <Form.Item
+        name="soLuong"
+        label="Số Lượng"
+        rules={[{ required: true, message: 'Vui lòng nhập số lượng!' }]}
+      >
+        <Input type="number" min={1} placeholder="Nhập số lượng thiết bị" />
+      </Form.Item>
 
       <Form.Item
       name="ngayCapNhat"

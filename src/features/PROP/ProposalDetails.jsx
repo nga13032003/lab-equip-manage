@@ -6,6 +6,8 @@ import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import './ChiTietPhieuDeXuat.scss';
 import { updateOrCreateChiTietDeXuatDC } from '../../api/chiTietDeXuatDC';
 import { updateOrCreateDeviceProposal } from '../../api/chiTietDeXuatTB';
+import { createLichSuPhieuDeXuat } from '../../api/lichSuPhieuDeXuat';
+import TimelinePhieuDeXuat from './TimeLinePhieuDeXuat';
 
 const ChiTietPhieuDeXuat = () => {
   const { maPhieu } = useParams(); // Lấy mã phiếu từ URL
@@ -51,8 +53,16 @@ const ChiTietPhieuDeXuat = () => {
   // Handle saving changes
   const handleSaveDeviceChanges = async (values) => {
     try {
+      const payload = {
+        maCTDeXuatTB: editingItem.maCTDeXuatTB,
+        maPhieu: maPhieu,
+        maLoaiThietBi: editingItemDevice.maLoaiThietBi,
+        tenThietBi: editingItemDevice.tenThietBi,  // Ensure this field is populated correctly
+        soLuongDeXuat: editingItem.soLuongDeXuat,
+        moTa: editingItem.moTa
+      }
       if (isEditingDevice) {
-        await updateOrCreateDeviceProposal(maPhieu, editingItemDevice.maLoaiThietBi, values);
+        await updateOrCreateDeviceProposal(maPhieu, editingItemDevice.maLoaiThietBi, payload);
         message.success('Cập nhật thiết bị thành công!');
         setIsModalDeviceVisible(false);
         // Reload data related to devices
@@ -66,19 +76,38 @@ const ChiTietPhieuDeXuat = () => {
   
   const handleSaveToolChanges = async (values) => {
     try {
-      if (!isEditingDevice) {
-        await updateOrCreateChiTietDeXuatDC(maPhieu, editingItem.maLoaiDC, values);
+        const payload = {
+            maCTDeXuatDC: editingItem.maCTDeXuatDC,
+            maPhieu: maPhieu,
+            maLoaiDC: editingItem.maLoaiDC,
+            tenDungCu: editingItem.tenDungCu,  // Ensure this field is populated correctly
+            soLuongDeXuat: editingItem.soLuongDeXuat,
+            moTa: editingItem.moTa
+        };
+
+        await updateOrCreateChiTietDeXuatDC(maPhieu, editingItem.maLoaiDC, payload);
         message.success('Cập nhật công cụ thành công!');
         setIsModalToolVisible(false);
         // Reload data related to tools
         const { toolDetails } = await getProposalDetailsAndTools(maPhieu);
         setToolList(toolDetails);
-      }
+        const LichSuPhieuDeXuat = {
+          maPhieu: maPhieu,  // Mã Phiếu Luân Chuyển
+          trangThaiTruoc: phieuDeXuat.trangThai,  
+          trangThaiSau: "Sửa Chi Tiết Thiết Bị",
+          ngayThayDoi: new Date().toISOString(),  
+          maNV: phieuDeXuat.maNV, 
+        };
+      
+        // Gửi dữ liệu lịch sử phiếu luân chuyển về cơ sở dữ liệu
+        createLichSuPhieuDeXuat(LichSuPhieuDeXuat);
     } catch (error) {
-      message.error('Lỗi khi lưu thay đổi công cụ.');
+        message.error('Lỗi khi lưu thay đổi công cụ.');
     }
-  };
+};
+
   
+
 
 
   // Handle closing the modal
@@ -391,9 +420,10 @@ const ChiTietPhieuDeXuat = () => {
           </Form.Item>
         </Form>
       </Modal>
+      {maPhieu && <TimelinePhieuDeXuat maPhieu={maPhieu} />}
     </div>
+    
   );
 };
 
 export default ChiTietPhieuDeXuat;
-

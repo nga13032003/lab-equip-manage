@@ -6,6 +6,7 @@ import NewDeviceForm from "../Device/NewDeviceForm";
 import NewToolForm from "../Tool/NewToolForm";
 import { useNavigate } from "react-router-dom";
 import moment from 'moment';
+import { createDeviceAPI, getThietBiData } from "../../api/deviceApi";
 
 const { Option } = Select;
 
@@ -18,6 +19,13 @@ const PhieuNhap = () => {
   const [modalItemType, setModalItemType] = useState(""); // Track the item type (device or tool)
   const [maPhieuNhap, setMaPhieuNhap] = useState("");
   const navigate = useNavigate(); 
+  const [employeeCode, setEmployeeCode] = useState('');
+  useEffect(() => {
+    const storedEmployeeCode = localStorage.getItem('employeeCode');
+    if (storedEmployeeCode) {
+      setEmployeeCode(storedEmployeeCode);
+    }
+  }, []);
   useEffect(() => {
     generateMaPhieuNhap();
   }, []);
@@ -43,41 +51,83 @@ const PhieuNhap = () => {
     setItemList((prev) => prev.filter((_, idx) => idx !== index));
   };
 
+  const [existingMaThietBi, setExistingMaThietBi] = useState([]);
+  const generateUniqueMaThietBi = () => {
+    // Generate a unique code for the device
+    const code = 'TB' + Math.floor(Math.random() * 900 + 100); 
+    return existingMaThietBi.includes(code) ? generateUniqueMaThietBi() : code;
+  };
+  
   const handleModalSubmit = async () => {
+    const values = await modalForm.validateFields();
     try {
-      const values = await modalForm.validateFields();
-      
-      // Add the new item (either device or tool)
-      await createNewItem(modalItemType, values);
-      message.success(`Mới đã được thêm thành công!`);
-      
-      // Add the new item to the list
-      const newItem = {
-        type: modalItemType === "ThietBi" ? "ThietBi" : "DungCu",
-        Ma: modalItemType === "ThietBi" ? values.maThietBi : values.maDungCu,
-        Ten: modalItemType === "ThietBi" ? values.tenThietBi : values.tenDungCu,
-        SoLuong: modalItemType === "ThietBi" ? 1 : values.soLuong,
-        GiaNhap: 0, // Default GiaNhap is 0
-      };
-      
-      setItemList((prev) => [...prev, newItem]);
-      
-      // Close the modal and reset form fields
-      setModalItemType("");  // This closes the modal
-      modalForm.resetFields(); // Resets the form fields
-      
+      if (modalItemType === "ThietBi" && values.soLuong > 0) {    
+        const itemsToAdd = [];
+        for (let i = 0; i < values.soLuong; i++) {
+          const uniqueCode = generateUniqueMaThietBi();  
+          const newItem = {
+            type: "ThietBi",
+            Ma: uniqueCode,
+            Ten: values.tenThietBi,
+            SoLuong: 1, 
+            GiaNhap: 0,
+          };
+          itemsToAdd.push(newItem);
+          const device ={ 
+            maThietBi: uniqueCode,
+            tenThietBi: values.tenThietBi,
+            maLoaiThietBi: values.maLoaiThietBi,
+            hinhAnh: values.hinhAnh,
+            nhaSX: values.nhaSX,
+            xuatXu: values.xuatXu,
+            ngaySX: values.ngaySX,
+            ngayCapNhat: values.ngayCapNhat,
+            ngayBaoHanh: values.ngayBaoHanh,
+            maNCC: values.maNCC,
+          };
+          await createDeviceAPI(device);
+        }
+        setItemList(prev => [...prev, ...itemsToAdd]); 
+        message.success(`Thiết bị đã được thêm thành công!`);
+        modalForm.resetFields();
+        setModalItemType("");  
+      } 
+      else if (modalItemType === "DungCu") {
+        const newTool = {
+          type: "DungCu",
+          Ma: values.maDungCu,
+          Ten: values.tenDungCu,
+          SoLuong: values.soLuong,
+          GiaNhap: 0,
+        };
+        await createNewItem(modalItemType, values);
+        setItemList(prev => [...prev, newTool]);
+        message.success("Dụng cụ đã được thêm thành công!");
+        modalForm.resetFields();
+        setModalItemType("");  
+      }
+      modalForm.resetFields();
+      setModalItemType("");
     } catch (error) {
       message.error("Lỗi khi thêm mới.");
     }
   };
-
+ 
+  
   const handleSubmit = async (values) => {
     try {
-      const { TongTien, NgayNhap } = values;
+      const { NgayNhap } = values;
+
+      // Tính tổng tiền từ itemList
+      const TongTien = itemList.reduce((total, item) => {
+        const giaNhap = item.GiaNhap || 0; // Đảm bảo không bị undefined
+        const soLuongNhap = item.SoLuong || 0; // Đảm bảo không bị undefined
+        return total + giaNhap * soLuongNhap; // Cộng dồn
+      }, 0);
 
       await createPhieuNhap({
         MaPhieuNhap: maPhieuNhap,
-        MaNV: localStorage.getItem("employeeCode"),
+        MaNV: employeeCode,
         NgayNhap,
         TongTien,
       });
@@ -89,6 +139,9 @@ const PhieuNhap = () => {
             MaThietBi: item.Ma,
             GiaNhap: item.GiaNhap,
             SoLuongNhap: item.SoLuong,
+          }).catch((error) => {
+            console.error(`Error for item: ${item.Ma}`, error);
+            return null; // Để không phá Promise.all
           });
         } else {
           return createChiTietNhapDC({
@@ -96,11 +149,16 @@ const PhieuNhap = () => {
             MaDungCu: item.Ma,
             GiaNhap: item.GiaNhap,
             SoLuongNhap: item.SoLuong,
+          }).catch((error) => {
+            console.error(`Error for item: ${item.Ma}`, error);
+            return null;
           });
         }
       });
-
-      await Promise.all(detailPromises);
+      
+      const results = await Promise.all(detailPromises);
+      console.log("Results:", results);
+      
 
       message.success("Phiếu nhập đã được lập thành công!");
       navigate(`/chi-tiet-phieu-nhap/${maPhieuNhap}`);

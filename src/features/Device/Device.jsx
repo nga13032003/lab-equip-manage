@@ -28,13 +28,14 @@ const Device = () => {
 
   const isLoggedIn = localStorage.getItem('employeeName');
 
-  const handleDeviceClick = (deviceId) => {
+  const handleDeviceClick = (maThietBi) => {
     if (!isLoggedIn) {
       navigate('/login');
     } else {
-      navigate(`/DeviceDetails/${deviceId}`); // Điều hướng đến trang chi tiết thiết bị
+      navigate(`/chi-tiet-thiet-bi/${maThietBi}`);
     }
   };
+  
 
   const handleMaintenanceClick = (device, event) => {
     event.stopPropagation(); // Ngừng sự kiện click trên phần tử cha
@@ -86,9 +87,6 @@ const Device = () => {
                   className="device-image w-full aspect-square object-cover rounded-lg mb-3"
                 />
                 <h3 className="text-lg font-medium text-gray-800">{device.tenThietBi}</h3>
-                {/* <p className="text-sm text-gray-600">
-                  Loại: {device.loaiThietBi?.tenLoaiThietBi || 'Không rõ'}
-                </p> */}
                 <p className="text-sm text-gray-600">Xuất xứ: {device.xuatXu}</p>
                 <p className="text-sm text-gray-600">
                   Tình trạng: {device.tinhTrang}
