@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Spin, Typography } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, Row, Col, Spin, Typography} from "antd";
 import { getLabRooms } from "../../api/phongLap";
 import { getThietBiData } from "../../api/deviceApi";
 import { BiAtom } from "react-icons/bi";
@@ -11,7 +12,6 @@ import { FaRobot } from "react-icons/fa";
 import { FaLaptopCode } from "react-icons/fa";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
-import { Link } from "react-router-dom"; // Dùng Link để chuyển trang
 import "./LabRoom.scss";
 
 const { Title, Text } = Typography;
@@ -20,6 +20,7 @@ const LabRooms = () => {
   const [labRooms, setLabRooms] = useState([]);
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLabRoomsAndDevices = async () => {
@@ -72,6 +73,24 @@ const LabRooms = () => {
         return <FaGlobeAmericas className="icon" style={{ color: "#5cdbd3" }} />;
       case "Phong Nguyên Liệu":
         return <AiOutlineFundProjectionScreen className="icon" style={{ color: "#ff85c0" }} />;
+        case "Phong Khoa Học Môi Trường":
+      return <FaGlobeAmericas className="icon" style={{ color: "#40a9ff" }} />; // Example icon for environmental science
+    case "Phong Hóa Sinh":
+      return <GiChemicalDrop className="icon" style={{ color: "#ff4d4f" }} />; // Example icon for chemistry and biology
+    case "Phong Vi Sinh":
+      return <BiAtom className="icon" style={{ color: "#52c41a" }} />; // Example icon for microbiology
+    case "Phong Tự Động Hóa":
+      return <GiMechanicalArm className="icon" style={{ color: "#ffa940" }} />; // Example icon for automation systems
+    case "Phong Quang Học":
+      return <AiOutlineFundProjectionScreen className="icon" style={{ color: "#ffec3d" }} />; // Example icon for optics
+    case "Phong Vật Liệu":
+      return <FiTool className="icon" style={{ color: "#ff85c0" }} />; // Example icon for material science
+    case "Phong Hệ Thống Thông Tin":
+      return <FaLaptopCode className="icon" style={{ color: "#40a9ff" }} />; // Example icon for software development
+    case "Phong Công Nghệ Thực Phẩm":
+      return <GiChemicalDrop className="icon" style={{ color: "#ff4d4f" }} />; // Example icon for food technology
+    case "Phong Xử Lý Dữ Liệu":
+      return <MdElectricMeter className="icon" style={{ color: "#1890ff" }} />;
       default:
         return <BiAtom className="icon" style={{ color: "#1890ff" }} />;
     }
@@ -106,6 +125,17 @@ const LabRooms = () => {
                 <p>
                   <Text strong>Số thiết bị:</Text> {devices[room.maPhong]?.length || 0}
                 </p>
+                <button className="ant-btn-luan-chuyen"
+                                  type="primary"
+                                  style={{
+                                    position: "absolute",
+                                    bottom: 5,
+                                    right: 5,
+                                  }}
+                                  onClick={() => navigate("/de-xuat-luan-chuyen")}
+                                >
+                                  +Luân chuyển
+                   </button>
               </Card>
               </Link>
             </Col>

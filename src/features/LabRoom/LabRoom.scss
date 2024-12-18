@@ -1,6 +1,6 @@
 // Container tổng quan
 .lab-container {
-  padding: 20px;
+  padding: 15px;
   background-color: #ffffff;
   min-height: 100vh;
 }
@@ -10,6 +10,10 @@
   color: #1890ff;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.ant-card-head-title{
+  margin-top: 10px;
 }
 
 // Spinner
@@ -24,7 +28,7 @@
   border-color: #bbedf9;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  height: 220px;
+  height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,3 +49,34 @@
   font-size: 36px;
   margin-bottom: 10px;
 }
+.ant-btn-luan-chuyen {
+  // Giữ nguyên phong cách cơ bản của Ant Design
+  background-color: rgb(91, 168, 239); // Màu nền (có thể thay đổi)
+  color: #fff; // Màu chữ
+  border: none; // Loại bỏ viền
+
+  &:hover {
+    background-color: #40a9ff; // Màu nền khi hover
+    color: #fff; // Màu chữ khi hover
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2); // Hiệu ứng focus
+  }
+
+  // Tùy chỉnh kích thước nút
+  width: 100px;
+  height: 30px;
+  font-size: 12px;
+
+  // Tùy chỉnh góc bo tròn
+  border-radius: 5px;
+
+  // Thêm animation khi nhấn
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95); // Hiệu ứng thu nhỏ khi click
+  }
+}
+

@@ -268,3 +268,42 @@ export const createChiTietLuanChuyenThietBi = async (payload) => {
       return null;
     }
   };
+  export const getAllChiTietDeXuatLCDC = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ChiTietLuanChuyenDC`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching ChiTietDeXuatLCDC:', error);
+      throw error;
+    }
+  };
+  const BASE_URL = 'https://localhost:7019/api';
+  export const getChiTietDeXuatLCDCById = async (maPhieu, maDungCu) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ChiTietLuanChuyenDC/${maPhieu}/${maDungCu}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching ChiTietDeXuatLCDC by ID:', error);
+      throw error;
+    }
+  };
+  
+  export const getAllChiTietLuanChuyenTB = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ChiTietLuanChuyenTB`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching ChiTietLuanChuyenTB:', error);
+      throw error;
+    }
+  };
+  
+  export const getChiTietLuanChuyenTBById = async (maPhieu, maThietBi) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ChiTietLuanChuyenTB/${maPhieu}/${maThietBi}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching ChiTietLuanChuyenTB by ID:', error);
+      throw error;
+    }
+  };

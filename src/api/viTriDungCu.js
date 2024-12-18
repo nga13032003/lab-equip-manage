@@ -82,16 +82,27 @@ export const deleteViTriDungCu = async (maDungCu, maPhong) => {
   }
 };
 
-// Cập nhật mã phòng cho vị trí dụng cụ
 export const updateMaPhong = async (maDungCu, newMaPhong) => {
   try {
-    const response = await fetch(`${API_URL_VI_TRI_DUNG_CU}/UpdateMaPhong/${maDungCu}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newMaPhong),
-    });
-    if (!response.ok) throw new Error("Failed to update MaPhong.");
-    return await response.json();
+    // Gửi request với query string chứa newMaPhong
+    const response = await fetch(
+      `${API_URL_VI_TRI_DUNG_CU}/update-ma-phong/${maDungCu}?newMaPhong=${encodeURIComponent(newMaPhong)}`, 
+      {
+        method: "PUT",
+        headers: {
+          // Nếu server không yêu cầu body, có thể bỏ Content-Type
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update MaPhong.");
+    }
+
+    const data = await response.text(); // Vì phản hồi chỉ là chuỗi
+    return data; // Trả về phản hồi từ server (chuỗi thông báo)
   } catch (error) {
     console.error("Error updating MaPhong:", error);
     throw error;

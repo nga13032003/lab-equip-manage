@@ -231,26 +231,50 @@ const PhieuLuanChuyenDetails = () => {
     printWindow.document.write('</div>');
     
     // Title
-    printWindow.document.write('<h2 style="text-align: center;">PHIẾU THANH LÝ</h2>');
+    printWindow.document.write('<h2 style="text-align: center;">PHIẾU LUÂN CHUYỂN</h2>');
     
     // Personal Information Form
     printWindow.document.write('<p><strong>Tôi tên:</strong> ……………………………………………………………………………………..</p>');
     printWindow.document.write('<p><strong>Mã nhân viên:</strong> ' + phieuDetails.maNV + '</p>');
     printWindow.document.write('<p><strong>Số điện thoại:</strong> ………………………………</p>');
     printWindow.document.write('<p><strong>Mã phiếu luân chuyển:</strong> ' + phieuDetails.maPhieuLC + '</p>');
-    printWindow.document.write('<p><strong>Ngày lập phiếu:</strong> ' + new Date(phieuDetails.ngayLapPhieu).toLocaleDateString() + '</p>');
-    printWindow.document.write('<p><strong>Trạng thái thanh lý:</strong> ' + phieuDetails.trangThaiThanhLy + '</p>');
+    printWindow.document.write('<p><strong>Ngày lập phiếu:</strong> ' + new Date(phieuDetails.ngayTao).toLocaleDateString() + '</p>');
+    printWindow.document.write('<p><strong>Trạng thái:</strong> ' + phieuDetails.trangThai + '</p>');
     
     // Table of device details for LuanChuyenTB (Table of Equipment Transfer)
-    printWindow.document.write('<h3>Chi tiết thiết bị chuyển</h3>');
+    printWindow.document.write('<h3>Chi tiết thiết bị luân chuyển</h3>');
     printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
-    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Tên Thiết Bị</th><th>N</th></tr></thead>');
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Thiết Bị</th><th>Ngày Đăng Kí</th><th>Mã Phòng Từ</th><th>Mã Phòng Đến</th></tr></thead>');
+    printWindow.document.write('<tbody>');
+    chiTietLuanChuyenTB.forEach((tb, index) => {
+      printWindow.document.write('<tr>');
+      printWindow.document.write(`<td>${index + 1}</td>`);
+      printWindow.document.write(`<td>${tb.maThietBi}</td>`);
+      printWindow.document.write(`<td>${tb.ngayDangKi}</td>`);
+      printWindow.document.write(`<td>${tb.maPhongTu}</td>`);
+      printWindow.document.write(`<td>${tb.maPhongDen}</td>`);
+      printWindow.document.write('</tr>');
+    });
+  
+    printWindow.document.write('</tbody></table>');
+    
     
     // Table of device details for LuanChuyenDC (Device Details for Dissolution Transfer)
-    printWindow.document.write('<h3>Chi tiết thiết bị thanh lý</h3>');
+    printWindow.document.write('<h3>Chi tiết dụng cụ luân chuyển</h3>');
     printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
-    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Tên Dụng Cụ</th><th>Số Lượng</th></tr></thead>');
-    
+    printWindow.document.write('<thead><tr><th>STT</th><th>Mã Dụng Cụ</th><th>Số lượng</th><th>Mã Phòng Từ</th><th>Mã Phòng Đến</th></tr></thead>');
+    printWindow.document.write('<tbody>');
+    chiTietLuanChuyenDC.forEach((dc, index) => {
+      printWindow.document.write('<tr>');
+      printWindow.document.write(`<td>${index + 1}</td>`);
+      printWindow.document.write(`<td>${dc.maDungCu}</td>`);
+      printWindow.document.write(`<td>${dc.soLuong}</td>`);
+      printWindow.document.write(`<td>${dc.maPhongTu}</td>`);
+      printWindow.document.write(`<td>${dc.maPhongDen}</td>`);
+      printWindow.document.write('</tr>');
+    });
+  
+    printWindow.document.write('</tbody></table>');
     // Conclusion and signature section
     printWindow.document.write('<div style="position: absolute; bottom: 20px; width: 90%;">');
     printWindow.document.write('<p>Nay tôi viết bản tường trình này để trình bày sự việc trên. Kính mong quý Ban/Phòng/Khoa/TT xem xét giải quyết, nếu có hư hỏng do lỗi vận hành chủ quan tôi xin chịu hoàn toàn trách nhiệm.</p>');
@@ -263,22 +287,21 @@ const PhieuLuanChuyenDetails = () => {
     printWindow.document.close();
     printWindow.print();
   };
-  
 
   // Columns for ChiTietLuanChuyenTB (Equipment Transfer Details)
   const columnsTB = [
     { title: 'Mã Thiết Bị', dataIndex: 'maThietBi', key: 'maThietBi' },
     { title: 'Mã Phòng Từ', dataIndex: 'maPhongTu', key: 'maPhongTu' },
     { title: 'Mã Phòng Đến', dataIndex: 'maPhongDen', key: 'maPhongDen' },
-    {
-      title: 'Sửa',
-      key: 'edit',
-      render: (text, record) => (
-        <Button onClick={() => handleEditTB(record)} type="primary">
-          Sửa
-        </Button>
-      ),
-    },
+    // {
+    //   title: 'Sửa',
+    //   key: 'edit',
+    //   render: (text, record) => (
+    //     <Button onClick={() => handleEditTB(record)} type="primary">
+    //       Sửa
+    //     </Button>
+    //   ),
+    // },
   ];
   
   const columnsDC = [
@@ -286,15 +309,15 @@ const PhieuLuanChuyenDetails = () => {
     { title: 'Mã Phòng Từ', dataIndex: 'maPhongTu', key: 'maPhongTu' },
     { title: 'Mã Phòng Đến', dataIndex: 'maPhongDen', key: 'maPhongDen' },
     { title: 'Số Lượng', dataIndex: 'soLuong', key: 'soLuong' },
-    {
-      title: 'Sửa',
-      key: 'edit',
-      render: (text, record) => (
-        <Button onClick={() => handleEditDC(record)} type="primary">
-          Sửa
-        </Button>
-      ),
-    },
+    // {
+    //   title: 'Sửa',
+    //   key: 'edit',
+    //   render: (text, record) => (
+    //     <Button onClick={() => handleEditDC(record)} type="primary">
+    //       Sửa
+    //     </Button>
+    //   ),
+    // },
   ];
   
   // Data for the 2-column table
@@ -342,12 +365,15 @@ const PhieuLuanChuyenDetails = () => {
         rowKey="maPhieuLC"
         pagination={false}
       />
-         {phieuDetails.trangThai === "Đã phê duyệt" && (
+      <div className='button-container'>
+      {phieuDetails.trangThai === "Đã phê duyệt" && (
     <Button type="primary" onClick={handleCompleteTransfer}>Hoàn tất</Button>)}
-      <Button type="primary" onClick={showEditModal}>Sửa Phiếu</Button>
+      {/* <Button type="primary" onClick={showEditModal}>Sửa Phiếu</Button> */}
       <Button onClick={handlePrint}>In Phiếu Thanh Lý</Button>
+      </div>
+         
       {/* Modal for editing the Phieu */}
-      <Modal
+      {/* <Modal
         title="Sửa Phiếu Luân Chuyển"
         visible={isModalVisible}
         onCancel={handleCancel}
@@ -402,7 +428,7 @@ const PhieuLuanChuyenDetails = () => {
         </Form>
       </Modal>
          {/* Modal for Editing Equipment Transfer */}
-         <Modal
+         {/* <Modal
         title="Chỉnh Sửa Thiết Bị"
         visible={isModalVisibleTB}
         onCancel={handleCancelTB}
@@ -439,9 +465,9 @@ const PhieuLuanChuyenDetails = () => {
             </Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal> */}
 
-      {/* Modal for Editing Tool Transfer */}
+      {/* Modal for Editing Tool Transfer
       <Modal
         title="Chỉnh Sửa Dụng Cụ"
         visible={isModalVisibleDC}
@@ -486,7 +512,7 @@ const PhieuLuanChuyenDetails = () => {
             </Button>
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal>  */}
       {maPhieu && <TimelinePhieuLuanChuyen maPhieuLC={maPhieu} />}
     </div>
   );
