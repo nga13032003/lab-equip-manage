@@ -105,9 +105,8 @@ export const getPhieuThanhLyByMaPhieu = async (maPhieu) => {
 export const updatePhieuThanhLy = async (id, updatedPhieuThanhLy) => {
   try {
     const response = await axios.put(`${API_BASE_URL}/PhieuThanhLy/${id}`, updatedPhieuThanhLy);
-    return response.data; // Return the response data (if any)
+    return response.data;
   } catch (error) {
-    // Throw an error with a detailed message if the request fails
     throw error.response?.data || 'Lỗi khi cập nhật phiếu thanh lý';
   }
 };

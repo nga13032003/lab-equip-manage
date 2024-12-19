@@ -34,3 +34,31 @@ export const duyetPhieuThanhLy = async (data) => {
       throw error;
     }
   };
+  export const kiemTraPhieuDuyet = async (maPhieu) => {
+    const apiUrl = `https://localhost:7019/api/DuyetPhieuThanhLy/${maPhieu}`;
+  
+    try {
+      const response = await fetch(apiUrl, { method: 'GET' });
+      return response.ok; 
+    } catch (error) {
+      console.error('Lỗi kiểm tra phiếu duyệt:', error.message);
+      return false; 
+    }
+  };
+  export const capNhatTrangThaiPhieu = async (maPhieu, data) => {
+    const apiUrl = `https://localhost:7019/api/DuyetPhieuThanhLy/${maPhieu}`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, ngayDuyet: new Date().toISOString() }),
+      });
+      if (!response.ok) throw new Error('Lỗi khi cập nhật trạng thái phiếu!');
+      return await response.json();
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  };
+  
+  

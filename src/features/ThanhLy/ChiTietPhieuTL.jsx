@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Table, Button, message, Spin, Input, Modal } from 'antd';
-import { getPhieuThanhLyByMaPhieu } from '../../api/phieuThanhLy';
-import { duyetPhieuThanhLy } from '../../api/duyetPhieuTL';
+import { getPhieuThanhLyByMaPhieu, updatePhieuThanhLy } from '../../api/phieuThanhLy';
+import { capNhatTrangThaiPhieu, duyetPhieuThanhLy, kiemTraPhieuDuyet } from '../../api/duyetPhieuTL';
 import './ChiTietPhieuThanhLy.scss';
 import { createLichSuPhieuThanhLy } from '../../api/lichSuPhieuTL';
+import { toast } from 'react-toastify';
 
 const ChiTietDuyetPhieuTL = () => {
   const { maPhieuTL } = useParams();
@@ -54,13 +55,27 @@ const ChiTietDuyetPhieuTL = () => {
       lyDoTuChoi: '',
       ghiChu: '',
     };
-
+    const updatedPhieu = {
+      ...phieuDetails,
+      trangThai: 'Đã duyệt',
+      ngayHoanTat: new Date().toISOString(),
+    };
+    await updatePhieuThanhLy(phieuDetails.maPhieuTL, updatedPhieu);
+    const exits = await kiemTraPhieuDuyet(maPhieuTL);
     try {
-      handleDuyet(maPhieuTL, employeeCode);
-      await duyetPhieuThanhLy(approvalData);
-      message.success(`Phiếu thanh lý ${maPhieuTL} đã được duyệt.`);
-      setButtonsDisabled(true); // Disable buttons after approval
-      fetchPhieuThanhLyDetails(); // Reload data after approval
+      if(exits)
+      {
+        await capNhatTrangThaiPhieu(maPhieuTL, approvalData);
+        toast("Duyệt thành công!");
+        handleDuyet(maPhieuTL, employeeCode);
+      }
+      else{
+        handleDuyet(maPhieuTL, employeeCode);
+        await duyetPhieuThanhLy(approvalData);
+        message.success(`Phiếu thanh lý ${maPhieuTL} đã được duyệt.`);
+      }
+      setButtonsDisabled(true);
+      fetchPhieuThanhLyDetails(); 
     } catch (error) {
       message.error(error.message || 'Lỗi khi phê duyệt phiếu thanh lý.');
     }
@@ -75,7 +90,7 @@ const ChiTietDuyetPhieuTL = () => {
       message.error('Vui lòng nhập lý do từ chối.');
       return;
     }
-
+    
     const rejectData = {
       maPhieuTL,
       maNV: employeeCode,
@@ -86,11 +101,27 @@ const ChiTietDuyetPhieuTL = () => {
     };
 
     try {
-      
-      await duyetPhieuThanhLy(rejectData);
-      message.success(`Phiếu thanh lý ${maPhieuTL} đã bị từ chối.`);
-      handleTuChoi(maPhieuTL, employeeCode);
-      setIsRejectModalVisible(false); // Close the modal
+      const exits = await kiemTraPhieuDuyet(maPhieuTL);
+        if(exits)
+        {
+          const updatedPhieu = {
+            ...phieuDetails,
+            trangThai: 'Từ chối',
+            ngayHoanTat: new Date().toISOString(),
+          };
+          await updatePhieuThanhLy(phieuDetails.maPhieuTL, updatedPhieu);
+          await capNhatTrangThaiPhieu(maPhieuTL, rejectData);
+          toast("Từ chối thành công!");
+          handleTuChoi(maPhieuTL, employeeCode);
+        }
+        else{
+          await duyetPhieuThanhLy(rejectData);
+          message.success(`Phiếu thanh lý ${maPhieuTL} đã bị từ chối.`);
+          handleTuChoi(maPhieuTL, employeeCode);
+          
+        }
+        setIsRejectModalVisible(false);
+       // Close the modal
       setButtonsDisabled(true); // Disable buttons after rejection
       fetchPhieuThanhLyDetails(); // Reload data after rejection
     } catch (error) {
