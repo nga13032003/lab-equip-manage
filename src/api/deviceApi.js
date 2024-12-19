@@ -103,4 +103,20 @@ export const updateMaPhongTB = async (maThietBi, newMaPhong) => {
     throw error.response?.data || 'Lỗi khi cập nhật mã phòng.';
   }
 };
+export const createDeviceAPI = async (thietBi) => {
+  const response = await fetch('https://localhost:7019/api/ThietBi', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(thietBi),
+  });
 
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Thêm thiết bị thành công:', data);
+  } else {
+    const error = await response.text();
+    console.error('Lỗi:', error);
+  }
+};
