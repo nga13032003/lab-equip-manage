@@ -97,20 +97,7 @@ body {
       background-color: #d3d3d3;
       cursor: not-allowed;
     }
-    @media (max-width: 1200px) {
-      padding: $button-padding-mobile; // Giảm padding cho màn hình nhỏ
-      font-size: 14px; // Thay đổi font-size cho các màn hình nhỏ hơn
-    }
-  
-    @media (max-width: 768px) {
-      padding: $button-padding-small; // Giảm padding cho màn hình nhỏ
-      font-size: 12px; // Thay đổi font-size cho các màn hình di động
-    }
-  
-    @media (max-width: 480px) {
-      padding: $button-padding-extra-small; // Giảm padding cho các màn hình rất nhỏ
-      font-size: 10px; // Thay đổi font-size cho các màn hình cực nhỏ
-    }
+    
   }
 
   .ant-checkbox-wrapper {

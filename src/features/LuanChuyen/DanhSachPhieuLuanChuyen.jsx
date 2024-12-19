@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space } from "antd";
+import { Table, Button, Space} from "antd";
 import { getAllPhieuDeXuatLuanChuyen, updatePhieuDeXuatLuanChuyen } from "../../api/phieuLuanChuyen";
 import { Link } from "react-router-dom";
 
@@ -75,9 +75,9 @@ const PhieuLuanChuyenTable = () => {
     {
       title: "Hành Động",
       key: "action",
-      align: "center",
+      width: 183, 
       render: (record) => (
-        <Space>
+        <Space className="action-column">
         <Button>
           <Link to={`/chi-tiet-phieu-luan-chuyen/${record.maPhieuLC}`} className="action-link view">
             Xem Chi Tiết

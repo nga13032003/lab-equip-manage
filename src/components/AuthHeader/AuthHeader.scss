@@ -4,7 +4,6 @@ header {
   justify-content: space-between; /* Aligns children to the edges of the header */
   align-items: center; /* Vertically centers items */
   position: relative; /* Allows dropdown to overlay correctly */
-
   .img-dashboard {
     width: 100px; /* Adjust width as needed */
     height: 32px; /* Adjust height as needed */
@@ -18,7 +17,9 @@ header {
     align-items: center;
     margin: auto;
   }
-    
+  .ant-btn.ant-btn-icon-only {
+    margin-left: 30px;
+   }
 }
 
 

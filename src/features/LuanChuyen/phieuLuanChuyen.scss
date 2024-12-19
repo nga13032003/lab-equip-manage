@@ -19,6 +19,7 @@ $text-color: #5a5c69;        // Text color
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .section-title {
@@ -54,7 +55,7 @@ $text-color: #5a5c69;        // Text color
     }
   }
 
-  .ant-btn-primary {
+  .ant-btn-primary, .ant-btn {
     background-color: $primary-color;
     border-color: $primary-color;
 
@@ -136,3 +137,42 @@ $text-color: #5a5c69;        // Text color
     border-color: darken($primary-color, 10%);
   }
 }
+.action-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+}
+.ant-btn {
+  height: 100%;  // This ensures the button takes up the full height of the container
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+// Ensure that the 'Space' container aligns buttons vertically and horizontally centered
+.ant-space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Optional: Add some margin between the buttons if needed
+.action-link {
+  display: block;  // Ensure the link inside button takes up full space
+  width: 100%;
+}
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;  // Căn giữa các nút
+  gap: 10px;  // Khoảng cách giữa các nút
+  align-items: center;  // Căn chỉnh các nút theo chiều dọc
+}
+
+.button-container .ant-btn {
+  
+  padding: 10px 20px;  // Tùy chỉnh khoảng cách bên trong nút
+}
+

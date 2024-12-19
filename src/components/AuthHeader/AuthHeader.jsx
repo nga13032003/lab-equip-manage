@@ -95,7 +95,7 @@ const AuthHeader = ({ collapsed, setCollapsed }) => {
         position: 'relative',
       }}
     >
-      <Button
+      <Button className='btn-icon'
         type="text"
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         onClick={() => setCollapsed(!collapsed)}

@@ -85,35 +85,22 @@ try {
   throw error.response?.data || 'Lỗi khi cập nhật trạng thái thiết bị.';
 }
 };
-// Update MaPhong for a specific device
+
 export const updateMaPhongTB = async (maThietBi, newMaPhong) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/thietbi/${maThietBi}/UpdateMaPhong`, newMaPhong, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.put(
+      `${API_BASE_URL}/thietbi/${maThietBi}/UpdateMaPhong`, 
+      JSON.stringify({ maPhong: newMaPhong }), // Đảm bảo gửi dữ liệu dưới dạng JSON
+      {
+        headers: {
+          'Content-Type': 'application/json', // Đảm bảo kiểu nội dung là JSON
+        },
+      }
+    );
 
-    return response.data;  // Return success message and updated device data
+    return response.data; // Trả về dữ liệu từ server
   } catch (error) {
-    // If the response has error data, throw that; otherwise, throw a generic error message
     throw error.response?.data || 'Lỗi khi cập nhật mã phòng.';
   }
 };
-export const createDeviceAPI = async (thietBi) => {
-  const response = await fetch('https://localhost:7019/api/ThietBi', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(thietBi),
-  });
 
-  if (response.ok) {
-    const data = await response.json();
-    console.log('Thêm thiết bị thành công:', data);
-  } else {
-    const error = await response.text();
-    console.error('Lỗi:', error);
-  }
-};
