@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Table, Typography, Button, message, Spin, Modal, Input } from 'antd';
 import { getProposalDetailsAndTools } from '../../api/phieuDeXuat';
-import { approveProposal } from '../../api/duyetPhieuDeXuat';  
+import { approveProposal, checkPhieuDeXuatExistence, updateDuyetPhieu } from '../../api/duyetPhieuDeXuat';  
 import './ApprovalDetails.scss';
+import { toast } from 'react-toastify';
 
 const { Title, Text } = Typography;
 
@@ -100,21 +101,31 @@ const ApprovalDetails = () => {
   const handleAccept = async () => {
     const maNV = localStorage.getItem('employeeCode');
     const ngayDuyet = new Date().toISOString();
-
+    const exits = checkPhieuDeXuatExistence(maPhieu);
+    const response ={
+      maPhieu,
+      maNV,
+      ngayDuyet,
+      trangThai: 'Phê duyệt',
+      lyDoTuChoi: '',
+    };
     try {
-      const response = await approveProposal({
-        maPhieu,
-        maNV,
-        ngayDuyet,
-        trangThai: 'Phê duyệt',
-        lyDoTuChoi: '',
-      });
-      if (response && response.maPhieu) {
-        message.success('Phiếu đề xuất đã được phê duyệt');
-        navigate('/phe-duyet-phieu-de-xuat');
-      } else {
-        message.error('Không thể phê duyệt phiếu đề xuất.');
+      if(exits)
+      {
+        updateDuyetPhieu(maPhieu, response);
+        toast("Duyệt phiếu thành công!");
       }
+      else
+      {
+        await approveProposal(response);
+        if (response && response.maPhieu) {
+          message.success('Phiếu đề xuất đã được phê duyệt');
+          navigate('/phe-duyet-phieu-de-xuat');
+        } else {
+          message.error('Không thể phê duyệt phiếu đề xuất.');
+        }
+      }
+      
     } catch (error) {
       message.error(error.message || 'Lỗi khi phê duyệt phiếu đề xuất.');
     }
