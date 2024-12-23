@@ -262,7 +262,6 @@ const PhieuNhapDeXuat = () => {
           </Button>
         </Form>
 
-        {/* Modal for item type selection */}
         <Modal
           visible={isModalVisible}
           title="Chọn Loại Mặt Hàng"
@@ -274,7 +273,7 @@ const PhieuNhapDeXuat = () => {
             block
             onClick={() => {
               setModalItemType("ThietBi");
-              setIsModalVisible(false); // Close the modal
+              setIsModalVisible(false); 
             }}
           >
             Thêm Thiết Bị Mới
@@ -284,19 +283,18 @@ const PhieuNhapDeXuat = () => {
             block
             onClick={() => {
               setModalItemType("DungCu");
-              setIsModalVisible(false); // Close the modal
+              setIsModalVisible(false); 
             }}
           >
             Thêm Dụng Cụ Mới
           </Button>
         </Modal>
 
-        {/* Modal for item form (device or tool) */}
         <Modal
           visible={modalItemType !== ""}
           title={`Thêm ${modalItemType === "ThietBi" ? "Thiết Bị" : "Dụng Cụ"} Mới`}
           onCancel={() => setModalItemType("")}
-          onOk={handleModalSubmit}  // Call handleModalSubmit when OK is clicked
+          onOk={handleModalSubmit}  
         >
           <Form form={modalForm} layout="vertical">
             {modalItemType === "ThietBi" ? (

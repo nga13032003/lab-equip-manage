@@ -1,5 +1,5 @@
 
-
+import axios from 'axios';
 const API_BASE_URL = "https://localhost:7019/api/NhanVien";
 
 // Hàm lấy tất cả nhân viên
@@ -38,39 +38,26 @@ export const createNhanVien = async (nhanVien) => {
   }
 };
 
-// Hàm cập nhật nhân viên
 export const updateNhanVien = async (id, nhanVien) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(nhanVien),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-    return await response.json();
+    const response = await axios.put(`https://localhost:7019/api/NhanVien/${id}`, nhanVien);
+    return response.data;
   } catch (error) {
-    console.error("Error updating NhanVien:", error.message);
-    throw error;
+    throw error.response?.data || 'Lỗi khi cập nhật thông tin nhân viên!';
   }
 };
-
 // Hàm xóa nhân viên
-export const deleteNhanVien = async (id) => {
+export const reactivateNhanVien = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-    return { message: "Deleted successfully" };
+    const response = await axios.put(`https://localhost:7019/api/NhanVien/reactivate/${id}`);
+
+    alert(response.data.message); 
   } catch (error) {
-    console.error("Error deleting NhanVien:", error.message);
-    throw error;
+    if (error.response) {
+      alert(error.response.data.message); // Hiển thị thông báo lỗi từ API
+    } else {
+      alert('Có lỗi xảy ra khi xóa nhân viên.');
+    }
   }
 };
 

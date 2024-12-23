@@ -111,3 +111,13 @@ export const fetchPhieuDeXuat = async () => {
   }
 };
 
+  // Update Phiếu đề xuất 
+  export const updatePhieuDeXuat = async (id, updatedPhieuDeXuat) => {
+    try {
+      const response = await axios.put(`https://localhost:7019/api/PhieuThanhLy/${id}`, updatedPhieuDeXuat);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || 'Lỗi khi cập nhật phiếu thanh lý';
+    }
+  };
+  
