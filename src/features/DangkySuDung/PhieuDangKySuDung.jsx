@@ -10,10 +10,11 @@ import { createChiTietDangKiThietBi, getChiTietDangKiThietBi, getDangKyThietBiBy
 import { fetchDeviceTypes } from '../../api/deviceTypeApi';
 import { fetchDevicesByType } from '../../api/deviceApi';
 import { fetchToolTypes } from '../../api/toolTypeApi';
-import { fetchToolsByType } from '../../api/toolApi';
+import { fetchToolsByType, getAllTools, getToolById, getQuantitiesByToolCode } from '../../api/toolApi';
 import { getAllPhongThiNghiem, getDungCuInLab, getDevicesInLab } from '../../api/labApi';
 import { getLichDungCuByMaPhong, getAllLichDungCu , getNgaySuDungLichDungCu, getNgaySuDungByMaPhong, getNgayKetThucByMaPhong, getNgayKetThucLichDungCu} from '../../api/lichDungCu';
 import { getLichTietBiByMaPhong, getAllLichThietBi, getAllNgaySuDungThietBi, getAllNgayKetThucThietBi, getNgaySuDungThietBiByMaPhong, getNgayKetThucThietBiByMaPhong } from '../../api/lichThietBI';
+import { red } from '@mui/material/colors';
 
 const PhieuDangKySuDung = () => {
   const [componentDisabled, setComponentDisabled] = useState(false);
@@ -34,6 +35,8 @@ const PhieuDangKySuDung = () => {
   const [lichDungCu, setLichDungCu] = useState([]);
   const [unavailableDates, setUnavailableDates] = useState([]); 
   const [unavailableEndDates, setUnavailableEndDates] = useState([]); 
+  const [quantityError, setQuantityError] = useState(''); // Trạng thái lưu lỗi
+  
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
@@ -148,11 +151,17 @@ const PhieuDangKySuDung = () => {
   
   const handleDeviceTypeChange = async (index, maLoaiThietBi) => {
     try {
+      // Fetch tools based on the selected type
       const devices = await fetchDevicesByType(maLoaiThietBi);
+  
+      // Filter out tools that have is_deleted as true
+      const availableDevices = devices.filter(device => !device.isDeleted);
+  
+      
       setDeviceList((prevList) =>
         prevList.map((device, idx) =>
           idx === index
-            ? { ...device, MaLoaiThietBi: maLoaiThietBi, filteredDevices: devices }
+            ? { ...device, MaLoaiThietBi: maLoaiThietBi, filteredDevices: availableDevices }
             : device
         )
       );
@@ -163,11 +172,30 @@ const PhieuDangKySuDung = () => {
   
   const handleToolTypeChange = async (index, maLoaiDC) => {
     try {
+      // Fetch tools based on the selected type
       const tools = await fetchToolsByType(maLoaiDC);
+  
+      // Filter out tools that have is_deleted as true
+      const availableTools = tools.filter(tool => !tool.isDeleted);
+  
+      // Get the selected tool code (first tool in the list, if available)
+      const selectedToolCode = availableTools.length > 0 ? availableTools[0].MaDungCu : null;
+  
+      if (selectedToolCode) {
+        // Check if the selected tool has enough quantity
+        const availableTool = availableTools.find(tool => tool.MaDungCu === selectedToolCode);
+  
+        if (availableTool && availableTool.SoLuong <= 0) {
+          message.error('Số lượng dụng cụ không đủ. Không thể đăng ký thêm.');
+          return;
+        }
+      }
+  
+      // Update the tool list after filtering out deleted tools
       setToolList((prevList) =>
         prevList.map((tool, idx) =>
           idx === index
-            ? { ...tool, MaLoaiDC: maLoaiDC, filteredTools: tools }
+            ? { ...tool, MaLoaiDC: maLoaiDC, filteredTools: availableTools }
             : tool
         )
       );
@@ -175,6 +203,8 @@ const PhieuDangKySuDung = () => {
       message.error('Lỗi khi tải danh sách dụng cụ');
     }
   };
+  
+  
 
   const generateRandomMaPhieuDK = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -249,6 +279,7 @@ useEffect(() => {
     setToolList((prevList) =>
       prevList.map((tool, idx) => {
         if (idx === index) {
+          // Kiểm tra trường hợp thay đổi ngày sử dụng
           if (field === 'NgaySuDung') {
             // Kiểm tra ngày đã chọn không trùng với ngày trong lịch đã phê duyệt
             if (lichDungCu.some((item) => dayjs(item.ngaySuDung).isSame(value, 'day') && item.trangThai === 'Đã phê duyệt')) {
@@ -256,14 +287,23 @@ useEffect(() => {
               return tool; // Không thay đổi nếu trùng ngày
             }
           }
+          
+          if (field === 'SoLuong') {
+            // Kiểm tra số lượng không vượt quá số lượng dụng cụ hiện có
+            const selectedTool = tool.filteredTools?.find(t => t.maDungCu === tool.MaDungCu);
+            if (selectedTool && value > selectedTool.soLuong) {
+              message.error(`Số lượng không thể vượt quá ${selectedTool.soLuong}`);
+              return tool; // Không cập nhật nếu vượt quá
+            }
+          }
+          
           return { ...tool, [field]: value };
         }
         return tool;
       })
     );
-  }, [lichDungCu]); 
-  
-
+  }, [lichDungCu]);
+ 
   const handleSubmit = async (values) => {
     if (!maphieudk) {
         await fetchAndGenerateUniqueMaPhieu(); // Chỉ tạo mã nếu chưa tồn tại
@@ -344,6 +384,16 @@ useEffect(() => {
       message.error(`Lỗi khi lập phiếu: ${error.message}`);
     }
   };
+  const handleClearDevices = useCallback(() => {
+    setDeviceList([]); // Xóa toàn bộ danh sách thiết bị
+    message.success('Danh sách thiết bị đã được xóa.');
+  }, []);
+  
+  const handleClearTools = useCallback(() => {
+    setToolList([]); // Xóa toàn bộ danh sách dụng cụ
+    message.success('Danh sách dụng cụ đã được xóa.');
+  }, []);
+  
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -473,10 +523,16 @@ useEffect(() => {
           )}
         />
         <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'start', gap: '10px' }}>
           <Button type="dashed" onClick={handleAddDevice} icon={<PlusOutlined />}>
             Thêm thiết bị
           </Button>
-        </Form.Item>
+          <Button type="danger" onClick={handleClearDevices} style={{backgroundColor: 'red'}}>
+            Xóa Thiết Bị
+          </Button>
+        </div>
+      </Form.Item>
+
 
         <h2>Danh sách dụng cụ</h2>
         <List
@@ -501,7 +557,10 @@ useEffect(() => {
                 <Form.Item label="Tên dụng cụ">
                   <Select
                     placeholder="Chọn tên dụng cụ"
-                    onChange={(value) => handleToolChange(index, 'MaDungCu', value)}
+                    onChange={(value) => {
+                      handleToolChange(index, 'MaDungCu', value); // Giữ nguyên handleToolChange
+                      
+                    }}
                     value={item.MaDungCu}
                   >
                     {item.filteredTools?.map((tool) => (
@@ -513,15 +572,28 @@ useEffect(() => {
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
-                  validateStatus={item.SoLuong <= 0 ? 'error' : ''}
-                  help={item.SoLuong <= 0 && 'Số lượng phải lớn hơn 0'}
+                  validateStatus={quantityError ? 'error' : ''}
+                  help={quantityError || (item.SoLuong <= 0 && 'Số lượng phải lớn hơn 0')}
                 >
                   <InputNumber
                     min={1}
                     value={item.SoLuong}
-                    onChange={(value) => handleToolChange(index, 'SoLuong', value)}
+                    onChange={(value) => {
+                      // Lấy số lượng tối đa từ danh sách filteredTools
+                      const selectedTool = item.filteredTools?.find(tool => tool.maDungCu === item.MaDungCu);
+                      const maxQuantity = selectedTool ? selectedTool.soLuong : 0;
+
+                      // Kiểm tra số lượng vượt quá
+                      if (value > maxQuantity) {
+                        message.error(`Số lượng không thể vượt quá ${maxQuantity}`);
+                        return; // Không cập nhật nếu vượt quá số lượng
+                      }
+
+                      handleToolChange(index, 'SoLuong', value); // Cập nhật số lượng
+                    }}
                   />
                 </Form.Item>
+
                 <Form.Item label="Ngày đăng ký">
                 <DatePicker
                   value={dayjs()} 
@@ -559,10 +631,16 @@ useEffect(() => {
           )}
         />
         <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
-          <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
-            Thêm dụng cụ
-          </Button>
+          <div className="flex gap-x-2">
+            <Button type="dashed" onClick={handleAddTool} icon={<PlusOutlined />}>
+              Thêm dụng cụ
+            </Button>
+            <Button type="danger" onClick={handleClearTools} style={{backgroundColor: 'red'}}>
+              Xóa Dụng Cụ
+            </Button>
+          </div>
         </Form.Item>
+
 
         <Form.Item wrapperCol={{ offset: 9, span: 18 }}>
         <div className="flex flex-wrap justify-between gap-4 sm:flex-col md:flex-row">

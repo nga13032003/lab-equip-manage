@@ -317,7 +317,7 @@ const ChiTietPhieuThanhLy = () => {
             <Button type="primary" onClick={handleHoanTatThanhLy}>
               Hoàn Tất Thanh Lý
             </Button>
-          ) : phieuDetails?.trangThai === 'Không được phê duyệt' ? (
+          ) : phieuDetails?.trangThai === 'Từ chối' ? (
             <Button type="default" onClick={handleSuaPhieuThanhLy}>
               Sửa Phiếu Thanh Lý
             </Button>

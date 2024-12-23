@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, Row, Col, Spin, Typography} from "antd";
+import { Card, Row, Col, Spin, Typography, Select, InputNumber, message } from "antd";
 import { getLabRooms } from "../../api/phongLap";
 import { getThietBiData } from "../../api/deviceApi";
+import { getAllViTriDungCu } from "../../api/viTriDungCu";
 import { BiAtom } from "react-icons/bi";
 import { FiTool } from "react-icons/fi";
 import { GiChemicalDrop } from "react-icons/gi";
@@ -12,17 +13,17 @@ import { FaRobot } from "react-icons/fa";
 import { FaLaptopCode } from "react-icons/fa";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
-import { getAllTools } from "../../api/toolApi";
 import "./LabRoom.scss";
-import { getAllViTriDungCu } from "../../api/viTriDungCu";
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 const LabRooms = () => {
   const [labRooms, setLabRooms] = useState([]);
   const [devices, setDevices] = useState([]);
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const LabRooms = () => {
           return acc;
         }, {});
 
-        // Nhóm thiết bị theo phòng
+        // Nhóm dụng cụ theo phòng
         const groupedTools = toolData.reduce((acc, tool) => {
           if (!acc[tool.maPhong]) {
             acc[tool.maPhong] = [];
@@ -51,10 +52,9 @@ const LabRooms = () => {
           acc[tool.maPhong].push(tool);
           return acc;
         }, {});
-        
-        
+
         setDevices(groupedDevices); // Lưu dữ liệu thiết bị theo phòng
-        setTools(groupedTools);
+        setTools(groupedTools); // Lưu dữ liệu dụng cụ theo phòng
         setLoading(false);
       } catch (error) {
         console.error("Error fetching lab rooms and devices:", error);
@@ -111,19 +111,44 @@ const LabRooms = () => {
     }
   };
 
+  const handleRoomSelect = (value) => {
+    if (value === "Tất cả") {
+      setSelectedRoom(null); // Show all rooms when "TẤT CẢ" is selected
+    } else {
+      setSelectedRoom(value); // Show selected room when a specific room is selected
+    }
+  };
+  
+
   return (
     <div className="lab-container">
       <Title level={2} className="lab-title">
         Danh sách phòng thí nghiệm
       </Title>
 
+      <div className="lab-room-info">
+        <Text strong>Số lượng phòng thí nghiệm: {labRooms.length}</Text>
+        <Select
+          value={selectedRoom} // Use value to keep track of selected room
+          style={{ width: 200, marginLeft: 20 }}
+          onChange={handleRoomSelect}
+          placeholder="Chọn phòng thí nghiệm"
+        >
+           <Option value="Tất cả">Tất cả</Option> {/* Add "TẤT CẢ" option */}
+        {labRooms.map((room) => (
+          <Option key={room.maPhong} value={room.maPhong}>
+            {room.maPhong}
+          </Option>
+        ))}
+        </Select>
+      </div>
+
       {loading ? (
         <Spin size="large" className="lab-spinner" />
       ) : (
         <Row gutter={[16, 16]} justify="center">
-          {labRooms.map((room) => (
-            <Col xs={24} sm={12} md={8} lg={6} key={room.maPhong}>
-            <Link to={`/phong-thi-nghiem/${room.maPhong}`}>
+          {(selectedRoom === null ? labRooms : labRooms.filter((room) => room.maPhong === selectedRoom)).map((room) => (
+            <Col key={room.maPhong} xs={24} sm={12} md={8} lg={6}>
               <Card
                 title={`Phòng: ${room.maPhong}`}
                 bordered={true}
@@ -143,9 +168,7 @@ const LabRooms = () => {
                 <p>
                   <Text strong>Số dụng cụ:</Text> {tools[room.maPhong]?.length || 0}
                 </p>
-               
               </Card>
-              </Link>
             </Col>
           ))}
         </Row>

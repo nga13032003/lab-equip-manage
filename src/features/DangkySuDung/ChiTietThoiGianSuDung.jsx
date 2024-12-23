@@ -29,7 +29,7 @@ const ChiTietThoiGianDangKi = () => {
 
   // Hàm tính số giờ sử dụng giữa hai thời điểm
   const calculateUsageHours = (startDate, endDate, status) => {
-    if (!startDate || status === 'Hoàn thành sử dụng') return '-'; // Don't calculate if status is "Hoàn thành sử dụng"
+    if (!startDate || status === 'Hoàn thành sử dụng' && status === 'Qúa hạn sử dụng') return '-'; // Don't calculate if status is "Hoàn thành sử dụng"
   
     const start = dayjs(startDate);
     const end = endDate ? dayjs(endDate) : dayjs(); // If end date is not provided, use current time
@@ -40,7 +40,7 @@ const ChiTietThoiGianDangKi = () => {
     const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((duration % (1000 * 60)) / 1000);
   
-    return `${hours} giờ ${minutes} phút ${seconds} giây`;
+    return `${hours} gio ${minutes} phút ${seconds} giây`;
   };
   // Hàm tính số giờ sử dụng giữa hai thời điểm
 const calculateUsageHoursDB = (startDate, endDate, status) => {
@@ -253,7 +253,7 @@ const calculateUsageHoursDB = (startDate, endDate, status) => {
       // Only update the device if `maThietBi` exists
       if (maThietBi) {
         // Calculate usage hours for the device
-        const soGioSuDung = calculateUsageHoursDB(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
+        const soGioSuDung = calculateUsageHours(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
   
         // Update device status and record usage hours
         await updateDeviceStatus(maPhieuDK, 'Hoàn thành sử dụng', usageStatus);
@@ -276,7 +276,7 @@ const calculateUsageHoursDB = (startDate, endDate, status) => {
       // Only update the tool if `maDungCu` exists
       if (maDungCu) {
         // Calculate usage hours for the tool
-        const soGioSuDung = calculateUsageHoursDB(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
+        const soGioSuDung = calculateUsageHours(ngayBatDauThucTe, ngayKetThucThucTe, tinhTrangSuDung);
   
         // Update tool status and record usage hours
         await updateToolStatus(maPhieuDK, 'Hoàn thành sử dụng', usageStatus);

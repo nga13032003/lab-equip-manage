@@ -110,21 +110,14 @@ const ApprovalDetails = () => {
       lyDoTuChoi: '',
     };
     try {
-      if(exits)
-      {
-        updateDuyetPhieu(maPhieu, response);
-        toast("Duyệt phiếu thành công!");
+      await approveProposal(response);
+      if (response && response.maPhieu) {
+        message.success('Phiếu đề xuất đã được phê duyệt');
+        navigate('/phe-duyet-phieu-de-xuat');
+      } else {
+        message.error('Không thể phê duyệt phiếu đề xuất.');
       }
-      else
-      {
-        await approveProposal(response);
-        if (response && response.maPhieu) {
-          message.success('Phiếu đề xuất đã được phê duyệt');
-          navigate('/phe-duyet-phieu-de-xuat');
-        } else {
-          message.error('Không thể phê duyệt phiếu đề xuất.');
-        }
-      }
+      
       
     } catch (error) {
       message.error(error.message || 'Lỗi khi phê duyệt phiếu đề xuất.');

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // Import Recharts
-import { Card, Spin, Table, Typography } from 'antd'; // Import các component từ Ant Design
-import { getAllQuanLyGioTB } from '../../api/quanLyGioTB';
-import { getAllQuanLyGioDC } from '../../api/quanLyGioDungCu';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'; 
+import { Card, Spin, Table, Typography } from 'antd'; 
+import { getAllQuanLyGioTB, getQuanLyGioTBById } from '../../api/quanLyGioTB';
+import { getAllQuanLyGioDC, getQuanLyGioDCById } from '../../api/quanLyGioDungCu';
 import { getDeviceById } from '../../api/deviceApi';
 import { getToolById } from '../../api/toolApi';
-import { getChiTietDangKiThietBi, getDangKyThietBiByMaPhieu } from '../../api/dangKiThietBi';
-import { getChiTietDangKiDungCu, getDangKiDungCuByMaPhieu } from '../../api/dangKiDC';
 
 const { Title } = Typography;
 
@@ -16,10 +14,8 @@ const ThongKeGioSuDung = () => {
     const [dataDC, setDataDC] = useState([]);
     const [deviceNames, setDeviceNames] = useState({});
     const [toolNames, setToolNames] = useState({});
-    const [deviceUsageDates, setDeviceUsageDates] = useState({});
-    const [toolUsageDates, setToolUsageDates] = useState({});
 
-    // Lấy dữ liệu thiết bị
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -45,9 +41,6 @@ const ThongKeGioSuDung = () => {
                     return acc;
                 }, {}));
 
-                
-
-
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu:', error);
             } finally {
@@ -59,22 +52,67 @@ const ThongKeGioSuDung = () => {
     }, []);
 
     // Biểu đồ đường cho thiết bị và dụng cụ
-    const renderLineChart = (data, title) => (
+   const renderLineChart = (data, title, isDevice = true) => {
+    if (!data || data.length === 0) {
+        return <div>Không có dữ liệu để hiển thị</div>;
+    }
+
+    // Function to convert time string (e.g., "0 giờ 0 phút 30 giây") to seconds
+    const parseTimeToSeconds = (timeString) => {
+        const regex = /(\d+)\s*gio\s*(\d+)\s*phút\s*(\d+)\s*giây/;
+        const match = timeString.match(regex);
+        if (match) {
+            const hours = parseInt(match[1], 10);
+            const minutes = parseInt(match[2], 10);
+            const seconds = parseInt(match[3], 10);
+            return hours * 3600 + minutes * 60 + seconds;  // Convert to total seconds
+        }
+        return 0;  // Return 0 if the format is not matched
+    };
+
+    // Process the data: convert time to seconds
+    const processedData = data.map(item => ({
+        ...item,
+        // Convert the soGioSuDungThucTe from string to total seconds
+        soGioSuDungThucTe: parseTimeToSeconds(item.soGioSuDungThucTe),
+        name: isDevice ? deviceNames[item.maThietBi] : toolNames[item.maDungCu],  // Add names for display
+    }));
+
+    console.log('Processed Data:', processedData); // Debugging to check data
+
+    return (
         <Card style={{ marginBottom: 20 }}>
             <Title level={4}>{title}</Title>
             <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data}>
+                <LineChart data={processedData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
+                    <XAxis dataKey={isDevice ? "maThietBi" : "maDungCu"} />
+                    <YAxis 
+                        domain={['auto', 'auto']} 
+                        tickFormatter={(value) => {
+                            const hours = Math.floor(value / 3600);
+                            const minutes = Math.floor((value % 3600) / 60);
+                            const seconds = value % 60;
+                            return `${hours}h ${minutes}m ${seconds}s`;  // Format as hours, minutes, seconds
+                        }} 
+                    />
+                    <Tooltip 
+                        formatter={(value) => {
+                            const hours = Math.floor(value / 3600);
+                            const minutes = Math.floor((value % 3600) / 60);
+                            const seconds = value % 60;
+                            return `${hours}h ${minutes}m ${seconds}s`;  // Tooltip format
+                        }} 
+                    />
                     <Legend />
-                    <Line type="monotone" dataKey="soGioSuDungThucTe" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="soGioSuDungThucTe" stroke="#82ca9d" />
                 </LineChart>
             </ResponsiveContainer>
         </Card>
     );
+};
 
+    
     // Cột bảng cho thiết bị
     const columnsForDevices = [
         { title: 'Mã thiết bị', dataIndex: 'maThietBi', key: 'maThietBi' },
@@ -97,7 +135,7 @@ const ThongKeGioSuDung = () => {
         tenThietBi: deviceNames[item.maThietBi] || 'Đang tải tên thiết bị...',
         maPhong: item.maPhong,
         soGioSuDungThucTe: item.soGioSuDungThucTe,
-        ngayBatDauThucTe: item.ngaySuDung || 'Đang tải ngày sử dụng...',  // Đổi thành 'ngayBatDauThucTe'
+        ngayBatDauThucTe: item.ngaySuDung || 'Đang tải ngày sử dụng...',
     }));
 
     // Dữ liệu bảng cho dụng cụ
@@ -106,7 +144,7 @@ const ThongKeGioSuDung = () => {
         tenDungCu: toolNames[item.maDungCu] || 'Đang tải tên dụng cụ...',
         maPhong: item.maPhong,
         soGioSuDungThucTe: item.soGioSuDungThucTe,
-        ngayBatDauThucTe: item.ngaySuDung || '-',  // Đổi thành 'ngayBatDauThucTe'
+        ngayBatDauThucTe: item.ngaySuDung || '-',
     }));
 
     if (loading) {
@@ -115,13 +153,11 @@ const ThongKeGioSuDung = () => {
 
     return (
         <div>
-            
-
             {/* Biểu đồ đường cho thiết bị */}
-            {renderLineChart(dataTB, 'Thống kê giờ sử dụng thiết bị')}
+            {renderLineChart(dataTB, 'Thống kê giờ sử dụng thiết bị', true)}
 
             {/* Biểu đồ đường cho dụng cụ */}
-            {renderLineChart(dataDC, 'Thống kê giờ sử dụng dụng cụ')}
+            {renderLineChart(dataDC, 'Thống kê giờ sử dụng dụng cụ', false)}
 
             {/* Bảng tổng hợp thiết bị */}
             <Card style={{ marginBottom: 20 }}>
