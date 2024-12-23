@@ -247,13 +247,14 @@ const PhieuThanhLy = () => {
                     onChange={(value) => handleToolChange(index, 'MaThietBi', value)}
                     style={{ width: '100%' }}
                   >
-                    {devices
-                      .filter((device) => !device.isDeleted) 
-                      .map((device) => (
-                        <Select.Option key={device.maThietBi} value={device.maThietBi}>
-                          {device.maThietBi} - {device.tenThietBi}
-                        </Select.Option>
-                      ))}
+                   {devices
+                  .filter((device) => !device.isDeleted && (device.tinhTrang === 'hư hỏng' || device.tinhTrang === 'ngừng hoạt động')) 
+                  .map((device) => (
+                    <Select.Option key={device.maThietBi} value={device.maThietBi}>
+                      {device.maThietBi} - {device.tenThietBi}
+                    </Select.Option>
+                  ))}
+
                   </Select>
                   </Col>
                 </Row>

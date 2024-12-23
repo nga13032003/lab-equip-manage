@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Table, Typography, Button, message, Spin, Modal, Input } from 'antd';
-import { getProposalDetailsAndTools } from '../../api/phieuDeXuat';
+import { getProposalDetailsAndTools, updatePhieuDeXuat } from '../../api/phieuDeXuat';
 import { approveProposal, checkPhieuDeXuatExistence, updateDuyetPhieu } from '../../api/duyetPhieuDeXuat';  
 import './ApprovalDetails.scss';
 import { toast } from 'react-toastify';
@@ -112,6 +112,7 @@ const ApprovalDetails = () => {
     try {
       if(exits)
       {
+              
         updateDuyetPhieu(maPhieu, response);
         toast("Duyệt phiếu thành công!");
       }
@@ -125,7 +126,13 @@ const ApprovalDetails = () => {
           message.error('Không thể phê duyệt phiếu đề xuất.');
         }
       }
-      
+      const updatedPhieu = {
+        ...proposalDetails,
+        trangThai: 'Đã phê duyệt',
+        ngayHoanTat: new Date().toISOString(), // Current date
+      };
+
+      await updatePhieuDeXuat(maPhieu, updatedPhieu);
     } catch (error) {
       message.error(error.message || 'Lỗi khi phê duyệt phiếu đề xuất.');
     }

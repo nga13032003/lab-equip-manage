@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Table, Form, Input, message, Modal } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProposalDetailsAndTools } from '../../api/phieuDeXuat'; // Consolidated API function
+import { getProposalDetailsAndTools, updatePhieuDeXuat } from '../../api/phieuDeXuat'; // Consolidated API function
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import './ChiTietPhieuDeXuat.scss';
 import { updateOrCreateChiTietDeXuatDC } from '../../api/chiTietDeXuatDC';
@@ -62,12 +62,20 @@ const ChiTietPhieuDeXuat = () => {
         moTa: editingItem.moTa
       }
       if (isEditingDevice) {
+        
         await updateOrCreateDeviceProposal(maPhieu, editingItemDevice.maLoaiThietBi, payload);
         message.success('Cập nhật thiết bị thành công!');
         setIsModalDeviceVisible(false);
         // Reload data related to devices
         const { deviceDetails } = await getProposalDetailsAndTools(maPhieu);
         setDeviceList(deviceDetails);
+        const updatedPhieu = {
+          ...phieuDeXuat,
+          trangThai: 'Chưa phê duyệt',
+          ngayHoanTat: new Date().toISOString(), // Current date
+        };
+  
+        await updatePhieuDeXuat(maPhieu, updatedPhieu);
       }
     } catch (error) {
       message.error('Lỗi khi lưu thay đổi thiết bị.');
@@ -84,7 +92,13 @@ const ChiTietPhieuDeXuat = () => {
             soLuongDeXuat: editingItem.soLuongDeXuat,
             moTa: editingItem.moTa
         };
-
+          const updatedPhieu = {
+                ...phieuDeXuat,
+                trangThai: 'Chưa phê duyệt',
+                ngayHoanTat: new Date().toISOString(), // Current date
+              };
+        
+              await updatePhieuDeXuat(maPhieu, updatedPhieu);
         await updateOrCreateChiTietDeXuatDC(maPhieu, editingItem.maLoaiDC, payload);
         message.success('Cập nhật công cụ thành công!');
         setIsModalToolVisible(false);
