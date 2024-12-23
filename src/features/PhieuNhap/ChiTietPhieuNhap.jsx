@@ -91,13 +91,14 @@ const ChiTietPhieuNhap = () => {
     // Table of device details
     printWindow.document.write('<h3>Chi tiết thiết bị thanh lý</h3>');
     printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
-    printWindow.document.write('<thead><tr><th style="padding: 8px;">STT</th><th style="padding: 8px;">Mã thiết bị</th><th style="padding: 8px;">Giá thanh lý</th><th style="padding: 8px;">Lý do</th></tr></thead>');
+    printWindow.document.write('<thead><tr><th style="padding: 8px;">STT</th><th style="padding: 8px;">Mã thiết bị</th><th style="padding: 8px;">Giá thanh lý</th><th>Số lượng</th></tr></thead>');
     printWindow.document.write('<tbody>');
     thietBiDetails.forEach((device, index) => {
       printWindow.document.write('<tr>');
       printWindow.document.write('<td style="text-align: center; padding: 8px;">' + (index + 1) + '</td>');
       printWindow.document.write('<td style="padding: 8px;">' + device.maThietBi + '</td>');
       printWindow.document.write('<td style="padding: 8px; text-align: right;">' + device.giaNhap.toLocaleString() + ' VND</td>');
+      printWindow.document.write('<td style="padding: 8px;">' + "1" + '</td>');
       printWindow.document.write('</tr>');
     });
     dungCuDetails.forEach((tool, index) => {
@@ -105,7 +106,7 @@ const ChiTietPhieuNhap = () => {
       printWindow.document.write('<td style="text-align: center; padding: 8px;">' + (index + 1) + '</td>');
       printWindow.document.write('<td style="padding: 8px;">' + tool.maDungCu + '</td>');
       printWindow.document.write('<td style="padding: 8px; text-align: right;">' + tool.giaNhap.toLocaleString() + ' VND</td>');
-      printWindow.document.write('<td style="padding: 8px;">' + tool.soLuong + '</td>');
+      printWindow.document.write('<td style="padding: 8px;">' + tool.soLuongNhap + '</td>');
       printWindow.document.write('</tr>');
     });
     printWindow.document.write('</tbody>');

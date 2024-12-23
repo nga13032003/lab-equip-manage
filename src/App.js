@@ -47,6 +47,7 @@ import ThongKeGioSuDung from './features/DangkySuDung/ThongKeGioSuDung';
 import MaintenanceReport from './components/Reports/ThongKeBaoDuong';
 import ThietBiBaoDuong from './features/Device/ThietBiBaoDuong';
 import ThongKeNhapHang from './components/Reports/ThongKeNhapHang';
+import ThongKePhongThiNghiem from './features/LabRoom/thongKePhongThiNghiem';
 
 const App = () => {
   return (
@@ -100,6 +101,7 @@ const App = () => {
         <Route path="/thong-ke-bao-duong" element={<DefaultLayout><MaintenanceReport/></DefaultLayout>} />
         <Route path="/chi-tiet-thiet-bi/:maThietBi" element={<DefaultLayout><ThietBiBaoDuong/></DefaultLayout>} />
         <Route path="/thong-ke-nhap-hang" element={<DefaultLayout><ThongKeNhapHang/></DefaultLayout>} />
+        <Route path="/thong-ke-phong-thi-nghiem" element={<DefaultLayout><ThongKePhongThiNghiem/></DefaultLayout>} />
       </Routes>
 
     </Router>

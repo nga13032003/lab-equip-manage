@@ -12,13 +12,16 @@ import { FaRobot } from "react-icons/fa";
 import { FaLaptopCode } from "react-icons/fa";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
+import { getAllTools } from "../../api/toolApi";
 import "./LabRoom.scss";
+import { getAllViTriDungCu } from "../../api/viTriDungCu";
 
 const { Title, Text } = Typography;
 
 const LabRooms = () => {
   const [labRooms, setLabRooms] = useState([]);
   const [devices, setDevices] = useState([]);
+  const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -28,6 +31,7 @@ const LabRooms = () => {
         setLoading(true);
         const labRoomData = await getLabRooms(); // Giả sử lấy danh sách phòng
         const deviceData = await getThietBiData(); // Lấy danh sách thiết bị
+        const toolData = await getAllViTriDungCu();
         setLabRooms(labRoomData);
 
         // Nhóm thiết bị theo phòng
@@ -38,8 +42,19 @@ const LabRooms = () => {
           acc[device.maPhong].push(device);
           return acc;
         }, {});
+
+        // Nhóm thiết bị theo phòng
+        const groupedTools = toolData.reduce((acc, tool) => {
+          if (!acc[tool.maPhong]) {
+            acc[tool.maPhong] = [];
+          }
+          acc[tool.maPhong].push(tool);
+          return acc;
+        }, {});
+        
         
         setDevices(groupedDevices); // Lưu dữ liệu thiết bị theo phòng
+        setTools(groupedTools);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching lab rooms and devices:", error);
@@ -125,17 +140,10 @@ const LabRooms = () => {
                 <p>
                   <Text strong>Số thiết bị:</Text> {devices[room.maPhong]?.length || 0}
                 </p>
-                <button className="ant-btn-luan-chuyen"
-                                  type="primary"
-                                  style={{
-                                    position: "absolute",
-                                    bottom: 5,
-                                    right: 5,
-                                  }}
-                                  onClick={() => navigate("/de-xuat-luan-chuyen")}
-                                >
-                                  +Luân chuyển
-                   </button>
+                <p>
+                  <Text strong>Số dụng cụ:</Text> {tools[room.maPhong]?.length || 0}
+                </p>
+               
               </Card>
               </Link>
             </Col>

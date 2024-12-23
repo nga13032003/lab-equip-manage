@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getThietBiData } from "../../api/deviceApi";
 import { getAllViTriDungCu } from "../../api/viTriDungCu";
 import { getToolById, getAllTools } from "../../api/toolApi";
@@ -13,6 +13,7 @@ const LabDetail = () => {
   const [tools, setTools] = useState([]); // Dữ liệu dụng cụ
   const [loadingDevices, setLoadingDevices] = useState(true);
   const [loadingTools, setLoadingTools] = useState(true);
+  const navigate = useNavigate();
 
   // Lấy danh sách thiết bị theo mã phòng
   useEffect(() => {
@@ -72,7 +73,20 @@ const LabDetail = () => {
   return (
     <div className="lab-detail-container">
       <Title level={2}>Chi tiết phòng {maPhong}</Title>
-
+      <button className="ant-btn-luan-chuyen"
+                                        type="primary"
+                                        style={{
+                                          marginTop: "70px",
+                                          position: "absolute",
+                                          top: 0, // Đặt ngang với chữ "Chi Tiết Phòng"
+                                          right: 0, // Căn sang bên phải
+                                          marginRight: "15px",
+                                          height: 40
+                                        }}
+                                        onClick={() => navigate("/de-xuat-luan-chuyen")}
+                                      >
+                                        +Luân chuyển
+    </button>
       {/* Danh sách thiết bị */}
       <Divider orientation="left">Danh sách thiết bị</Divider>
       {loadingDevices ? (
@@ -88,6 +102,9 @@ const LabDetail = () => {
                 <p>
                   <Text strong>Ngày sản xuất:</Text> {device.ngaySX}
                 </p> */}
+                <p>
+                  <Text strong>Mã Thiết Bị:</Text> {device.maThietBi}
+                </p>
                 <img
                   src={device.hinhAnhUrl}
                   alt={device.tenThietBi}
@@ -108,6 +125,9 @@ const LabDetail = () => {
           {tools.map(tool => (
             <Col xs={24} sm={12} md={8} lg={6} key={tool.maDungCu}>
               <Card title={tool.tenDungCu}>
+              <p>
+                  <Text strong>Mã Dụng Cụ:</Text> {tool.maDungCu}
+                </p>
                 <img
                   src={tool.hinhAnhUrl}
                   alt={tool.tenDungCu}
@@ -119,6 +139,7 @@ const LabDetail = () => {
           ))}
         </Row>
       )}
+      
     </div>
   );
 };

@@ -83,12 +83,12 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="15" icon={<HistoryOutlined />} >
             <Link to='/thong-ke-bao-duong'>Thống kê bảo dưỡng</Link>
           </Menu.Item> */}
-          <SubMenu key="15" icon={<HistoryOutlined />} title="Danh sách dụng cụ và thiết bị">
+          <SubMenu key="15" icon={<HistoryOutlined />} title="Thống kê">
             <Menu.Item key="15-1"><Link to='/thong-ke-bao-duong'>Thống kê bảo dưỡng</Link></Menu.Item>
             <Menu.Item key="15-2"><Link to='/thong-ke'>Thống kê thanh lý</Link></Menu.Item>
             <Menu.Item key="15-3"><Link to='/thong-ke-nhap-hang'>Thống kê nhập hàng</Link></Menu.Item>
             <Menu.Item key="15-4"><Link to='/thong-ke-gio-su-dung'>Thống kê giờ sử dụng</Link></Menu.Item>
-            
+            <Menu.Item key="15-5"><Link to='/thong-ke-phong-thi-nghiem'>Thống kê phòng thí nghiệm</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
             <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
@@ -152,10 +152,6 @@ const AuthSider = ({ collapsed, role, setActiveComponent }) => {
           <Menu.Item key="15" icon={<HistoryOutlined />} >
             <Link to='/thoi-gian-su-dung'>Lịch sử đăng ký sử dụng</Link>
           </Menu.Item>
-          <SubMenu key="sub2" icon={<FileAddOutlined />} title="Danh sách Phòng Thí Nghiệm">
-            <Menu.Item key="device-pos"><Link to='/danh-sach-vi-tri-thiet-bi'>Thiết Bị</Link></Menu.Item>
-            <Menu.Item key="tool-pos"><Link to='/danh-sach-vi-tri-dung-cu'>Dụng cụ</Link></Menu.Item>
-          </SubMenu>
           <SubMenu key="sub1" icon={<SwapOutlined />} title="Danh sách dụng cụ và thiết bị">
             <Menu.Item key="9-1"><Link to='/loai-dung-cu'>Dụng cụ</Link></Menu.Item>
             <Menu.Item key="9-2"><Link to='/loai-thiet-bi'>Thiết bị</Link></Menu.Item>
